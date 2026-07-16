@@ -17,10 +17,10 @@ ALL_40 = Path(__file__).parents[1] / "examples" / "all_40_components.json"
 pytestmark = pytest.mark.skipif(not SOURCE.exists(), reason="Installed EasyEDA donor source is unavailable.")
 
 
-def test_all_40_catalogue_entries_resolve_to_source_payloads() -> None:
+def test_all_catalogue_entries_resolve_to_source_payloads() -> None:
     source = EasyedaDonorSource(SOURCE)
     packets = [source.resolve(entry) for entry in CATALOGUE.values()]
-    assert len(packets) == 40
+    assert len(packets) == 59
     assert all(packet.device and packet.symbol and packet.pins for packet in packets)
     assert all(packet.footprint is not None for packet in packets if packet.kind not in {"GND", "VCC"})
 
@@ -105,4 +105,4 @@ def test_all_40_source_symbols_generate_in_one_project(tmp_path: Path) -> None:
     assert result["passed"] is True
     assert result["component_count"] == 40
     assert result["pcb_ready"] is False
-    assert result["pcb_reason"] == "basic_pcb_component_limit_24"
+    assert result["pcb_reason"] == "basic_pcb_component_limit_32"

@@ -10,7 +10,15 @@ import sqlite3
 from typing import Any, Iterable
 
 from .donor_source import DonorPacket, _symbol_geometry
-from .geometry import Point, Rect, rects_overlap, rotate_point, segment_hits_rect, transform_rect
+from .geometry import (
+    Point,
+    Rect,
+    WireSpanIndex,
+    rects_overlap,
+    rotate_point,
+    segment_hits_rect,
+    transform_rect,
+)
 from .ir import Circuit, resolve_pin
 from .native import NativeWriteResult
 
@@ -68,6 +76,45 @@ def _point_on_segment(point: Point, start: Point, end: Point, tolerance: float =
         return abs(y - y1) <= tolerance and min(x1, x2) - tolerance <= x <= max(x1, x2) + tolerance
     if abs(x1 - x2) <= tolerance:
         return abs(x - x1) <= tolerance and min(y1, y2) - tolerance <= y <= max(y1, y2) + tolerance
+    return False
+
+
+def _segments_intersect(
+    first_start: Point,
+    first_end: Point,
+    second_start: Point,
+    second_end: Point,
+) -> bool:
+    if first_start[0] == first_end[0] and second_start[1] == second_end[1]:
+        return _point_on_segment(
+            (first_start[0], second_start[1]),
+            first_start,
+            first_end,
+        ) and _point_on_segment(
+            (first_start[0], second_start[1]),
+            second_start,
+            second_end,
+        )
+    if first_start[1] == first_end[1] and second_start[0] == second_end[0]:
+        return _point_on_segment(
+            (second_start[0], first_start[1]),
+            first_start,
+            first_end,
+        ) and _point_on_segment(
+            (second_start[0], first_start[1]),
+            second_start,
+            second_end,
+        )
+    if first_start[0] == first_end[0] == second_start[0] == second_end[0]:
+        return max(min(first_start[1], first_end[1]), min(second_start[1], second_end[1])) <= min(
+            max(first_start[1], first_end[1]),
+            max(second_start[1], second_end[1]),
+        )
+    if first_start[1] == first_end[1] == second_start[1] == second_end[1]:
+        return max(min(first_start[0], first_end[0]), min(second_start[0], second_end[0])) <= min(
+            max(first_start[0], first_end[0]),
+            max(second_start[0], second_end[0]),
+        )
     return False
 
 
@@ -161,12 +208,28 @@ def _find_instance_by_reference(instances: dict[str, dict[str, Any]]) -> dict[st
 
 def _actual_membership(
     circuit: Circuit,
-    reference_instances: dict[str, dict[str, Any]],
+    instances: dict[str, dict[str, Any]],
     wires: list[tuple[str, Point, Point]],
     packets: dict[str, DonorPacket],
 ) -> tuple[dict[str, set[str]], list[str]]:
     membership: dict[str, set[str]] = {}
     errors: list[str] = []
+    reference_instances = _find_instance_by_reference(instances)
+    terminal_nets_by_point: dict[Point, set[str]] = {}
+    for instance in instances.values():
+        if instance.get("reference"):
+            continue
+        terminal_net = str(
+            instance.get("global_net")
+            or instance.get("name")
+            or ""
+        )
+        if not terminal_net:
+            continue
+        for terminal_point in instance.get("pins", {}).values():
+            terminal_nets_by_point.setdefault(terminal_point, set()).add(
+                terminal_net
+            )
     packet_by_reference = {
         component.reference: packets[component.identifier]
         for component in circuit.components
@@ -192,10 +255,17 @@ def _actual_membership(
                 for net, start, end in wires
                 if net and _point_on_segment(point, start, end)
             }
+            connected_nets.update(terminal_nets_by_point.get(point, set()))
             if component.kind in {"GND", "VCC"}:
                 native_net = instance.get("global_net") or instance.get("name")
                 if native_net:
                     connected_nets.add(str(native_net))
+            wrong_nets = connected_nets - {expected_net}
+            if wrong_nets:
+                errors.append(
+                    f"{component.reference}.{requested} expected only {expected_net!r}, "
+                    f"also connected to {sorted(wrong_nets)}"
+                )
             if expected_net in connected_nets:
                 membership.setdefault(expected_net, set()).add(f"{component.reference}.{requested}")
             else:
@@ -205,33 +275,156 @@ def _actual_membership(
     return membership, errors
 
 
+def _component_errors(
+    circuit: Circuit,
+    instances: dict[str, dict[str, Any]],
+    packets: dict[str, DonorPacket],
+) -> list[str]:
+    errors: list[str] = []
+    emitted = [
+        instance
+        for instance in instances.values()
+        if instance.get("reference")
+    ]
+    expected_references = {component.reference for component in circuit.components}
+    emitted_references = [str(instance["reference"]) for instance in emitted]
+    duplicates = sorted(
+        reference
+        for reference in set(emitted_references)
+        if emitted_references.count(reference) > 1
+    )
+    if duplicates:
+        errors.append(f"duplicate emitted component references: {duplicates}")
+    actual_references = set(emitted_references)
+    missing = expected_references - actual_references
+    extra = actual_references - expected_references
+    if missing:
+        errors.append(f"missing schematic references: {sorted(missing)}")
+    if extra:
+        errors.append(f"unexpected schematic references: {sorted(extra)}")
+    by_reference = _find_instance_by_reference(instances)
+    for component in circuit.components:
+        instance = by_reference.get(component.reference)
+        if instance is None:
+            continue
+        packet = packets[component.identifier]
+        expected_device = str(packet.device["uuid"])
+        if instance["device_uuid"] != expected_device:
+            errors.append(
+                f"{component.reference} device mismatch: "
+                f"{instance['device_uuid']!r} != {expected_device!r}"
+            )
+        if instance["part_name"] != packet.part_name:
+            errors.append(
+                f"{component.reference} symbol part mismatch: "
+                f"{instance['part_name']!r} != {packet.part_name!r}"
+            )
+        if component.kind not in {"GND", "VCC"} and instance["value"] != component.value:
+            errors.append(
+                f"{component.reference} value mismatch: "
+                f"{instance['value']!r} != {component.value!r}"
+            )
+    return errors
+
+
+def _terminal_errors(
+    instances: dict[str, dict[str, Any]],
+    native: NativeWriteResult,
+) -> list[str]:
+    errors: list[str] = []
+    actual = [
+        instance
+        for instance in instances.values()
+        if not instance.get("reference") and instance.get("name")
+    ]
+    unmatched = list(actual)
+    for terminal in native.terminal_instances:
+        expected_device = str(terminal.packet.device["uuid"])
+        match = next(
+            (
+                instance
+                for instance in unmatched
+                if instance["name"] == terminal.net
+                and instance["device_uuid"] == expected_device
+                and abs(instance["x"] - terminal.x) <= 1e-6
+                and abs(instance["y"] - terminal.y) <= 1e-6
+                and instance["rotation"] == terminal.rotation
+            ),
+            None,
+        )
+        if match is None:
+            errors.append(
+                f"missing native terminal {terminal.net!r} for {terminal.endpoint} "
+                f"at ({terminal.x}, {terminal.y})"
+            )
+        else:
+            unmatched.remove(match)
+    if unmatched:
+        errors.append(
+            "unexpected native terminals: "
+            + repr(
+                sorted(
+                    (
+                        str(instance["name"]),
+                        float(instance["x"]),
+                        float(instance["y"]),
+                    )
+                    for instance in unmatched
+                )
+            )
+        )
+    return errors
+
+
 def _geometry_errors(
     instances: dict[str, dict[str, Any]],
     wires: list[tuple[str, Point, Point]],
 ) -> list[str]:
     errors: list[str] = []
-    real_instances = [
-        instance
-        for instance in instances.values()
-        if instance.get("reference")
-    ]
-    for index, first in enumerate(real_instances):
-        for second in real_instances[index + 1 :]:
+    all_instances = list(instances.values())
+
+    def label(instance: dict[str, Any]) -> str:
+        reference = str(instance.get("reference") or "")
+        if reference:
+            return reference
+        return (
+            f"terminal:{instance.get('name') or instance.get('global_net') or '?'}"
+            f"@{instance['x']},{instance['y']}"
+        )
+
+    for index, first in enumerate(all_instances):
+        for second in all_instances[index + 1 :]:
             if rects_overlap(first["body"], second["body"], touch_is_overlap=False):
-                errors.append(f"component overlap: {first['reference']} and {second['reference']}")
-    pin_points: dict[str, set[Point]] = {}
-    for instance in real_instances:
-        pin_points[str(instance["reference"])] = set(instance["pins"].values())
+                errors.append(f"component overlap: {label(first)} and {label(second)}")
     for net, start, end in wires:
-        for instance in real_instances:
-            if not segment_hits_rect(start, end, instance["body"]):
+        for instance in all_instances:
+            body = instance["body"]
+            if not instance.get("reference"):
+                body = (
+                    body[0] + 1e-6,
+                    body[1] + 1e-6,
+                    body[2] - 1e-6,
+                    body[3] - 1e-6,
+                )
+            if not segment_hits_rect(start, end, body):
                 continue
-            allowed = pin_points[str(instance["reference"])]
+            allowed = set(instance["pins"].values())
             if start in allowed or end in allowed:
                 continue
             errors.append(
-                f"wire {net!r} touches component body {instance['reference']} away from a pin: {start}->{end}"
+                f"wire {net!r} touches component body {label(instance)} away from a pin: {start}->{end}"
             )
+    wire_spans = WireSpanIndex()
+    for net, start, end in wires:
+        conflict = wire_spans.find_overlap(((start, end),), net)
+        if conflict is not None:
+            other_net, _, _, other_start, other_end = conflict
+            errors.append(
+                f"different-net wires share a collinear span: "
+                f"{net!r} {start}->{end} and "
+                f"{other_net!r} {other_start}->{other_end}"
+            )
+        wire_spans.add(net, start, end)
     return errors
 
 
@@ -280,6 +473,7 @@ def _pcb_errors(
     connection: sqlite3.Connection,
     circuit: Circuit,
     native: NativeWriteResult,
+    packets: dict[str, DonorPacket],
 ) -> list[str]:
     errors: list[str] = []
     row = connection.execute("SELECT dataStr FROM documents WHERE docType = 3 LIMIT 1").fetchone()
@@ -307,15 +501,31 @@ def _pcb_errors(
         if component.kind not in {"GND", "VCC"}
     }
     missing = expected_references - references
+    extra = references - expected_references
     if missing:
         errors.append(f"PCB missing references: {sorted(missing)}")
+    if extra:
+        errors.append(f"PCB has unexpected references: {sorted(extra)}")
     net_records = {str(item[1]) for item in rows if item[0] == "NET" and len(item) > 1}
     if not set(circuit.nets).issubset(net_records):
         errors.append(f"PCB missing net records: {sorted(set(circuit.nets) - net_records)}")
     tracks = [
-        (str(item[3]), (float(item[5]), float(item[6])), (float(item[7]), float(item[8])))
+        (
+            str(item[3]),
+            int(item[4]),
+            (float(item[5]), float(item[6])),
+            (float(item[7]), float(item[8])),
+        )
         for item in rows
         if item[0] == "LINE" and len(item) >= 9
+    ]
+    vias = [
+        (str(item[3]), (float(item[6]), float(item[7])))
+        for item in rows
+        if item[0] == "PAD"
+        and len(item) >= 8
+        and int(item[4]) == 12
+        and str(item[3])
     ]
     pad_net_rows = {
         (str(item[1]), str(item[2])): str(item[3])
@@ -337,14 +547,20 @@ def _pcb_errors(
         component_id = component_id_by_reference.get(reference)
         if component_id is None:
             continue
-        packet_manifest = native.donor_manifest.get("packets", {}).get(reference, {})
-        matching = [
-            pin["number"]
-            for pin in packet_manifest.get("pins", [])
-            if str(pin["number"]) == requested or str(pin["name"]) == requested
-        ]
-        if matching and pad_net_rows.get((component_id, str(matching[0]))) != expected_net:
+        component = next(item for item in circuit.components if item.reference == reference)
+        try:
+            descriptor = resolve_pin(packets[component.identifier], requested)
+        except ValueError as exc:
+            errors.append(str(exc))
+            continue
+        if pad_net_rows.get((component_id, descriptor.number)) != expected_net:
             errors.append(f"PCB PAD_NET mismatch for {endpoint}: expected {expected_net}")
+    expected_pad_nets = {
+        endpoint: net
+        for net, members in circuit.nets.items()
+        for endpoint in members
+        if endpoint in native.pcb.pad_points
+    }
     for endpoint, point in native.pcb.pad_points.items():
         expected_net = next(
             (
@@ -361,8 +577,102 @@ def _pcb_errors(
         )
         if same_net_pad_count < 2:
             continue
-        if not any(net == expected_net and _point_on_segment(point, start, end) for net, start, end in tracks):
+        if not any(
+            net == expected_net and _point_on_segment(point, start, end)
+            for net, _, start, end in tracks
+        ):
             errors.append(f"PCB pad {endpoint} is not physically tracked on {expected_net}")
+    for first_index, (net, layer, start, end) in enumerate(tracks):
+        for other_net, other_layer, other_start, other_end in tracks[first_index + 1 :]:
+            if (
+                layer == other_layer
+                and net != other_net
+                and _segments_intersect(start, end, other_start, other_end)
+            ):
+                errors.append(
+                    f"PCB copper short on layer {layer}: {net!r} {start}->{end} "
+                    f"intersects {other_net!r} {other_start}->{other_end}"
+                )
+        for endpoint, expected_net in expected_pad_nets.items():
+            if expected_net != net and _point_on_segment(native.pcb.pad_points[endpoint], start, end):
+                errors.append(
+                    f"PCB track {net!r} touches wrong-net pad {endpoint} "
+                    f"assigned to {expected_net!r}"
+                )
+
+    class _UnionFind:
+        def __init__(self, size: int) -> None:
+            self.parent = list(range(size))
+
+        def find(self, item: int) -> int:
+            while self.parent[item] != item:
+                self.parent[item] = self.parent[self.parent[item]]
+                item = self.parent[item]
+            return item
+
+        def union(self, first: int, second: int) -> None:
+            first_root = self.find(first)
+            second_root = self.find(second)
+            if first_root != second_root:
+                self.parent[second_root] = first_root
+
+    for net, members in circuit.nets.items():
+        pad_endpoints = [
+            endpoint
+            for endpoint in members
+            if endpoint in native.pcb.pad_points
+        ]
+        if len(pad_endpoints) < 2:
+            continue
+        net_tracks = [
+            (layer, start, end)
+            for track_net, layer, start, end in tracks
+            if track_net == net
+        ]
+        if not net_tracks:
+            errors.append(f"PCB net {net!r} has multiple pads but no copper tracks")
+            continue
+        connected = _UnionFind(len(net_tracks))
+        for first_index, (layer, start, end) in enumerate(net_tracks):
+            for second_index, (other_layer, other_start, other_end) in enumerate(
+                net_tracks[first_index + 1 :],
+                start=first_index + 1,
+            ):
+                if layer == other_layer and _segments_intersect(start, end, other_start, other_end):
+                    connected.union(first_index, second_index)
+        net_vias = [point for via_net, point in vias if via_net == net]
+        for via_point in net_vias:
+            touching = [
+                index
+                for index, (_, start, end) in enumerate(net_tracks)
+                if _point_on_segment(via_point, start, end)
+            ]
+            for index in touching[1:]:
+                connected.union(touching[0], index)
+        pad_roots: list[int] = []
+        for endpoint in pad_endpoints:
+            point = native.pcb.pad_points[endpoint]
+            touching = [
+                index
+                for index, (_, start, end) in enumerate(net_tracks)
+                if _point_on_segment(point, start, end)
+            ]
+            if not touching:
+                continue
+            reference, requested = endpoint.rsplit(".", 1)
+            component = next(item for item in circuit.components if item.reference == reference)
+            descriptor = resolve_pin(packets[component.identifier], requested)
+            pad = packets[component.identifier].footprint_pad_details.get(descriptor.number)
+            has_via = any(
+                abs(point[0] - via[0]) <= 1e-5 and abs(point[1] - via[1]) <= 1e-5
+                for via in net_vias
+            )
+            if has_via or (pad is not None and pad.through_hole):
+                for index in touching[1:]:
+                    connected.union(touching[0], index)
+            pad_roots.append(connected.find(touching[0]))
+        if pad_roots and len({connected.find(root) for root in pad_roots}) != 1:
+            errors.append(f"PCB net {net!r} has disconnected copper islands")
     return errors
 
 
@@ -437,15 +747,55 @@ def validate_native_project(
             wires = _wire_nets(rows, attrs)
             reference_instances = _find_instance_by_reference(instances)
             membership, connectivity_errors = _actual_membership(
-                circuit, reference_instances, wires, packets
+                circuit, instances, wires, packets
             )
+            component_errors = _component_errors(circuit, instances, packets)
+            pin_coverage_errors: list[str] = []
+            pin_coverage: dict[str, dict[str, Any]] = {}
+            for component in circuit.components:
+                packet = packets[component.identifier]
+                expected_numbers = {pin.number for pin in packet.pins}
+                resolved_numbers: set[str] = set()
+                for requested in component.pins:
+                    try:
+                        resolved_numbers.add(resolve_pin(packet, requested).number)
+                    except ValueError as exc:
+                        pin_coverage_errors.append(str(exc))
+                missing = sorted(expected_numbers - resolved_numbers)
+                extra = sorted(resolved_numbers - expected_numbers)
+                if missing:
+                    pin_coverage_errors.append(
+                        f"{component.reference} does not account for source pins {missing}"
+                    )
+                if extra:
+                    pin_coverage_errors.append(
+                        f"{component.reference} resolves unexpected source pins {extra}"
+                    )
+                pin_coverage[component.reference] = {
+                    "raw_symbol_pin_count": len(packet.pins),
+                    "unique_electrical_pin_count": len(expected_numbers),
+                    "accounted_pin_count": len(resolved_numbers),
+                    "missing": missing,
+                    "complete": not missing and not extra,
+                }
+            terminal_errors = _terminal_errors(instances, native)
+            for net, expected_members in circuit.nets.items():
+                actual_members = membership.get(net, set())
+                if actual_members != set(expected_members):
+                    connectivity_errors.append(
+                        f"net {net!r} membership mismatch: "
+                        f"expected {sorted(expected_members)}, actual {sorted(actual_members)}"
+                    )
             source_packets = dict(packets)
             for terminal in native.terminal_instances:
                 source_packets[f"terminal:{terminal.endpoint}"] = terminal.packet
             source_errors = _source_errors(connection, source_packets)
             geometry_errors = _geometry_errors(instances, wires)
-            pcb_errors = _pcb_errors(connection, circuit, native)
+            pcb_errors = _pcb_errors(connection, circuit, native, packets)
             errors.extend(instance_errors)
+            errors.extend(component_errors)
+            errors.extend(pin_coverage_errors)
+            errors.extend(terminal_errors)
             errors.extend(connectivity_errors)
             errors.extend(source_errors)
             errors.extend(geometry_errors)
@@ -466,6 +816,10 @@ def validate_native_project(
                         net: sorted(members) for net, members in sorted(circuit.nets.items())
                     },
                     "source_payload_errors": source_errors,
+                    "component_errors": component_errors,
+                    "pin_coverage": pin_coverage,
+                    "pin_coverage_errors": pin_coverage_errors,
+                    "terminal_errors": terminal_errors,
                     "geometry_errors": geometry_errors,
                     "pcb_ready": native.pcb.ready,
                     "pcb_reason": native.pcb.reason,

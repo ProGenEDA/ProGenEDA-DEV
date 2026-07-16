@@ -12,7 +12,7 @@ from dataclasses import dataclass
 import re
 
 
-CATALOGUE_VERSION = "progen-easyeda-donor-catalogue/v1"
+CATALOGUE_VERSION = "progen-easyeda-donor-catalogue/v2"
 
 
 @dataclass(frozen=True)
@@ -33,6 +33,8 @@ class CatalogueEntry:
     reference_prefix: str
     selector: DonorSelector
     category: str
+    value_rule: str
+    default_value: str
 
 
 def _entry(
@@ -43,6 +45,8 @@ def _entry(
     category: str,
     terminal: bool = False,
     pcb_required: bool = True,
+    value_rule: str = "display_text",
+    default_value: str | None = None,
 ) -> CatalogueEntry:
     return CatalogueEntry(
         kind=kind,
@@ -50,6 +54,8 @@ def _entry(
         reference_prefix=reference_prefix,
         selector=DonorSelector(titles=titles, terminal=terminal, pcb_required=pcb_required),
         category=category,
+        value_rule=value_rule,
+        default_value=default_value or kind,
     )
 
 
@@ -64,14 +70,18 @@ CATALOGUE: dict[str, CatalogueEntry] = {
         "R",
         "mfr-25jt-52-10k",
         category="basic",
+        value_rule="positive_number",
+        default_value="10k",
     ),
-    "R_POT": _entry("R_POT", ("POT", "POTENTIOMETER", "TRIMMER"), "R", "3296w-1-103_c330432", "3296w-1-101lf", category="basic"),
+    "R_POT": _entry("R_POT", ("POT", "POTENTIOMETER", "TRIMMER"), "R", "3296w-1-103_c330432", "3296w-1-101lf", category="basic", value_rule="positive_number", default_value="10k"),
     "C": _entry(
         "C",
         ("CAP", "CAPACITOR", "C_100NF_CERAMIC", "DECOUPLING_CAPACITOR"),
         "C",
         "fn43n104j500egg",
         category="basic",
+        value_rule="positive_number",
+        default_value="100n",
     ),
     "CAP_ELEC": _entry(
         "CAP_ELEC",
@@ -79,8 +89,10 @@ CATALOGUE: dict[str, CatalogueEntry] = {
         "C",
         "ca45a-b-6.3v-100uf-k",
         category="basic",
+        value_rule="positive_number",
+        default_value="100u",
     ),
-    "L": _entry("L", ("IND", "INDUCTOR", "REALIND"), "L", "ckcs5040-47uh/m", category="basic"),
+    "L": _entry("L", ("IND", "INDUCTOR", "REALIND"), "L", "ckcs5040-47uh/m", category="basic", value_rule="positive_number", default_value="47u"),
     "DIODE": _entry("DIODE", ("D", "DIODE_GENERIC", "FLYBACK_DIODE", "TVS_DIODE"), "D", "d_1n4007", "1n4148tr", category="basic"),
     "1N4007": _entry("1N4007", ("D_1N4007", "1N4007_DIODE"), "D", "1n4007rlg", "1n4007w", "d_1n4007", category="basic"),
     "1N4148": _entry("1N4148", ("D_1N4148",), "D", "1n4148tr", "1n4148w-tp", "1n4148wt_c511874", category="basic"),
@@ -109,8 +121,8 @@ CATALOGUE: dict[str, CatalogueEntry] = {
         category="lab_digital",
     ),
     "PIN_HEADER": _entry("PIN_HEADER", ("HEADER", "HEADER_CONNECTOR"), "J", "header-male-2.54_1x4", "2.54-1*2p母", category="lab_digital"),
-    "GND": _entry("GND", ("GROUND",), "#PWR", "ground-gnd", category="lab_digital", terminal=True, pcb_required=False),
-    "VCC": _entry("VCC", ("+5V", "POWER", "POWER_VCC"), "#PWR", "power-vcc", category="lab_digital", terminal=True, pcb_required=False),
+    "GND": _entry("GND", ("GROUND",), "#PWR", "ground-gnd", category="lab_digital", terminal=True, pcb_required=False, value_rule="fixed_terminal", default_value="GND"),
+    "VCC": _entry("VCC", ("+5V", "POWER", "POWER_VCC"), "#PWR", "power-vcc", category="lab_digital", terminal=True, pcb_required=False, value_rule="fixed_terminal", default_value="VCC"),
     "LM358": _entry("LM358", (), "U", "lm358adr", "lm358n_c434570", category="lab_digital"),
     "NE555": _entry("NE555", ("555",), "U", "ne555dr", "ne555l-d08-t", category="lab_digital"),
     "74HC00": _entry("74HC00", (), "U", "sn74hc00n", "74hc00d,653", category="lab_digital"),
@@ -130,6 +142,27 @@ CATALOGUE: dict[str, CatalogueEntry] = {
     "DS3231": _entry("DS3231", (), "U", "ds3231sn#t&r", "ds3231mz+trl", category="embedded"),
     "W25Q64": _entry("W25Q64", (), "U", "w25q64jvzeiq", "w25q64fwssiq", category="embedded"),
     "SSD1306": _entry("SSD1306", ("OLED", "OLED_SSD1306"), "DS", "0.96oled模块_4p", "0.96oled_4p", category="embedded"),
+    # Audited physical expansion. Selectors are exact source-device titles;
+    # native symbol and footprint records remain in donor databases.
+    "TEST_POINT": _entry("TEST_POINT", ("TESTPOINT", "TP"), "TP", "5010-Testpointred", category="pcb_utility"),
+    "MOUNTING_HOLE_NPTH": _entry("MOUNTING_HOLE_NPTH", ("NPTH", "NPTH_HOLE"), "H", "NPTH_4.4", category="pcb_utility"),
+    "MOUNTING_HOLE_PTH": _entry("MOUNTING_HOLE_PTH", ("PTH_HOLE", "SCREW_HOLE_M3"), "H", "Screw-Hole-M3", category="pcb_utility"),
+    "HEADER_1X2": _entry("HEADER_1X2", ("PIN_HEADER_1X2",), "J", "hdr-m_2.54_1x2p", category="pcb_utility"),
+    "HEADER_1X6": _entry("HEADER_1X6", ("PIN_HEADER_1X6", "UART_HEADER"), "J", "hdr-m_2.54_1x6p", category="pcb_utility"),
+    "HEADER_2X3": _entry("HEADER_2X3", ("AVR_ISP_HEADER",), "J", "hdr-m_2.54_2x3", category="pcb_utility"),
+    "HEADER_2X5_1P27": _entry("HEADER_2X5_1P27", ("SWD_HEADER", "HEADER_2X5_1_27"), "J", "1.27_2x5_3.6THR", category="pcb_utility"),
+    "USB_C_RECEPTACLE": _entry("USB_C_RECEPTACLE", ("USB_C", "TYPE_C_RECEPTACLE"), "J", "type-c-31-m-12", category="power_usb"),
+    "AP2112K_3V3": _entry("AP2112K_3V3", ("AP2112K",), "U", "ap2112k-3.3trg1", category="power_usb"),
+    "USBLC6_2SC6": _entry("USBLC6_2SC6", ("USBLC6",), "U", "usblc6-2sc6", category="power_usb"),
+    "PTC_FUSE": _entry("PTC_FUSE", ("POLYFUSE", "RESETTABLE_FUSE"), "F", "ResettableFuse-500mA", category="power_usb", value_rule="positive_number", default_value="500mA"),
+    "FERRITE_BEAD": _entry("FERRITE_BEAD", ("FB", "FERRITE"), "FB", "直插磁珠", category="power_usb", value_rule="positive_number", default_value="100"),
+    "SN65HVD230": _entry("SN65HVD230", ("CAN_TRANSCEIVER",), "U", "sn65hvd230dr", category="communications"),
+    "SM24CANB": _entry("SM24CANB", ("CAN_TVS",), "D", "SM24CANB-02HTG", category="communications"),
+    "MAX485": _entry("MAX485", ("RS485_TRANSCEIVER",), "U", "max485esa+t", category="communications"),
+    "AT24C256": _entry("AT24C256", ("I2C_EEPROM",), "U", "at24c256c-sshl-t", category="i2c"),
+    "PCF8574": _entry("PCF8574", ("I2C_GPIO",), "U", "pcf8574t", category="i2c"),
+    "PCA9685": _entry("PCA9685", ("I2C_PWM",), "U", "PCA9685PW,118", category="i2c"),
+    "ADS1115": _entry("ADS1115", ("I2C_ADC",), "U", "ads1115idgsr", category="i2c"),
 }
 
 
@@ -178,12 +211,14 @@ def catalogue_summary() -> dict[str, object]:
                 "donor_titles": list(entry.selector.titles),
                 "terminal": entry.selector.terminal,
                 "pcb_required": entry.selector.pcb_required,
+                "value_rule": entry.value_rule,
+                "default_value": entry.default_value,
             }
             for kind, entry in sorted(CATALOGUE.items())
         },
         "limits": {
             "max_input_components": 80,
-            "basic_pcb_physical_components": 24,
+            "basic_pcb_physical_components": 32,
         },
         "routing_modes": ["wire", "terminal", "combination"],
         "default_routing_mode": "combination",

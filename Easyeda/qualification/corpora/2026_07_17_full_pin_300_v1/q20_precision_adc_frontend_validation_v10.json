@@ -1,0 +1,447 @@
+{
+  "components": [
+    {
+      "block": "precision_adc_frontend",
+      "id": "U1",
+      "kind": "ADS1115",
+      "pins": {
+        "1": "IO_U1_1",
+        "10": "I2C_SCL",
+        "2": "IO_U1_2",
+        "3": "GND",
+        "4": "IO_U1_4",
+        "5": "IO_U1_5",
+        "6": "IO_U1_6",
+        "7": "IO_U1_7",
+        "8": "+3V3",
+        "9": "I2C_SDA"
+      },
+      "ref": "U1",
+      "role": "functional",
+      "value": "ADS1115"
+    },
+    {
+      "block": "precision_adc_frontend",
+      "id": "U2",
+      "kind": "LM358",
+      "pins": {
+        "1": "IO_U2_1",
+        "2": "IO_U2_2",
+        "3": "IO_U2_3",
+        "4": "GND",
+        "5": "IO_U2_5",
+        "6": "IO_U2_6",
+        "7": "IO_U2_7",
+        "8": "+3V3"
+      },
+      "ref": "U2",
+      "role": "functional",
+      "value": "LM358"
+    },
+    {
+      "block": "expansion",
+      "id": "J2",
+      "kind": "HEADER_2X5_1P27",
+      "pins": {
+        "1": "IO_U1_7",
+        "10": "IO_R1_3",
+        "2": "IO_U2_1",
+        "3": "IO_U2_2",
+        "4": "IO_U2_3",
+        "5": "IO_U2_5",
+        "6": "IO_U2_6",
+        "7": "IO_U2_7",
+        "8": "IO_R1_1",
+        "9": "IO_R1_2"
+      },
+      "ref": "J2",
+      "role": "full_pin_breakout",
+      "value": "HEADER_2X5_1P27"
+    },
+    {
+      "block": "precision_adc_frontend",
+      "id": "R1",
+      "kind": "R_POT",
+      "pins": {
+        "1": "IO_R1_1",
+        "2": "IO_R1_2",
+        "3": "IO_R1_3"
+      },
+      "ref": "R1",
+      "role": "functional",
+      "value": "10k"
+    },
+    {
+      "block": "precision_adc_frontend",
+      "id": "R2",
+      "kind": "R",
+      "pins": {
+        "1": "GND",
+        "2": "+3V3"
+      },
+      "ref": "R2",
+      "role": "functional",
+      "value": "120"
+    },
+    {
+      "block": "precision_adc_frontend",
+      "id": "R3",
+      "kind": "R",
+      "pins": {
+        "1": "GND",
+        "2": "+3V3"
+      },
+      "ref": "R3",
+      "role": "functional",
+      "value": "120"
+    },
+    {
+      "block": "precision_adc_frontend",
+      "id": "C1",
+      "kind": "C",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      },
+      "ref": "C1",
+      "role": "functional",
+      "value": "1uF"
+    },
+    {
+      "block": "precision_adc_frontend",
+      "id": "C2",
+      "kind": "C",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      },
+      "ref": "C2",
+      "role": "functional",
+      "value": "1uF"
+    },
+    {
+      "block": "precision_adc_frontend",
+      "id": "J1",
+      "kind": "HEADER_1X6",
+      "pins": {
+        "1": "I2C_SDA",
+        "2": "I2C_SCL",
+        "3": "IO_U1_1",
+        "4": "IO_U1_2",
+        "5": "IO_U1_4",
+        "6": "IO_U1_5"
+      },
+      "ref": "J1",
+      "role": "functional",
+      "value": "HEADER_1X6"
+    },
+    {
+      "block": "precision_adc_frontend",
+      "id": "TP1",
+      "kind": "TEST_POINT",
+      "pins": {
+        "1": "IO_U1_6"
+      },
+      "ref": "TP1",
+      "role": "functional",
+      "value": "TEST_POINT"
+    },
+    {
+      "block": "precision_adc_frontend",
+      "id": "LED1",
+      "kind": "LED",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      },
+      "ref": "LED1",
+      "role": "functional",
+      "value": "LED"
+    },
+    {
+      "block": "mechanical",
+      "id": "H1",
+      "kind": "MOUNTING_HOLE_PTH",
+      "pins": {
+        "1": "GND"
+      },
+      "ref": "H1",
+      "role": "mechanical_ground",
+      "value": "MOUNTING_HOLE_PTH"
+    },
+    {
+      "block": "mechanical",
+      "id": "H2",
+      "kind": "MOUNTING_HOLE_NPTH",
+      "pins": {
+        "1": "NC_CHASSIS_H2"
+      },
+      "ref": "H2",
+      "role": "mechanical",
+      "value": "MOUNTING_HOLE_NPTH"
+    }
+  ],
+  "expected_netlist": {
+    "+3V3": [
+      "C1.1",
+      "C2.1",
+      "LED1.1",
+      "R2.2",
+      "R3.2",
+      "U1.8",
+      "U2.8"
+    ],
+    "GND": [
+      "C1.2",
+      "C2.2",
+      "H1.1",
+      "LED1.2",
+      "R2.1",
+      "R3.1",
+      "U1.3",
+      "U2.4"
+    ],
+    "I2C_SCL": [
+      "J1.2",
+      "U1.10"
+    ],
+    "I2C_SDA": [
+      "J1.1",
+      "U1.9"
+    ],
+    "IO_R1_1": [
+      "J2.8",
+      "R1.1"
+    ],
+    "IO_R1_2": [
+      "J2.9",
+      "R1.2"
+    ],
+    "IO_R1_3": [
+      "J2.10",
+      "R1.3"
+    ],
+    "IO_U1_1": [
+      "J1.3",
+      "U1.1"
+    ],
+    "IO_U1_2": [
+      "J1.4",
+      "U1.2"
+    ],
+    "IO_U1_4": [
+      "J1.5",
+      "U1.4"
+    ],
+    "IO_U1_5": [
+      "J1.6",
+      "U1.5"
+    ],
+    "IO_U1_6": [
+      "TP1.1",
+      "U1.6"
+    ],
+    "IO_U1_7": [
+      "J2.1",
+      "U1.7"
+    ],
+    "IO_U2_1": [
+      "J2.2",
+      "U2.1"
+    ],
+    "IO_U2_2": [
+      "J2.3",
+      "U2.2"
+    ],
+    "IO_U2_3": [
+      "J2.4",
+      "U2.3"
+    ],
+    "IO_U2_5": [
+      "J2.5",
+      "U2.5"
+    ],
+    "IO_U2_6": [
+      "J2.6",
+      "U2.6"
+    ],
+    "IO_U2_7": [
+      "J2.7",
+      "U2.7"
+    ],
+    "NC_CHASSIS_H2": [
+      "H2.1"
+    ]
+  },
+  "nets": [
+    {
+      "members": [
+        "C1.1",
+        "C2.1",
+        "LED1.1",
+        "R2.2",
+        "R3.2",
+        "U1.8",
+        "U2.8"
+      ],
+      "name": "+3V3"
+    },
+    {
+      "members": [
+        "C1.2",
+        "C2.2",
+        "H1.1",
+        "LED1.2",
+        "R2.1",
+        "R3.1",
+        "U1.3",
+        "U2.4"
+      ],
+      "name": "GND"
+    },
+    {
+      "members": [
+        "J1.2",
+        "U1.10"
+      ],
+      "name": "I2C_SCL"
+    },
+    {
+      "members": [
+        "J1.1",
+        "U1.9"
+      ],
+      "name": "I2C_SDA"
+    },
+    {
+      "members": [
+        "J2.8",
+        "R1.1"
+      ],
+      "name": "IO_R1_1"
+    },
+    {
+      "members": [
+        "J2.9",
+        "R1.2"
+      ],
+      "name": "IO_R1_2"
+    },
+    {
+      "members": [
+        "J2.10",
+        "R1.3"
+      ],
+      "name": "IO_R1_3"
+    },
+    {
+      "members": [
+        "J1.3",
+        "U1.1"
+      ],
+      "name": "IO_U1_1"
+    },
+    {
+      "members": [
+        "J1.4",
+        "U1.2"
+      ],
+      "name": "IO_U1_2"
+    },
+    {
+      "members": [
+        "J1.5",
+        "U1.4"
+      ],
+      "name": "IO_U1_4"
+    },
+    {
+      "members": [
+        "J1.6",
+        "U1.5"
+      ],
+      "name": "IO_U1_5"
+    },
+    {
+      "members": [
+        "TP1.1",
+        "U1.6"
+      ],
+      "name": "IO_U1_6"
+    },
+    {
+      "members": [
+        "J2.1",
+        "U1.7"
+      ],
+      "name": "IO_U1_7"
+    },
+    {
+      "members": [
+        "J2.2",
+        "U2.1"
+      ],
+      "name": "IO_U2_1"
+    },
+    {
+      "members": [
+        "J2.3",
+        "U2.2"
+      ],
+      "name": "IO_U2_2"
+    },
+    {
+      "members": [
+        "J2.4",
+        "U2.3"
+      ],
+      "name": "IO_U2_3"
+    },
+    {
+      "members": [
+        "J2.5",
+        "U2.5"
+      ],
+      "name": "IO_U2_5"
+    },
+    {
+      "members": [
+        "J2.6",
+        "U2.6"
+      ],
+      "name": "IO_U2_6"
+    },
+    {
+      "members": [
+        "J2.7",
+        "U2.7"
+      ],
+      "name": "IO_U2_7"
+    },
+    {
+      "members": [
+        "H2.1"
+      ],
+      "name": "NC_CHASSIS_H2"
+    }
+  ],
+  "project": {
+    "name": "q20_precision_adc_frontend_validation_v10",
+    "target": "easyeda_pro",
+    "title": "Precision ADC Sensor Front End - Validation Variant"
+  },
+  "purpose": "Buffered precision ADC front end with adjustable threshold. Optimized for production validation fixture.",
+  "qualification": {
+    "archetype": "precision_adc_frontend",
+    "profile": "validation",
+    "require_complete_pin_coverage": true,
+    "require_pcb_when_routable": true,
+    "schema": "progen-easyeda-qualification-corpus/v1",
+    "source_basis": "Precision ADC and op-amp front-end practice",
+    "variant": 10
+  },
+  "routing": {
+    "mode": "combination"
+  },
+  "schema_version": "progen-easyeda-circuit-ir/v1"
+}

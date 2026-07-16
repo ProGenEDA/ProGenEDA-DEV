@@ -97,7 +97,9 @@ def _choose_rotation(packet: DonorPacket) -> int:
 def place_components(circuit: Circuit, packets: dict[str, DonorPacket]) -> tuple[PlacedComponent, ...]:
     """Shelf-pack source bodies into a compact square-like schematic."""
 
-    prepared: list[tuple[CircuitComponent, DonorPacket, int, float, float]] = []
+    prepared: list[
+        tuple[CircuitComponent, DonorPacket, int, float, float, float, float]
+    ] = []
     total_area = 0.0
     for component in circuit.components:
         packet = packets[component.identifier]
@@ -105,17 +107,30 @@ def place_components(circuit: Circuit, packets: dict[str, DonorPacket]) -> tuple
         left, top, right, bottom = transform_rect(packet.body_bbox, 0, 0, rotation)
         width = max(30.0, right - left)
         height = max(30.0, bottom - top)
-        prepared.append((component, packet, rotation, width, height))
-        total_area += (width + 100) * (height + 90)
-    target_width = max(600.0, min(1800.0, math.sqrt(total_area) * 1.25))
+        pin_pressure = max(0, len({pin.number for pin in packet.pins}) - 4)
+        horizontal_halo = min(440.0, 240.0 + pin_pressure * 7.0)
+        vertical_halo = min(300.0, 190.0 + pin_pressure * 4.0)
+        prepared.append(
+            (
+                component,
+                packet,
+                rotation,
+                width,
+                height,
+                horizontal_halo,
+                vertical_halo,
+            )
+        )
+        total_area += (width + horizontal_halo) * (height + vertical_halo)
+    target_width = max(700.0, min(3600.0, math.sqrt(total_area) * 1.35))
     cursor_x = 160.0
     cursor_y = 160.0
     row_height = 0.0
     placed: list[PlacedComponent] = []
-    for component, packet, rotation, width, height in prepared:
-        if cursor_x > 160 and cursor_x + width + 120 > target_width:
+    for component, packet, rotation, width, height, horizontal_halo, vertical_halo in prepared:
+        if cursor_x > 160 and cursor_x + width + horizontal_halo > target_width:
             cursor_x = 160.0
-            cursor_y += row_height + 110.0
+            cursor_y += row_height
             row_height = 0.0
         local_left, local_top, _, _ = transform_rect(packet.body_bbox, 0, 0, rotation)
         x = round(cursor_x - local_left, 3)
@@ -139,8 +154,8 @@ def place_components(circuit: Circuit, packets: dict[str, DonorPacket]) -> tuple
                 source_pins=source_pins,
             )
         )
-        cursor_x += width + 120.0
-        row_height = max(row_height, height)
+        cursor_x += width + horizontal_halo
+        row_height = max(row_height, height + vertical_halo)
     return tuple(placed)
 
 
@@ -188,6 +203,130 @@ def points_to_segments(points: Iterable[Point]) -> tuple[tuple[Point, Point], ..
     return tuple((first, second) for first, second in zip(cleaned, cleaned[1:]) if first != second)
 
 
+def segments_collinear_overlap(
+    first_start: Point,
+    first_end: Point,
+    second_start: Point,
+    second_end: Point,
+    *,
+    tolerance: float = 1e-6,
+) -> bool:
+    """Return true only when two orthogonal segments share a positive-length span."""
+
+    first_horizontal = abs(first_start[1] - first_end[1]) <= tolerance
+    second_horizontal = abs(second_start[1] - second_end[1]) <= tolerance
+    if first_horizontal and second_horizontal:
+        if abs(first_start[1] - second_start[1]) > tolerance:
+            return False
+        overlap = min(
+            max(first_start[0], first_end[0]),
+            max(second_start[0], second_end[0]),
+        ) - max(
+            min(first_start[0], first_end[0]),
+            min(second_start[0], second_end[0]),
+        )
+        return overlap > tolerance
+    first_vertical = abs(first_start[0] - first_end[0]) <= tolerance
+    second_vertical = abs(second_start[0] - second_end[0]) <= tolerance
+    if first_vertical and second_vertical:
+        if abs(first_start[0] - second_start[0]) > tolerance:
+            return False
+        overlap = min(
+            max(first_start[1], first_end[1]),
+            max(second_start[1], second_end[1]),
+        ) - max(
+            min(first_start[1], first_end[1]),
+            min(second_start[1], second_end[1]),
+        )
+        return overlap > tolerance
+    return False
+
+
+class WireSpanIndex:
+    """Coordinate-indexed positive-length spans reserved by emitted nets."""
+
+    def __init__(self) -> None:
+        self.horizontal: dict[
+            float,
+            list[tuple[str, float, float, Point, Point]],
+        ] = {}
+        self.vertical: dict[
+            float,
+            list[tuple[str, float, float, Point, Point]],
+        ] = {}
+        self.entries: list[tuple[str, float]] = []
+
+    def checkpoint(self) -> int:
+        return len(self.entries)
+
+    def add(self, net_name: str, start: Point, end: Point) -> None:
+        if abs(start[1] - end[1]) <= 1e-6:
+            key = round(start[1], 6)
+            self.horizontal.setdefault(key, []).append(
+                (
+                    net_name,
+                    min(start[0], end[0]),
+                    max(start[0], end[0]),
+                    start,
+                    end,
+                )
+            )
+            self.entries.append(("horizontal", key))
+        elif abs(start[0] - end[0]) <= 1e-6:
+            key = round(start[0], 6)
+            self.vertical.setdefault(key, []).append(
+                (
+                    net_name,
+                    min(start[1], end[1]),
+                    max(start[1], end[1]),
+                    start,
+                    end,
+                )
+            )
+            self.entries.append(("vertical", key))
+
+    def find_overlap(
+        self,
+        segments: Iterable[tuple[Point, Point]],
+        net_name: str,
+    ) -> tuple[str, Point, Point, Point, Point] | None:
+        for start, end in segments:
+            if abs(start[1] - end[1]) <= 1e-6:
+                spans = self.horizontal.get(round(start[1], 6), ())
+                low, high = sorted((start[0], end[0]))
+            elif abs(start[0] - end[0]) <= 1e-6:
+                spans = self.vertical.get(round(start[0], 6), ())
+                low, high = sorted((start[1], end[1]))
+            else:
+                continue
+            for other_net, other_low, other_high, other_start, other_end in spans:
+                if (
+                    other_net != net_name
+                    and min(high, other_high) - max(low, other_low) > 1e-6
+                ):
+                    return other_net, start, end, other_start, other_end
+        return None
+
+    def overlaps(
+        self,
+        segments: Iterable[tuple[Point, Point]],
+        net_name: str,
+    ) -> bool:
+        return self.find_overlap(segments, net_name) is not None
+
+    def rollback(self, checkpoint: int) -> None:
+        while len(self.entries) > checkpoint:
+            orientation, key = self.entries.pop()
+            target = (
+                self.horizontal
+                if orientation == "horizontal"
+                else self.vertical
+            )
+            target[key].pop()
+            if not target[key]:
+                del target[key]
+
+
 def _path_clear(
     points: tuple[Point, ...],
     obstacles: Iterable[Rect],
@@ -210,6 +349,7 @@ def _path_clear(
 def _candidate_paths(start: Point, end: Point, envelope: Rect, lane_index: int) -> tuple[tuple[Point, ...], ...]:
     left, top, right, bottom = envelope
     offset = 35.0 + lane_index * 12.0
+    nudge = 12.0 + (lane_index % 24) * 6.0
     return (
         (start, (end[0], start[1]), end),
         (start, (start[0], end[1]), end),
@@ -217,7 +357,67 @@ def _candidate_paths(start: Point, end: Point, envelope: Rect, lane_index: int) 
         (start, (start[0], bottom + offset), (end[0], bottom + offset), end),
         (start, (left - offset, start[1]), (left - offset, end[1]), end),
         (start, (right + offset, start[1]), (right + offset, end[1]), end),
+        (
+            start,
+            (start[0] + nudge, start[1]),
+            (start[0] + nudge, top - offset),
+            (end[0] - nudge, top - offset),
+            (end[0] - nudge, end[1]),
+            end,
+        ),
+        (
+            start,
+            (start[0] - nudge, start[1]),
+            (start[0] - nudge, bottom + offset),
+            (end[0] + nudge, bottom + offset),
+            (end[0] + nudge, end[1]),
+            end,
+        ),
+        (
+            start,
+            (start[0], start[1] + nudge),
+            (left - offset, start[1] + nudge),
+            (left - offset, end[1] - nudge),
+            (end[0], end[1] - nudge),
+            end,
+        ),
+        (
+            start,
+            (start[0], start[1] - nudge),
+            (right + offset, start[1] - nudge),
+            (right + offset, end[1] + nudge),
+            (end[0], end[1] + nudge),
+            end,
+        ),
     )
+
+
+def _pin_escape(point: Point, body: Rect, distance: float = 18.0) -> Point:
+    left, top, right, bottom = body
+    outside = {
+        "left": left - point[0],
+        "right": point[0] - right,
+        "top": top - point[1],
+        "bottom": point[1] - bottom,
+    }
+    outside = {side: amount for side, amount in outside.items() if amount > 0}
+    if outside:
+        side = max(outside, key=outside.get)
+    else:
+        distances = {
+            "left": abs(point[0] - left),
+            "right": abs(point[0] - right),
+            "top": abs(point[1] - top),
+            "bottom": abs(point[1] - bottom),
+        }
+        side = min(distances, key=distances.get)
+    if side == "left":
+        return round(min(point[0], left) - distance, 6), point[1]
+    if side == "right":
+        return round(max(point[0], right) + distance, 6), point[1]
+    if side == "top":
+        return point[0], round(min(point[1], top) - distance, 6)
+    return point[0], round(max(point[1], bottom) + distance, 6)
 
 
 def _visibility_route(
@@ -318,9 +518,10 @@ def route_nets(
         max(rect[3] for rect in all_bodies) + 20,
     )
     routed: list[RoutedNet] = []
+    reserved_segments = WireSpanIndex()
     lane_index = 0
     for net_name, members in sorted(circuit.nets.items(), key=lambda item: (-len(item[1]), item[0])):
-        resolved: list[tuple[str, Point]] = []
+        resolved: list[tuple[str, Point, Point]] = []
         for endpoint in members:
             if "." not in endpoint:
                 continue
@@ -328,9 +529,18 @@ def route_nets(
             item = by_reference.get(reference)
             if item is None or requested_pin not in item.pins:
                 continue
-            resolved.append((endpoint, item.pins[requested_pin]))
+            point = item.pins[requested_pin]
+            resolved.append((endpoint, point, _pin_escape(point, item.body)))
         if len(resolved) < 2:
-            routed.append(RoutedNet(net_name, (), True, tuple(endpoint for endpoint, _ in resolved), "single_endpoint"))
+            routed.append(
+                RoutedNet(
+                    net_name,
+                    (),
+                    True,
+                    tuple(endpoint for endpoint, _, _ in resolved),
+                    "single_endpoint",
+                )
+            )
             continue
         power = net_name.upper() in {"GND", "VCC", "+5V", "5V", "+3V3", "3V3", "VDD", "VSS"}
         shared_power_terminal = circuit.routing_mode == "combination" and power
@@ -341,32 +551,118 @@ def route_nets(
         )
         if policy_terminal:
             reason = "terminal_mode" if circuit.routing_mode == "terminal" else "high_fanout"
-            routed.append(RoutedNet(net_name, (), True, tuple(endpoint for endpoint, _ in resolved), reason))
+            routed.append(
+                RoutedNet(
+                    net_name,
+                    (),
+                    True,
+                    tuple(endpoint for endpoint, _, _ in resolved),
+                    reason,
+                )
+            )
             continue
-        root_endpoint, root_point = resolved[0]
+        root_endpoint, root_point, root_escape = resolved[0]
+        other_pin_obstacles = [
+            (
+                pin_point[0] - 5.0,
+                pin_point[1] - 5.0,
+                pin_point[0] + 5.0,
+                pin_point[1] + 5.0,
+            )
+            for item in placed
+            for requested, pin_point in item.pins.items()
+            if f"{item.component.reference}.{requested}" not in members
+        ]
+        net_obstacles = obstacles + other_pin_obstacles
         net_segments: list[tuple[Point, Point]] = []
+        reserved_before_net = reserved_segments.checkpoint()
         failed = False
-        for endpoint, point in resolved[1:]:
-            found: tuple[tuple[Point, Point], ...] | None = None
-            for candidate in _candidate_paths(root_point, point, envelope, lane_index):
-                if _path_clear(candidate, obstacles, allowed_start=root_point, allowed_end=point):
-                    found = points_to_segments(candidate)
+        for endpoint, point, escape in resolved[1:]:
+            branch: tuple[tuple[Point, Point], ...] | None = None
+            lane_attempts = 0
+            lane_limit = 32 if circuit.routing_mode == "combination" else 128
+            for lane_attempts in range(lane_limit):
+                candidate_lane = lane_index + lane_attempts
+                for candidate in _candidate_paths(
+                    root_escape,
+                    escape,
+                    envelope,
+                    candidate_lane,
+                ):
+                    candidate_segments = points_to_segments(candidate)
+                    candidate_branch = (
+                        (root_point, root_escape),
+                        *candidate_segments,
+                        (escape, point),
+                    )
+                    if not _path_clear(
+                        candidate,
+                        net_obstacles,
+                        allowed_start=root_escape,
+                        allowed_end=escape,
+                    ) or reserved_segments.overlaps(
+                        candidate_branch,
+                        net_name,
+                    ):
+                        continue
+                    branch = candidate_branch
                     break
-            if found is None:
-                found = _visibility_route(root_point, point, obstacles, envelope, lane_index)
-            lane_index += 1
-            if found is None:
+                if branch is not None:
+                    break
+            if branch is None:
+                visibility_attempts = 0 if circuit.routing_mode == "combination" else 16
+                for visibility_attempt in range(visibility_attempts):
+                    found = _visibility_route(
+                        root_escape,
+                        escape,
+                        net_obstacles,
+                        envelope,
+                        lane_index + visibility_attempt,
+                    )
+                    if found is None:
+                        continue
+                    candidate_branch = (
+                        (root_point, root_escape),
+                        *found,
+                        (escape, point),
+                    )
+                    if reserved_segments.overlaps(
+                        candidate_branch,
+                        net_name,
+                    ):
+                        continue
+                    branch = candidate_branch
+                    break
+            lane_index += lane_attempts + 1
+            if branch is None:
                 failed = True
                 break
-            net_segments.extend(found)
+            for segment in branch:
+                if segment not in net_segments:
+                    net_segments.append(segment)
+                reserved_segments.add(net_name, *segment)
+        if failed and circuit.routing_mode != "wire":
+            reserved_segments.rollback(reserved_before_net)
         if failed:
             if circuit.routing_mode == "wire":
                 routed.append(
-                    RoutedNet(net_name, tuple(net_segments), False, tuple(endpoint for endpoint, _ in resolved), "unroutable")
+                    RoutedNet(
+                        net_name,
+                        tuple(net_segments),
+                        False,
+                        tuple(endpoint for endpoint, _, _ in resolved),
+                        "unroutable",
+                    )
                 )
             else:
                 routed.append(
-                    RoutedNet(net_name, (), True, tuple(endpoint for endpoint, _ in resolved), "router_fallback")
+                    RoutedNet(
+                        net_name,
+                        (),
+                        True,
+                        tuple(endpoint for endpoint, _, _ in resolved),
+                        "router_fallback",
+                    )
                 )
         else:
             routed.append(
@@ -374,7 +670,7 @@ def route_nets(
                     net_name,
                     tuple(net_segments),
                     shared_power_terminal,
-                    tuple(endpoint for endpoint, _ in resolved),
+                    tuple(endpoint for endpoint, _, _ in resolved),
                     "shared_power_terminal" if shared_power_terminal else "routed",
                 )
             )

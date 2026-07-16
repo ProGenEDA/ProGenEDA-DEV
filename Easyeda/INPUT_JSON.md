@@ -1,7 +1,8 @@
 # EasyEDA Input JSON Contract
 
 The executable accepts one JSON object. The stable sections are `project`,
-`routing`, `components`, and optional `nets`/`expected_netlist`.
+`routing`, `components`, and optional `nets`/`expected_netlist`. Normal
+generation always passes the input through the deterministic fixer first.
 
 ```json
 {
@@ -46,6 +47,28 @@ The executable accepts one JSON object. The stable sections are `project`,
 the primary source of truth. Contradictory top-level or expected-netlist
 members are rejected.
 
+## Deterministic Repair
+
+`fix-input` writes canonical JSON. `validate-input` reports the same repairs
+without writing a project:
+
+```bash
+Easyeda/dist/progen-easyeda validate-input circuit.json
+Easyeda/dist/progen-easyeda fix-input circuit.json --output fixed.json
+```
+
+The fixer tolerates JSON comments and trailing commas, component maps instead
+of lists, common field aliases, missing `id`/`ref`, duplicate references,
+unsupported routing-mode spelling, and several top-level net shapes. It
+resolves the exact embedded donor before making pin decisions.
+
+Every unique electrical donor pin must be accounted for. Missing pins are
+never silently ignored: the fixer creates a separate `GUESS_<ROLE>_<REF>_<PIN>`
+net, marks it for terminal routing, and records the decision in
+`input_fixer.json`. Explicitly unused pins should be assigned to distinct
+`NC_<REF>_<PIN>` nets by the producer. A clean input has zero changes and zero
+guessed nets.
+
 ## Pin Rules
 
 Exact source pin numbers always work. Source pin names work when unique.
@@ -63,3 +86,36 @@ Duplicate source names use explicit audited aliases or numbers:
 
 Unsupported or ambiguous pins fail with the full donor pin list. The generator
 does not choose a pin from drawing position.
+
+## Future-Proof Fields
+
+The following fields are retained through normalization for downstream stages:
+
+- `project.name`, `project.title`, `project.target`, and optional project
+  metadata.
+- `routing.mode`, plus per-net terminal decisions produced by the fixer.
+- Component `id`, `ref`, `kind`, `value`, `role`, `block`, and exact `pins`.
+- Exact `nets` and `expected_netlist`.
+
+PCB generation consumes the same component and net objects. There is no
+separate PCB input contract.
+
+## Safe Value and Reference Editing
+
+`editable` returns the component fields exposed to a normal deterministic
+editor. `edit` accepts an object keyed by component id or reference:
+
+```json
+{
+  "components": {
+    "R1": {
+      "value": "2.2k",
+      "reference": "R10"
+    }
+  }
+}
+```
+
+The editor validates positive numeric values for passives, rejects unsafe
+display text, prevents duplicate references, updates every net member after a
+reference change, and never changes donor identity or footprint selection.

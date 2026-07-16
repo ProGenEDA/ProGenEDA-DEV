@@ -1,0 +1,276 @@
+{
+  "schema_version": "progeneda-main-json-contract/v1",
+  "project": {
+    "name": "easyeda_can_rs485_i2c_controller",
+    "title": "CAN RS485 and I2C Controller",
+    "target": "easyeda_pro"
+  },
+  "routing": {
+    "mode": "combination"
+  },
+  "components": [
+    {
+      "id": "U1",
+      "ref": "U1",
+      "kind": "STM32F103C8T6",
+      "value": "STM32F103C8T6",
+      "pins": {
+        "5": "CAN_TX",
+        "6": "CAN_RX",
+        "14": "RS485_TX",
+        "15": "RS485_RX",
+        "16": "RS485_EN",
+        "21": "I2C_SCL",
+        "22": "I2C_SDA",
+        "23": "+3V3",
+        "24": "GND"
+      }
+    },
+    {
+      "id": "U2",
+      "ref": "U2",
+      "kind": "SN65HVD230",
+      "value": "SN65HVD230",
+      "pins": {
+        "1": "CAN_TX",
+        "2": "GND",
+        "3": "+3V3",
+        "4": "CAN_RX",
+        "6": "CAN_L",
+        "7": "CAN_H",
+        "8": "GND"
+      }
+    },
+    {
+      "id": "D1",
+      "ref": "D1",
+      "kind": "SM24CANB",
+      "value": "SM24CANB",
+      "pins": {
+        "1": "CAN_H",
+        "2": "CAN_L",
+        "3": "GND"
+      }
+    },
+    {
+      "id": "U3",
+      "ref": "U3",
+      "kind": "MAX485",
+      "value": "MAX485",
+      "pins": {
+        "1": "RS485_RX",
+        "2": "RS485_EN",
+        "3": "RS485_EN",
+        "4": "RS485_TX",
+        "5": "GND",
+        "6": "RS485_A",
+        "7": "RS485_B",
+        "8": "+5V"
+      }
+    },
+    {
+      "id": "U4",
+      "ref": "U4",
+      "kind": "AT24C256",
+      "value": "256k EEPROM",
+      "pins": {
+        "1": "GND",
+        "2": "GND",
+        "3": "GND",
+        "4": "GND",
+        "5": "I2C_SDA",
+        "6": "I2C_SCL",
+        "7": "GND",
+        "8": "+3V3"
+      }
+    },
+    {
+      "id": "U5",
+      "ref": "U5",
+      "kind": "PCF8574",
+      "value": "I2C GPIO",
+      "pins": {
+        "1": "GND",
+        "2": "GND",
+        "3": "GND",
+        "4": "GPIO0",
+        "5": "GPIO1",
+        "6": "GPIO2",
+        "7": "GPIO3",
+        "8": "GND",
+        "9": "GPIO4",
+        "10": "GPIO5",
+        "11": "GPIO6",
+        "12": "GPIO7",
+        "13": "GPIO_INT",
+        "14": "I2C_SCL",
+        "15": "I2C_SDA",
+        "16": "+3V3"
+      }
+    },
+    {
+      "id": "U6",
+      "ref": "U6",
+      "kind": "PCA9685",
+      "value": "16 Channel PWM",
+      "pins": {
+        "1": "GND",
+        "2": "GND",
+        "3": "GND",
+        "4": "GND",
+        "5": "GND",
+        "6": "PWM0",
+        "7": "PWM1",
+        "8": "PWM2",
+        "9": "PWM3",
+        "14": "GND",
+        "23": "GND",
+        "24": "GND",
+        "26": "I2C_SCL",
+        "27": "I2C_SDA",
+        "28": "+3V3"
+      }
+    },
+    {
+      "id": "U7",
+      "ref": "U7",
+      "kind": "ADS1115",
+      "value": "16-bit ADC",
+      "pins": {
+        "1": "GND",
+        "2": "ADC_ALERT",
+        "3": "GND",
+        "4": "ADC0",
+        "5": "ADC1",
+        "6": "ADC2",
+        "7": "ADC3",
+        "8": "+3V3",
+        "9": "I2C_SDA",
+        "10": "I2C_SCL"
+      }
+    },
+    {
+      "id": "R1",
+      "ref": "R1",
+      "kind": "R",
+      "value": "4.7k",
+      "pins": {
+        "1": "+3V3",
+        "2": "I2C_SDA"
+      }
+    },
+    {
+      "id": "R2",
+      "ref": "R2",
+      "kind": "R",
+      "value": "4.7k",
+      "pins": {
+        "1": "+3V3",
+        "2": "I2C_SCL"
+      }
+    },
+    {
+      "id": "R3",
+      "ref": "R3",
+      "kind": "R",
+      "value": "120ohm",
+      "pins": {
+        "1": "CAN_H",
+        "2": "CAN_L"
+      }
+    },
+    {
+      "id": "R4",
+      "ref": "R4",
+      "kind": "R",
+      "value": "120ohm",
+      "pins": {
+        "1": "RS485_A",
+        "2": "RS485_B"
+      }
+    },
+    {
+      "id": "C1",
+      "ref": "C1",
+      "kind": "C",
+      "value": "100nF",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "C2",
+      "ref": "C2",
+      "kind": "C",
+      "value": "100nF",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "J1",
+      "ref": "J1",
+      "kind": "HEADER_1X2",
+      "value": "CAN",
+      "pins": {
+        "1": "CAN_H",
+        "2": "CAN_L"
+      }
+    },
+    {
+      "id": "J2",
+      "ref": "J2",
+      "kind": "HEADER_1X2",
+      "value": "RS485",
+      "pins": {
+        "1": "RS485_A",
+        "2": "RS485_B"
+      }
+    },
+    {
+      "id": "J3",
+      "ref": "J3",
+      "kind": "HEADER_2X5_1P27",
+      "value": "SWD and GPIO",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND",
+        "3": "GPIO0",
+        "4": "GPIO1",
+        "5": "GPIO2",
+        "6": "GPIO3",
+        "7": "ADC0",
+        "8": "ADC1",
+        "9": "I2C_SCL",
+        "10": "I2C_SDA"
+      }
+    },
+    {
+      "id": "TP1",
+      "ref": "TP1",
+      "kind": "TEST_POINT",
+      "value": "CAN H",
+      "pins": {
+        "1": "CAN_H"
+      }
+    },
+    {
+      "id": "TP2",
+      "ref": "TP2",
+      "kind": "TEST_POINT",
+      "value": "CAN L",
+      "pins": {
+        "1": "CAN_L"
+      }
+    },
+    {
+      "id": "H1",
+      "ref": "H1",
+      "kind": "MOUNTING_HOLE_NPTH",
+      "value": "M4.4",
+      "pins": {}
+    }
+  ]
+}

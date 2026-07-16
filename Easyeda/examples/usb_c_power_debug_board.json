@@ -1,0 +1,183 @@
+{
+  "schema_version": "progeneda-main-json-contract/v1",
+  "project": {
+    "name": "easyeda_usb_c_power_debug_board",
+    "title": "USB-C Protected 3V3 Power and Debug Board",
+    "target": "easyeda_pro"
+  },
+  "routing": {
+    "mode": "combination"
+  },
+  "components": [
+    {
+      "id": "J1",
+      "ref": "J1",
+      "kind": "USB_C_RECEPTACLE",
+      "value": "USB-C",
+      "pins": {
+        "A1": "GND",
+        "A4": "VBUS_RAW",
+        "A5": "CC1",
+        "A6": "USB_D_P",
+        "A7": "USB_D_N",
+        "A9": "VBUS_RAW",
+        "A12": "GND",
+        "B1": "GND",
+        "B4": "VBUS_RAW",
+        "B5": "CC2",
+        "B6": "USB_D_P",
+        "B7": "USB_D_N",
+        "B9": "VBUS_RAW",
+        "B12": "GND"
+      }
+    },
+    {
+      "id": "F1",
+      "ref": "F1",
+      "kind": "PTC_FUSE",
+      "value": "500mA",
+      "pins": {
+        "1": "VBUS_RAW",
+        "2": "VBUS_FUSED"
+      }
+    },
+    {
+      "id": "FB1",
+      "ref": "FB1",
+      "kind": "FERRITE_BEAD",
+      "value": "100ohm",
+      "pins": {
+        "1": "VBUS_FUSED",
+        "2": "+5V"
+      }
+    },
+    {
+      "id": "U1",
+      "ref": "U1",
+      "kind": "USBLC6_2SC6",
+      "value": "USBLC6-2SC6",
+      "pins": {
+        "1": "USB_D_P",
+        "2": "GND",
+        "3": "USB_D_N",
+        "4": "USB_D_N_PROTECTED",
+        "5": "+5V",
+        "6": "USB_D_P_PROTECTED"
+      }
+    },
+    {
+      "id": "U2",
+      "ref": "U2",
+      "kind": "AP2112K_3V3",
+      "value": "3V3 LDO",
+      "pins": {
+        "1": "+5V",
+        "2": "GND",
+        "3": "+5V",
+        "5": "+3V3"
+      }
+    },
+    {
+      "id": "R1",
+      "ref": "R1",
+      "kind": "R",
+      "value": "5.1k",
+      "pins": {
+        "1": "CC1",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "R2",
+      "ref": "R2",
+      "kind": "R",
+      "value": "5.1k",
+      "pins": {
+        "1": "CC2",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "C1",
+      "ref": "C1",
+      "kind": "C",
+      "value": "1uF",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "C2",
+      "ref": "C2",
+      "kind": "C",
+      "value": "1uF",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "J2",
+      "ref": "J2",
+      "kind": "HEADER_1X6",
+      "value": "USB Debug",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND",
+        "3": "USB_D_P_PROTECTED",
+        "4": "USB_D_N_PROTECTED",
+        "5": "+5V",
+        "6": "VBUS_RAW"
+      }
+    },
+    {
+      "id": "J3",
+      "ref": "J3",
+      "kind": "HEADER_2X3",
+      "value": "Power Test Header",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND",
+        "3": "+5V",
+        "4": "GND",
+        "5": "VBUS_RAW",
+        "6": "GND"
+      }
+    },
+    {
+      "id": "TP1",
+      "ref": "TP1",
+      "kind": "TEST_POINT",
+      "value": "VBUS",
+      "pins": {
+        "1": "VBUS_RAW"
+      }
+    },
+    {
+      "id": "TP2",
+      "ref": "TP2",
+      "kind": "TEST_POINT",
+      "value": "3V3",
+      "pins": {
+        "1": "+3V3"
+      }
+    },
+    {
+      "id": "H1",
+      "ref": "H1",
+      "kind": "MOUNTING_HOLE_NPTH",
+      "value": "M4.4",
+      "pins": {}
+    },
+    {
+      "id": "H2",
+      "ref": "H2",
+      "kind": "MOUNTING_HOLE_PTH",
+      "value": "M3 Chassis",
+      "pins": {
+        "1": "GND"
+      }
+    }
+  ]
+}

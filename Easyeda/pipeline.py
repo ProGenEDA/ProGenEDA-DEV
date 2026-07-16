@@ -11,11 +11,13 @@ from typing import Any, Mapping
 import zipfile
 
 from .catalogue import CATALOGUE_VERSION, get_entry
-from .donor_source import DonorPacket, EasyedaDonorSource
+from .donor_source import DonorPacket, EasyedaDonorSource, bundled_source_pack
 from .geometry import place_components, route_nets
+from .input_fixer import repair_circuit_input
 from .ir import Circuit, load_circuit
 from .native import NativeWriteResult, write_project
 from .validator import ValidationResult, validate_native_project
+from .value_editor import normalize_circuit_values
 
 
 PIPELINE_SCHEMA = "progen-easyeda-pipeline/v1"
@@ -114,6 +116,7 @@ def _pcb_report(native: NativeWriteResult) -> dict[str, Any]:
             endpoint: list(point)
             for endpoint, point in sorted(native.pcb.pad_points.items())
         },
+        "variations": list(native.pcb.variations),
     }
 
 
@@ -130,17 +133,29 @@ def _zip_internal(run_directory: Path, project_path: Path) -> Path:
 def generate_project(
     input_value: Path | str | Mapping[str, Any],
     *,
-    source_pack: Path | str,
+    source_pack: Path | str | None = None,
     output_root: Path | str,
     routing_mode: str | None = None,
 ) -> dict[str, Any]:
     """Generate, validate, and package one immutable EasyEDA project run."""
 
-    circuit = load_circuit(input_value, routing_mode=routing_mode)
-    source = EasyedaDonorSource(Path(source_pack))
+    source = EasyedaDonorSource(
+        Path(source_pack) if source_pack is not None else bundled_source_pack()
+    )
+    fixed = repair_circuit_input(input_value, source)
+    circuit = load_circuit(fixed.fixed, routing_mode=routing_mode)
+    circuit, value_report = normalize_circuit_values(circuit)
     run_directory = _new_run_directory(Path(output_root).expanduser().resolve(), circuit.name)
     normalized_path = run_directory / "normalized_input.json"
-    _json(normalized_path, circuit.normalized_json())
+    normalized = circuit.normalized_json()
+    normalized["expected_netlist"] = {
+        name: list(members)
+        for name, members in sorted(circuit.nets.items())
+    }
+    normalized["input_fixer"] = fixed.fixed["input_fixer"]
+    _json(normalized_path, normalized)
+    _json(run_directory / "input_fixer.json", fixed.report)
+    _json(run_directory / "value_editor.json", value_report)
     _json(run_directory / "source_provenance.json", source.provenance())
 
     packets = _resolve_packets(source, circuit)
@@ -178,6 +193,8 @@ def generate_project(
         "project_path": str(project_path),
         "component_count": len(circuit.components),
         "net_count": len(circuit.nets),
+        "input_fix_count": fixed.report["change_count"],
+        "guessed_net_count": fixed.report["guessed_net_count"],
         "terminal_net_count": sum(1 for net in routed if net.terminalized),
         "wire_net_count": sum(1 for net in routed if not net.terminalized and net.segments),
         "pcb_ready": native.pcb.ready,
@@ -206,13 +223,16 @@ def validate_project(
     project_path: Path | str,
     input_value: Path | str | Mapping[str, Any],
     *,
-    source_pack: Path | str,
+    source_pack: Path | str | None = None,
     routing_mode: str | None = None,
 ) -> ValidationResult:
     """Regenerate the deterministic model and validate an existing project."""
 
-    circuit = load_circuit(input_value, routing_mode=routing_mode)
-    source = EasyedaDonorSource(Path(source_pack))
+    source = EasyedaDonorSource(
+        Path(source_pack) if source_pack is not None else bundled_source_pack()
+    )
+    fixed = repair_circuit_input(input_value, source)
+    circuit = load_circuit(fixed.fixed, routing_mode=routing_mode)
     packets = _resolve_packets(source, circuit)
     placed = place_components(circuit, packets)
     routed = route_nets(circuit, placed)

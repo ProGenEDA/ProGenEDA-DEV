@@ -2,7 +2,7 @@
 
 ```text
 Canonical JSON
-  -> input normalizer and validator
+  -> tolerant deterministic input fixer and validator
   -> exact donor resolver
   -> source-pin resolver
   -> square-like schematic placer
@@ -19,31 +19,50 @@ Canonical JSON
 ## Replaceable Contracts
 
 `ir.py` owns the backend-neutral circuit contract. `donor_source.py` owns
-read-only source extraction. Geometry stages consume only normalized
-components, source body bounds, and source pin descriptors. The SQLite writer
-does not infer electrical pin roles.
+read-only extraction from either the embedded locked donor bundle or an
+authorized development source override. `input_fixer.py` repairs common JSON
+shape, naming, reference, pin, and net mistakes before `ir.py` applies the
+strict contract. Geometry stages consume only normalized components, source
+body bounds, and source pin descriptors. The SQLite writer does not infer
+electrical pin roles.
 
 `geometry.py` places and routes schematic records. Physical wires may cross
 other wires, but may not enter component bodies away from their intended pins.
+Different nets may meet at a point geometrically, but they may never share a
+positive-length horizontal or vertical span. A coordinate-indexed
+`WireSpanIndex` reserves every accepted segment during planning and terminal
+placement; `validator.py` independently rebuilds that index from the emitted
+native records and rejects any different-net collinear overlap. This keeps
+every pin escape and trunk visually traceable instead of allowing unrelated
+nets to collapse into an apparent bus.
+
 Terminalized nets use copied source `netport-in` or `netport-out` components
-and short orthogonal wire stubs. Combination-mode power nets are attempted as
-physical routes first, then receive exactly one shared named terminal at the
-route root. Only a failed power route falls back to endpoint terminals.
+and short orthogonal wire stubs. A guessed net with exactly one endpoint may
+use a source-native net port attached directly at that source pin; this avoids
+meaningless fanout wires while remaining explicit in the pin graph.
+Combination-mode power nets are attempted as physical routes first, then
+receive exactly one shared named terminal at the route root. Only a failed
+power route falls back to endpoint terminals.
 
 `native.py` clones a valid donor `.eprj`, removes unrelated example content,
 copies only required source rows, and writes generated project/document rows.
-The raw standard library and application are never placed in a generated
-project or output archive.
+The complete standard library and application are never placed in a generated
+project, portable executable, or output archive. The executable carries only
+the exact audited source rows required by the locked catalogue.
 
 `validator.py` reopens the emitted SQLite file and independently proves:
 
 1. SQLite integrity and required native documents.
 2. Exact component references, devices, values, and source pin existence.
-3. Expected net membership from actual `WIRE`/`ATTR NET` and native net-port
+3. Complete accounting of every unique electrical donor pin, including
+   explicit `NC_*` or reported terminalized `GUESS_*` nets.
+4. Expected net membership from actual `WIRE`/`ATTR NET` and native net-port
    records.
-4. No schematic component overlap or wire/body contact away from pins.
-5. Source symbol and footprint payload hashes are unchanged.
-6. When PCB is present: footprint instances, `PAD_NET`, nets, tracks, vias,
+5. No schematic component overlap or wire/body contact away from pins.
+6. No positive-length collinear overlap between wires belonging to different
+   nets; point crossings remain legal.
+7. Source symbol and footprint payload hashes are unchanged.
+8. When PCB is present: footprint instances, `PAD_NET`, nets, tracks, vias,
    outline, and pad-level physical connectivity.
 
 The donor manifest records terminal packet types separately from terminal
@@ -52,11 +71,14 @@ net, endpoint, coordinate, and rotation for audit.
 
 ## PCB Scope
 
-PCB generation is intentionally bounded to 24 physical components in the
-first hardened profile. Power and ground use opposite bottom-layer rails with
-native via pads; signal routes use obstacle-aware top-layer Manhattan routing
-and may use the bottom layer when valid. Output is withheld on missing pad
-mapping, footprint overlap, unroutable copper, or same-layer cross-net contact.
+PCB generation is intentionally bounded to 32 physical components in the
+hardened profile. The placer switches to broad channel-oriented rows for dense
+pin banks. The router evaluates deterministic variations, supports source pad
+rotation and exposed center-pad escape, and records accepted and rejected
+attempts in `pcb_report.json`. Power and ground use bottom-layer resources;
+signals use obstacle-aware two-layer routing. Output is withheld on missing
+pad mapping, footprint overlap, unroutable copper, or same-layer cross-net
+contact.
 
 This is a useful MVP board generator, not a universal autorouter or production
 manufacturing sign-off. EasyEDA DRC and human board review remain acceptance

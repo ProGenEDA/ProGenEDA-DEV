@@ -11,6 +11,7 @@ from __future__ import annotations
 from contextlib import closing
 from dataclasses import dataclass
 import hashlib
+from importlib import resources as importlib_resources
 import json
 from pathlib import Path
 import shutil
@@ -23,10 +24,35 @@ from .catalogue import CatalogueEntry, DonorSelector
 
 
 SOURCE_SCHEMA = "progen-easyeda-donor-source/v1"
+BUNDLED_SOURCE_FILES = (
+    "easyeda-std.elib",
+    "blank_template.eprj",
+    "manifest.json",
+)
 
 
 class DonorSourceError(ValueError):
     """The supplied source pack cannot prove a requested native packet."""
+
+
+def bundled_source_pack() -> Path:
+    """Return a filesystem directory containing the locked runtime donor set."""
+
+    direct = Path(__file__).resolve().parent / "donors" / "locked_catalogue_v2"
+    if all((direct / name).is_file() for name in BUNDLED_SOURCE_FILES):
+        return direct
+    root = Path(tempfile.gettempdir()) / "progen_easyeda_locked_catalogue_v2"
+    root.mkdir(parents=True, exist_ok=True)
+    traversable = importlib_resources.files("Easyeda").joinpath(
+        "donors",
+        "locked_catalogue_v2",
+    )
+    for name in BUNDLED_SOURCE_FILES:
+        destination = root / name
+        data = traversable.joinpath(name).read_bytes()
+        if not destination.is_file() or destination.read_bytes() != data:
+            destination.write_bytes(data)
+    return root
 
 
 @dataclass(frozen=True)
@@ -34,6 +60,7 @@ class SourcePaths:
     source_pack: Path
     source_sha256: str
     library_path: Path
+    supplemental_library_paths: tuple[Path, ...]
     template_path: Path
     source_version: str | None
 
@@ -45,6 +72,19 @@ class PinDescriptor:
     pin_type: str
     x: float
     y: float
+
+
+@dataclass(frozen=True)
+class FootprintPadDescriptor:
+    number: str
+    identifier: str
+    x: float
+    y: float
+    layer: int
+    rotation: float
+    shape: object
+    hole: object
+    through_hole: bool
 
 
 @dataclass(frozen=True)
@@ -64,11 +104,17 @@ class DonorPacket:
     reference_prefix: str
     footprint_pads: dict[str, tuple[float, float]]
     footprint_pad_ids: dict[str, str]
+    footprint_pad_details: dict[str, FootprintPadDescriptor]
+    footprint_bbox: tuple[float, float, float, float] | None
     source_hashes: dict[str, str]
 
     @property
     def pcb_ready(self) -> bool:
-        return self.footprint is not None and bool(self.footprint_pads)
+        if self.footprint is None:
+            return False
+        if not self.pins:
+            return True
+        return all(pin.number in self.footprint_pads for pin in self.pins)
 
 
 def sha256_file(path: Path) -> str:
@@ -138,18 +184,65 @@ def _symbol_geometry(data: str) -> tuple[tuple[PinDescriptor, ...], tuple[float,
     return tuple(pins), bbox, part_name, reference_prefix
 
 
-def _footprint_pads(data: str) -> tuple[dict[str, tuple[float, float]], dict[str, str]]:
+def _shape_extents(value: object) -> tuple[float, float]:
+    if not isinstance(value, list):
+        return 0.0, 0.0
+    numbers = [abs(float(item)) for item in value[1:] if isinstance(item, (int, float))]
+    if not numbers:
+        return 0.0, 0.0
+    return numbers[0] / 2.0, (numbers[1] if len(numbers) > 1 else numbers[0]) / 2.0
+
+
+def _footprint_geometry(
+    data: str,
+) -> tuple[
+    dict[str, tuple[float, float]],
+    dict[str, str],
+    dict[str, FootprintPadDescriptor],
+    tuple[float, float, float, float] | None,
+]:
     pads: dict[str, tuple[float, float]] = {}
     identifiers: dict[str, str] = {}
+    details: dict[str, FootprintPadDescriptor] = {}
+    bounds: list[tuple[float, float, float, float]] = []
     for row in _read_json_records(data):
         if row[0] != "PAD" or len(row) < 8:
             continue
         number = str(row[5] or "").strip()
         if not number:
             continue
-        pads[number] = (float(row[6]), float(row[7]))
+        x = float(row[6])
+        y = float(row[7])
+        layer = int(row[4]) if isinstance(row[4], (int, float)) else 0
+        rotation = float(row[8]) if len(row) > 8 and isinstance(row[8], (int, float)) else 0.0
+        shape = row[10] if len(row) > 10 else None
+        hole = row[11] if len(row) > 11 else None
+        half_width, half_height = _shape_extents(shape)
+        if half_width == 0 and half_height == 0:
+            half_width = half_height = 2.0
+        pads[number] = (x, y)
         identifiers[number] = str(row[1])
-    return pads, identifiers
+        details[number] = FootprintPadDescriptor(
+            number=number,
+            identifier=str(row[1]),
+            x=x,
+            y=y,
+            layer=layer,
+            rotation=rotation,
+            shape=shape,
+            hole=hole,
+            through_hole=layer == 12,
+        )
+        bounds.append((x - half_width, y - half_height, x + half_width, y + half_height))
+    bbox = None
+    if bounds:
+        bbox = (
+            min(item[0] for item in bounds),
+            min(item[1] for item in bounds),
+            max(item[2] for item in bounds),
+            max(item[3] for item in bounds),
+        )
+    return pads, identifiers, details, bbox
 
 
 class EasyedaDonorSource:
@@ -217,6 +310,7 @@ class EasyedaDonorSource:
             source_pack=self.source_pack,
             source_sha256=sha256_file(libraries[0]),
             library_path=libraries[0],
+            supplemental_library_paths=self._supplemental_library_paths(),
             template_path=template,
             source_version=version,
         )
@@ -255,6 +349,7 @@ class EasyedaDonorSource:
             source_pack=self.source_pack,
             source_sha256=source_hash,
             library_path=library,
+            supplemental_library_paths=self._supplemental_library_paths(),
             template_path=template,
             source_version=version,
         )
@@ -265,32 +360,68 @@ class EasyedaDonorSource:
         connection.row_factory = sqlite3.Row
         return connection
 
+    @staticmethod
+    def _supplemental_library_paths() -> tuple[Path, ...]:
+        candidate = Path(__file__).resolve().parent / "donors" / "system_expansion_v2.elib"
+        return (candidate,) if candidate.is_file() else ()
+
+    def _library_paths(self) -> tuple[Path, ...]:
+        paths = self.materialize()
+        return (paths.library_path, *paths.supplemental_library_paths)
+
     def resolve(self, entry: CatalogueEntry) -> DonorPacket:
         """Resolve one catalogue entry to exact source records or fail closed."""
 
-        with self._connect_library() as connection:
-            device = self._find_device(connection, entry)
-            device_uuid = str(device["uuid"])
-            attributes = self._attributes(connection, device_uuid)
-            attribute_map = {str(row["key"]): str(row["value"]) for row in attributes}
-            symbol_uuid = attribute_map.get("Symbol")
-            if not symbol_uuid:
-                raise DonorSourceError(f"{entry.kind} donor {device['title']!r} has no source Symbol binding.")
-            symbol = self._component_row(connection, symbol_uuid, entry.kind, "symbol")
-            footprint: dict[str, Any] | None = None
-            footprint_uuid = attribute_map.get("Footprint")
-            if footprint_uuid:
-                footprint = self._component_row(connection, footprint_uuid, entry.kind, "footprint")
-            if entry.selector.pcb_required and footprint is None:
-                raise DonorSourceError(f"{entry.kind} donor {device['title']!r} has no source Footprint binding.")
-            resources = self._resource_rows(connection, attribute_map.values())
+        resolved: tuple[
+            dict[str, Any],
+            list[dict[str, Any]],
+            dict[str, Any],
+            dict[str, Any] | None,
+            list[dict[str, Any]],
+        ] | None = None
+        for library_path in self._library_paths():
+            with sqlite3.connect(f"file:{library_path}?mode=ro", uri=True) as connection:
+                connection.row_factory = sqlite3.Row
+                try:
+                    device = self._find_device(connection, entry)
+                except DonorSourceError:
+                    continue
+                device_uuid = str(device["uuid"])
+                attributes = self._attributes(connection, device_uuid)
+                attribute_map = {str(row["key"]): str(row["value"]) for row in attributes}
+                symbol_uuid = attribute_map.get("Symbol")
+                if not symbol_uuid:
+                    raise DonorSourceError(
+                        f"{entry.kind} donor {device['title']!r} has no source Symbol binding."
+                    )
+                symbol = self._component_row(connection, symbol_uuid, entry.kind, "symbol")
+                footprint: dict[str, Any] | None = None
+                footprint_uuid = attribute_map.get("Footprint")
+                if footprint_uuid:
+                    footprint = self._component_row(
+                        connection, footprint_uuid, entry.kind, "footprint"
+                    )
+                if entry.selector.pcb_required and footprint is None:
+                    raise DonorSourceError(
+                        f"{entry.kind} donor {device['title']!r} has no source Footprint binding."
+                    )
+                resources = self._resource_rows(connection, attribute_map.values())
+                resolved = device, attributes, symbol, footprint, resources
+                break
+        if resolved is None:
+            tried = ", ".join(entry.selector.titles)
+            raise DonorSourceError(
+                f"{entry.kind} has no exact donor device in the authorized source libraries; "
+                f"tried: {tried}."
+            )
+        device, attributes, symbol, footprint, resources = resolved
         pins, bbox, part_name, donor_prefix = _symbol_geometry(str(symbol["dataStr"]))
         if not entry.selector.terminal and not part_name:
             raise DonorSourceError(f"{entry.kind} donor {device['title']!r} has no native symbol PART record.")
-        pads, pad_ids = (
-            _footprint_pads(str(footprint["dataStr"]))
+        pads, pad_ids, pad_details, footprint_bbox = (
+            _footprint_geometry(str(footprint["dataStr"]))
             if footprint is not None
-            else ({}, {})
+            else ({}, {}, {}, None)
         )
         hashes = {
             "device": _stable_json_hash(device),
@@ -313,6 +444,8 @@ class EasyedaDonorSource:
             reference_prefix=donor_prefix or entry.reference_prefix,
             footprint_pads=pads,
             footprint_pad_ids=pad_ids,
+            footprint_pad_details=pad_details,
+            footprint_bbox=footprint_bbox,
             source_hashes=hashes,
         )
 
@@ -329,6 +462,8 @@ class EasyedaDonorSource:
             reference_prefix="PORT",
             selector=DonorSelector((title,), terminal=True, pcb_required=False),
             category="terminal",
+            value_rule="display_text",
+            default_value=title,
         )
         return self.resolve(entry)
 
@@ -379,6 +514,10 @@ class EasyedaDonorSource:
             "source_sha256": paths.source_sha256,
             "source_version": paths.source_version,
             "library_sha256": sha256_file(paths.library_path),
+            "supplemental_libraries": [
+                {"path": str(path), "sha256": sha256_file(path)}
+                for path in paths.supplemental_library_paths
+            ],
             "template_sha256": sha256_file(paths.template_path),
-            "raw_source_embedded": False,
+            "raw_source_embedded": bool(paths.supplemental_library_paths),
         }

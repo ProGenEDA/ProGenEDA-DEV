@@ -271,16 +271,18 @@ directs work onward.
 
 `Easyeda/` is an independent donor-native backend. It may consume the shared
 canonical circuit JSON, but it must not import from or modify `kicad/` at
-runtime. The locked implementation target is 40 source-backed component
-families and at most 80 input component instances.
+runtime. The locked implementation is 59 logical entries backed by 57 physical
+source families plus two native terminal families, at most 80 schematic input
+components, and at most 32 physical PCB components.
 
 Never invent, redraw, approximate, or substitute an EasyEDA symbol, device,
 footprint, pad, power symbol, or net port. Resolve exact records from the
 authorized EasyEDA source package at generation time, copy only the records
 needed by the generated project, and retain source payload hashes in the
-internal manifest. The desktop application, compiled modules, and complete
-standard library must not be embedded in generated outputs or the portable
-generator.
+internal manifest. The portable generator may embed the compact audited donor
+bundle containing only locked catalogue rows and the blank template. The
+desktop application, compiled modules, and complete standard library must not
+be embedded in generated outputs or the portable generator.
 
 The primary user artifact is one native `.eprj`. Schematic wiring supports
 `wire`, `terminal`, and `combination`, with combination as the default. Failed
@@ -290,8 +292,12 @@ the same `.eprj` only when every used source pin maps to a source footprint pad
 and the complete board passes the bounded physical validator.
 
 Every accepted generation uses a new run directory and preserves normalized
-input, placement, routing, donor provenance, PCB decision, and validation
-reports in its internal archive. Do not overwrite prior generated projects.
+input, fixer report, placement, routing, donor provenance, PCB decision,
+accepted/rejected PCB variations, and validation reports in its internal
+archive. Do not overwrite prior generated projects. Every unique donor
+electrical pin must be accounted for by an explicit requested net, `NC_*` net,
+or a reported terminalized `GUESS_*` net.
 Static SQLite/net/geometry validation is necessary but not EasyEDA acceptance:
-before claiming a release candidate works, open the exact generated `.eprj`
-through the installed EasyEDA Pro file association and record visual results.
+before claiming a release candidate works, open a disposable copy of the exact
+generated `.eprj` through the installed EasyEDA Pro file association, prove the
+audited original was unchanged, and record visual results.

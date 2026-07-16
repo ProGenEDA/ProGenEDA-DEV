@@ -1,0 +1,385 @@
+{
+  "components": [
+    {
+      "block": "i2c_gpio_module",
+      "id": "U1",
+      "kind": "PCF8574",
+      "pins": {
+        "1": "IO_U1_1",
+        "10": "IO_U1_10",
+        "11": "IO_U1_11",
+        "12": "IO_U1_12",
+        "13": "IO_U1_13",
+        "14": "I2C_SCL",
+        "15": "I2C_SDA",
+        "16": "+3V3",
+        "2": "IO_U1_2",
+        "3": "IO_U1_3",
+        "4": "IO_U1_4",
+        "5": "IO_U1_5",
+        "6": "IO_U1_6",
+        "7": "IO_U1_7",
+        "8": "GND",
+        "9": "IO_U1_9"
+      },
+      "ref": "U1",
+      "role": "functional",
+      "value": "PCF8574"
+    },
+    {
+      "block": "i2c_gpio_module",
+      "id": "R1",
+      "kind": "R",
+      "pins": {
+        "1": "GND",
+        "2": "+3V3"
+      },
+      "ref": "R1",
+      "role": "functional",
+      "value": "10k"
+    },
+    {
+      "block": "i2c_gpio_module",
+      "id": "R2",
+      "kind": "R",
+      "pins": {
+        "1": "GND",
+        "2": "+3V3"
+      },
+      "ref": "R2",
+      "role": "functional",
+      "value": "10k"
+    },
+    {
+      "block": "i2c_gpio_module",
+      "id": "C1",
+      "kind": "C",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      },
+      "ref": "C1",
+      "role": "functional",
+      "value": "22pF"
+    },
+    {
+      "block": "i2c_gpio_module",
+      "id": "J1",
+      "kind": "HEADER_1X6",
+      "pins": {
+        "1": "I2C_SCL",
+        "2": "I2C_SDA",
+        "3": "IO_U1_1",
+        "4": "IO_U1_2",
+        "5": "IO_U1_3",
+        "6": "IO_U1_4"
+      },
+      "ref": "J1",
+      "role": "functional",
+      "value": "HEADER_1X6"
+    },
+    {
+      "block": "i2c_gpio_module",
+      "id": "J2",
+      "kind": "HEADER_2X5_1P27",
+      "pins": {
+        "1": "IO_U1_5",
+        "10": "GND",
+        "2": "IO_U1_6",
+        "3": "IO_U1_7",
+        "4": "IO_U1_9",
+        "5": "IO_U1_10",
+        "6": "IO_U1_11",
+        "7": "IO_U1_12",
+        "8": "IO_U1_13",
+        "9": "SWITCH_SW1"
+      },
+      "ref": "J2",
+      "role": "functional",
+      "value": "HEADER_2X5_1P27"
+    },
+    {
+      "block": "i2c_gpio_module",
+      "id": "LED1",
+      "kind": "LED",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      },
+      "ref": "LED1",
+      "role": "functional",
+      "value": "LED"
+    },
+    {
+      "block": "i2c_gpio_module",
+      "id": "SW1",
+      "kind": "SPST_SWITCH",
+      "pins": {
+        "A": "SWITCH_SW1",
+        "B": "GND"
+      },
+      "ref": "SW1",
+      "role": "functional",
+      "value": "SPST_SWITCH"
+    },
+    {
+      "block": "mechanical",
+      "id": "H1",
+      "kind": "MOUNTING_HOLE_PTH",
+      "pins": {
+        "1": "GND"
+      },
+      "ref": "H1",
+      "role": "mechanical_ground",
+      "value": "MOUNTING_HOLE_PTH"
+    },
+    {
+      "block": "mechanical",
+      "id": "H2",
+      "kind": "MOUNTING_HOLE_NPTH",
+      "pins": {
+        "1": "NC_CHASSIS_H2"
+      },
+      "ref": "H2",
+      "role": "mechanical",
+      "value": "MOUNTING_HOLE_NPTH"
+    }
+  ],
+  "expected_netlist": {
+    "+3V3": [
+      "C1.1",
+      "LED1.1",
+      "R1.2",
+      "R2.2",
+      "U1.16"
+    ],
+    "GND": [
+      "C1.2",
+      "H1.1",
+      "J2.10",
+      "LED1.2",
+      "R1.1",
+      "R2.1",
+      "SW1.B",
+      "U1.8"
+    ],
+    "I2C_SCL": [
+      "J1.1",
+      "U1.14"
+    ],
+    "I2C_SDA": [
+      "J1.2",
+      "U1.15"
+    ],
+    "IO_U1_1": [
+      "J1.3",
+      "U1.1"
+    ],
+    "IO_U1_10": [
+      "J2.5",
+      "U1.10"
+    ],
+    "IO_U1_11": [
+      "J2.6",
+      "U1.11"
+    ],
+    "IO_U1_12": [
+      "J2.7",
+      "U1.12"
+    ],
+    "IO_U1_13": [
+      "J2.8",
+      "U1.13"
+    ],
+    "IO_U1_2": [
+      "J1.4",
+      "U1.2"
+    ],
+    "IO_U1_3": [
+      "J1.5",
+      "U1.3"
+    ],
+    "IO_U1_4": [
+      "J1.6",
+      "U1.4"
+    ],
+    "IO_U1_5": [
+      "J2.1",
+      "U1.5"
+    ],
+    "IO_U1_6": [
+      "J2.2",
+      "U1.6"
+    ],
+    "IO_U1_7": [
+      "J2.3",
+      "U1.7"
+    ],
+    "IO_U1_9": [
+      "J2.4",
+      "U1.9"
+    ],
+    "NC_CHASSIS_H2": [
+      "H2.1"
+    ],
+    "SWITCH_SW1": [
+      "J2.9",
+      "SW1.A"
+    ]
+  },
+  "nets": [
+    {
+      "members": [
+        "C1.1",
+        "LED1.1",
+        "R1.2",
+        "R2.2",
+        "U1.16"
+      ],
+      "name": "+3V3"
+    },
+    {
+      "members": [
+        "C1.2",
+        "H1.1",
+        "J2.10",
+        "LED1.2",
+        "R1.1",
+        "R2.1",
+        "SW1.B",
+        "U1.8"
+      ],
+      "name": "GND"
+    },
+    {
+      "members": [
+        "J1.1",
+        "U1.14"
+      ],
+      "name": "I2C_SCL"
+    },
+    {
+      "members": [
+        "J1.2",
+        "U1.15"
+      ],
+      "name": "I2C_SDA"
+    },
+    {
+      "members": [
+        "J1.3",
+        "U1.1"
+      ],
+      "name": "IO_U1_1"
+    },
+    {
+      "members": [
+        "J2.5",
+        "U1.10"
+      ],
+      "name": "IO_U1_10"
+    },
+    {
+      "members": [
+        "J2.6",
+        "U1.11"
+      ],
+      "name": "IO_U1_11"
+    },
+    {
+      "members": [
+        "J2.7",
+        "U1.12"
+      ],
+      "name": "IO_U1_12"
+    },
+    {
+      "members": [
+        "J2.8",
+        "U1.13"
+      ],
+      "name": "IO_U1_13"
+    },
+    {
+      "members": [
+        "J1.4",
+        "U1.2"
+      ],
+      "name": "IO_U1_2"
+    },
+    {
+      "members": [
+        "J1.5",
+        "U1.3"
+      ],
+      "name": "IO_U1_3"
+    },
+    {
+      "members": [
+        "J1.6",
+        "U1.4"
+      ],
+      "name": "IO_U1_4"
+    },
+    {
+      "members": [
+        "J2.1",
+        "U1.5"
+      ],
+      "name": "IO_U1_5"
+    },
+    {
+      "members": [
+        "J2.2",
+        "U1.6"
+      ],
+      "name": "IO_U1_6"
+    },
+    {
+      "members": [
+        "J2.3",
+        "U1.7"
+      ],
+      "name": "IO_U1_7"
+    },
+    {
+      "members": [
+        "J2.4",
+        "U1.9"
+      ],
+      "name": "IO_U1_9"
+    },
+    {
+      "members": [
+        "H2.1"
+      ],
+      "name": "NC_CHASSIS_H2"
+    },
+    {
+      "members": [
+        "J2.9",
+        "SW1.A"
+      ],
+      "name": "SWITCH_SW1"
+    }
+  ],
+  "project": {
+    "name": "q18_i2c_gpio_module_compact_v04",
+    "target": "easyeda_pro",
+    "title": "I2C GPIO Expansion Module - Compact Variant"
+  },
+  "purpose": "16-line-style GPIO expansion and protected field breakout. Optimized for compact embedded integration.",
+  "qualification": {
+    "archetype": "i2c_gpio_module",
+    "profile": "compact",
+    "require_complete_pin_coverage": true,
+    "require_pcb_when_routable": true,
+    "schema": "progen-easyeda-qualification-corpus/v1",
+    "source_basis": "I2C GPIO expander application circuit",
+    "variant": 4
+  },
+  "routing": {
+    "mode": "combination"
+  },
+  "schema_version": "progen-easyeda-circuit-ir/v1"
+}

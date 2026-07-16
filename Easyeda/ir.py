@@ -217,7 +217,12 @@ def load_circuit(
     for net_name, members in nets.items():
         for endpoint in members:
             previous = endpoint_to_net.get(endpoint)
-            if previous is not None and previous != net_name:
+            if previous is None:
+                raise CircuitInputError(
+                    f"Top-level net {net_name!r} references undeclared endpoint {endpoint!r}; "
+                    "declare the pin in the matching component's pins object."
+                )
+            if previous != net_name:
                 raise CircuitInputError(
                     f"Top-level net {net_name!r} conflicts with component pin assignment {endpoint} -> {previous!r}."
                 )
@@ -229,6 +234,12 @@ def load_circuit(
             if isinstance(members, list):
                 expected_set = {str(member).strip() for member in members if str(member).strip()}
                 actual_set = nets.get(str(net_name), set())
+                undeclared = expected_set - set(endpoint_to_net)
+                if undeclared:
+                    raise CircuitInputError(
+                        f"expected_netlist for {net_name!r} references undeclared endpoints: "
+                        f"{sorted(undeclared)}"
+                    )
                 if actual_set and expected_set and actual_set != expected_set:
                     raise CircuitInputError(
                         f"expected_netlist disagrees with component pins for {net_name!r}: "

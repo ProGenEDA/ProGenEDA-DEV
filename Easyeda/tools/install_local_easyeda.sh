@@ -44,14 +44,24 @@ if command -v nix >/dev/null 2>&1 && [[ -e /etc/NIXOS ]]; then
 set -euo pipefail
 unset ELECTRON_RUN_AS_NODE ELECTRON_NO_ATTACH_CONSOLE
 export LD_LIBRARY_PATH="${LIBRARY_PATH}\${LD_LIBRARY_PATH:+:\${LD_LIBRARY_PATH}}"
-exec "${INSTALL_DIR}/easyeda-pro" --no-sandbox --gtk-version=3 "\$@"
+exec "${INSTALL_DIR}/easyeda-pro" \
+    --no-sandbox \
+    --gtk-version=3 \
+    --disable-gpu \
+    --disable-gpu-compositing \
+    "\$@"
 EOF
 else
     cat >"${BIN_DIR}/easyeda-pro" <<EOF
 #!/usr/bin/env bash
 set -euo pipefail
 unset ELECTRON_RUN_AS_NODE ELECTRON_NO_ATTACH_CONSOLE
-exec "${INSTALL_DIR}/easyeda-pro" --no-sandbox --gtk-version=3 "\$@"
+exec "${INSTALL_DIR}/easyeda-pro" \
+    --no-sandbox \
+    --gtk-version=3 \
+    --disable-gpu \
+    --disable-gpu-compositing \
+    "\$@"
 EOF
 fi
 chmod 0755 "${BIN_DIR}/easyeda-pro"
