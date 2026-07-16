@@ -135,6 +135,22 @@ Future validation must mechanically inspect the serialized object stream:
 - verify the actual terminal and component suffix trailers, not just counts
   and WIRE geometry.
 
+## Rejected structural probe (2026-07-16)
+
+The narrow P04 probe emitted an anode packet, eight attachment units, a raw
+cathode packet with one continuation footer, then eight cathode units. Its
+static stream shape was correct-looking, but Proteus displayed **Bad Object
+Record -- circuit data lost**. After dismissing that dialog and saving a
+disposable copy, Proteus reduced the object chunk from 4,960 to 2,106 bytes
+and removed both display attachment blocks and the cathode packet (20 terminal
+and WIRE units became 4). This is rejected evidence, not a working repair.
+
+The shared placer, component placer, catalogue, and regression test changes
+from this probe were reverted. The accepted 43-family non-display route stays
+frozen. Do not use the P04 packet order, one-footer assumption, or its trailer
+classes as a future display solution without a new authoritative donor and a
+passing loader gate.
+
 ## Safe next implementation plan
 
 No repair was made in this audit. When the user requests the repair, it must:
