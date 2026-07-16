@@ -11951,3 +11951,39 @@ Visible assistant final response (verbatim):
 > The final bundle is here: [LTSPICE_COMMON_CIRCUITS_100_2026_07_15_FINAL.zip](/home/zaruka/Documents/Ltspice/LTSPICE_COMMON_CIRCUITS_100_2026_07_15_FINAL.zip). It has 100 named folders, each with `circuit.json`, a normally generated stock-symbol `.asc`, and `accuracy_check.txt`. All 100 generated and netlisted successfully in installed LTspice 26.0.2; the top ten complex circuits were opened, screenshot-reviewed, and each exact LTspice window was closed afterward. See [GUI review evidence](/home/zaruka/Documents/Ltspice/common_circuit_gui_review_2026_07_15_final) and [review notes](/home/zaruka/Documents/kicad/ltspice/docs/COMMON_CIRCUIT_GUI_REVIEW.md).
 >
 > Verification: 106 tests passed, 1 optional test skipped. The 100 examples stay within the existing 43-component cap (largest is 14), so I did not raise it merely for a corpus count. Dense bridge/T layouts are the next styling target; I am not claiming full waveform-response proof or arbitrary unsupported LTspice components.
+
+## 2026-07-16T12:58:00+05:00 — LTspice website executable handoff
+
+User requests (verbatim):
+
+> so it is ready to be shiped?
+> then covert it into an executable
+> and then ill have u pay attention to a folder called newwebsite
+> there u can see is support for proteus and even in the supported components there is only mention for proteus
+> i want u to deeply analysis that whole website
+> and make for me an executable for that, with a zip containing all the information it needs to succesfull move implement everything for Ltspice, support for generation, support in supported component menu everywhere.
+> add in the 100 jsons too.
+
+> be quick
+
+> continue
+
+Visible assistant responses (verbatim):
+
+> I’m finishing the delivery path now: validating the live LTspice route, packaging the executable and the 100 JSON corpus into the website handoff ZIP.
+
+> The live API stream and JSON Lab both now produce real validated `.asc` files. I’ve also started the full 100-input website-level replay in two 50-circuit batches; the first batch is 50/50.
+
+> The website handoff is built and integrity-checked: it includes the executable, exact integration sources, and all 100 canonical JSONs. I’m recording and pushing the portable-build source checkpoint now.
+
+Visible assistant final response (verbatim):
+
+> Shipped the LTspice website handoff.
+>
+> - [Handoff ZIP](/home/zaruka/Documents/Ltspice/PROGENEDA_LTSPICE_WEBSITE_HANDOFF_2026_07_16.zip): executable, exact `newwebsite` integration source, catalogue/build source, deployment/audit docs, and all 100 named canonical JSONs.
+> - [Portable executable](/home/zaruka/Documents/newwebsite/vendor/ltspice/progen-ltspice-portable/progen-ltspice): Linux x86_64/NixOS build of the donor-native generator.
+> - The website now has an LTspice target, real executable progress streaming, `.asc` downloads, an LTspice supported-components tab, history filtering, and a deterministic JSON Lab (guided for safe properties; advanced canonical JSON for admin/demo).
+>
+> Verification passed: 106 backend tests (1 optional skip), frontend build and lint, one real streamed API generation/download, JSON-Lab validation/regeneration, and the full website-level 100-circuit replay (100/100).
+>
+> Verified scope is deliberately bounded: ground, R, C, L, voltage/current/signal sources; 43 components maximum; physical wires only. It does not bundle LTspice/Wine or claim universal LTspice support. The existing Proteus list/15-per-IC rule is transparently documented as a registry target still awaiting exporter-level audit.
