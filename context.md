@@ -14760,6 +14760,24 @@ I’m starting from your `totalmix.pdsprj` as the authoritative combined example
 
 Files edited: `context.md`.
 
+### Agent response - 2026-07-16 17:14 +05:00
+
+The 41-family mix (with Switch and Fuse excluded) opens at 1× but still produces a parser-derived library dialog at 3×. A direct static audit found unresolved 74HC74 component-link rebasing mismatches and zero-length drain WIRE units for 2N7000/BS170; no IC-route repair was emitted.
+
+Files created: `backups/component_terminal_placer/component_terminal_placer_20260716_171408_before_totalmix_switch_fuse_block.py`, `knowledge/totalmix_switch_fuse_block_preflight_2026_07_16.md`, and `experiments/frozen_43_family_mix_matrix_v1_temp_2026_07_16/18_41_family_no_switch_fuse/`; edited: `src/proteusgen/component_terminal_placer.py`, `tests/test_component_placer.py`, and `context.md`.
+
+### User message - 2026-07-16 17:18 +05:00
+
+stop.
+can u test the 3x etc mix on 2 pinned and other none ic?
+we can put ics on hold for time being
+
+### Agent response - 2026-07-16 17:18 +05:00
+
+Stopping the IC mix work. I will test a non-IC-only matrix—passives, sources, diodes, transistors/MOSFETs, POT-HG, LM317T, OPAMP, BRIDGE, and TRAN-2P2S—at 1×, 3×, 9×, and 15×, with FUSE and SWITCH excluded.
+
+Files edited: `context.md`.
+
 ### User message - 2026-07-16 00:02 +05:00
 
 bro comeon how are u failing after having full donor and ur generated file to compare?
@@ -15558,6 +15576,208 @@ Files edited: none at this point.
 The audit is complete and the evidence is clear: the components were never absent from the DSN. The generated stream had the wrong display attachment order, wrong mixed trailer classes, generic labels, and placed both displays far outside the donor’s working frame.
 
 Files created/edited: `proteus_ic/donors/terminalized_catalogue_evidence/display_7seg/combined_45_family/both7segplaced_user_terminalized_45f_20260715.pdsprj`, `knowledge/combined_7seg_45f_donor_audit_2026_07_15.md`, `knowledge/display_cathode_terminal_preflight_2026_07_15.md`, `knowledge/terminal_placement_preflight_checklist.md`, and `context.md`.
+
+### User message - 2026-07-16 17:03 +05:00
+
+*(Screenshot supplied: Proteus library dialog.)*
+
+### Agent response - 2026-07-16 17:03 +05:00
+
+I can read the live dialog directly rather than relying on the tiny screenshot. I’m extracting its literal Unicode text and then will locate the matching byte sequence in the DSN.
+
+Files edited: `context.md`.
+
+### Agent response - 2026-07-16 17:04 +05:00
+
+Captured exactly: `Device '$¤\x06\x07=¼#t' used but not in library.` I searched its CP-1252 byte form (`24 a4 06 07 3d bc 23 74`) and UTF-16 representation across every internal project member. It is not stored literally in the project, so Proteus is deriving it after losing a DSN record boundary.
+
+Files edited: `context.md`.
+
+### Agent response - 2026-07-16 17:05 +05:00
+
+I am testing the correct Switch exclusion route: keep the Switch component packet placed in the mixed stream, but omit only its terminal attachment, so its packet continues to preserve the stream boundary.
+
+Files created: `experiments/frozen_43_family_mix_matrix_v1_temp_2026_07_16/17_switch_bare_full_mix/U19_43F_SWITCH_BARE_1X_BARE.pdsprj`, `U19_43F_SWITCH_BARE_1X_TERMINALIZED_sa.pdsprj`, `U19_43F_SWITCH_BARE_3X_BARE.pdsprj`, `U19_43F_SWITCH_BARE_3X_TERMINALIZED_sa.pdsprj`, and their reports/manifests.
+
+### Agent response - 2026-07-16 17:06 +05:00
+
+The Switch-bare 3× file passed a loader cold-open and cold-reopen on a disposable copy with no modal error. This is loader evidence only; it does not establish that all visual terminal attachments are present.
+
+Files created: `experiments/frozen_43_family_mix_matrix_v1_temp_2026_07_16/17_switch_bare_full_mix/U19_43F_SWITCH_BARE_3X_TERMINALIZED_COLD_GATE_COPY.pdsprj`; edited: `context.md`.
+
+### User message - 2026-07-16 17:07 +05:00
+
+in the circuit that openned many other then switch didnt have terminals, like opamp, lmsomething, the 2n7000etc
+
+### Agent response - 2026-07-16 17:07 +05:00
+
+You’re right—the loader gate only proved the file opens; it did not prove every placed family received visible terminals. I withdrew the “verified mixed route” conclusion and am auditing the emitted attachment records for OPAMP, LM317T/LM741, and 2N7000 specifically against their placed components before changing anything.
+
+Files edited: `context.md`.
+
+### User message - 2026-07-16 16:00 +05:00
+
+this is not nesssity, only reason this is the case is because i copy paste all components.
+donot use this as proof, ur method is correct just some small byte are mistaking
+and anyways if u do go with this route how do u plan on achieving it?
+just opening the file and doubling bytes? what if no of per components are uneven.
+fix ur org method u were close
+
+### Agent response - 2026-07-16 16:00 +05:00
+
+Youâ€™re right: I will keep the original mixed-emitter order and fix its byte/link grammar for uneven counts. The manual copy-paste project is evidence for pointer encoding only, not a generation strategy.
+
+Files edited: `context.md`.
+
+### Agent response - 2026-07-16 16:01 +05:00
+
+Because the 1Ã— mixed file is now valid but its 3Ã— version still has stale/mis-encoded absolute link fields after the DSN crosses a size boundary. That is the remaining mixed blocker; Iâ€™m isolating those fields against your accepted Ctrl+S 3Ã— file now, not moving on to any new work.
+
+Files edited: `context.md`.
+
+### Agent response - 2026-07-16 16:02 +05:00
+
+Iâ€™m doing one narrow check now: the fresh 3Ã— bare placer output versus the same output after terminal attachment. That separates a placement/CDB problem from the attachment-byte problem before I change anything else.
+
+Files edited: `context.md`.
+
+### Agent response - 2026-07-16 16:04 +05:00
+
+I found the prior full-pointer 3Ã— test was generated before the now-proven CAP separator repair, so it could not isolate pointer encoding. Iâ€™m regenerating the same original-order 3Ã— mix with that repair included; this is the clean test of the actual remaining hypothesis.
+
+Files edited: `context.md`.
+
+### Agent response - 2026-07-16 16:08 +05:00
+
+The bare 3Ã— component-placer project opens cleanly; the failure is exclusively in the attachment link fields. Iâ€™m running one controlled three-variant DSN matrix nowâ€”terminal field only, component field only, and the donorâ€™s original `0100` link class preservedâ€”so the next source change follows a measured result rather than another guess.
+
+Files edited: `context.md`.
+
+### Agent response - 2026-07-16 16:11 +05:00
+
+The matrix has ruled out CDB and the simple terminal-vs-component split: the same full 3Ã— DSN fails with either CDB, so this is definitely a remaining DSN attachment-record issue. Iâ€™m narrowing it to the exact corrupted attachment field class now.
+
+Files edited: `context.md`.
+
+### Agent response - 2026-07-16 16:13 +05:00
+
+I found the real mixed-stream defect: it is not family ordering. In the 3Ã— output, many catalogue components have their pin-link fields beside the component but their WIRE records are emitted tens of thousands of bytes later in a shared tail. Your accepted file keeps each componentâ€™s active link and WIRE unit local. Iâ€™m fixing that locality rule in the original emitterâ€”works for uneven counts and does not copy/paste closures.
+
+Files edited: `context.md`.
+
+### Agent response - 2026-07-16 16:14 +05:00
+
+Correction to my last update: the accepted manual file also has some legitimate long-range component-to-WIRE links, so locality alone is not the fix. Iâ€™ve kept it as an audit clue, not a code change. The clean fact remains: bare placement works; one of the scaled DSN link records is still encoded differently from the accepted file.
+
+Files edited: `context.md`.
+
+### Agent response - 2026-07-16 16:16 +05:00
+
+One exact DSN difference is now isolated: the accepted 3Ã— file ends its object stream as `00 FF`; the current generated 3Ã— ends `FF FF`. Iâ€™m testing that one-byte-class finalizer correction on the fresh original 3Ã— output before touching the shared placer.
+
+Files edited: `context.md`.
+
+### User message - 2026-07-16 16:18 +05:00
+
+y havent u figured out just mix yet? how tf ull do anything else?
+
+### Agent response - 2026-07-16 16:18 +05:00
+
+You’re right: mix is the critical path. I have isolated it to the terminal-attachment stream only—the bare 3× mixed placement opens—and I’m continuing the binary audit there until the generated mixed project opens reliably, rather than moving to any new component work.
+
+Files edited: `context.md`.
+
+### Agent response - 2026-07-16 16:20 +05:00
+
+Both valid half-native 3× mixes open when they retain the full catalogue context. That rules out a single broken family and points to one structural interaction added only when both native halves are present; I’m comparing that combined stream against the two passing streams now, field by field.
+
+Files edited: `context.md`.
+
+### Agent response - 2026-07-16 16:23 +05:00
+
+The passing split shows the failure appears only when the first native set and the last native set coexist. I’m bisecting that interaction on fresh 3× outputs with the same full 43-component placed base—no reordering, no donor copying, and no source mutation.
+
+Files edited: `context.md`.
+
+### Agent response - 2026-07-16 16:25 +05:00
+
+The bisection has a real result: first-10 plus `1N4148…BZX55C5V1` opens, while first-10 plus `BZX79C5V1/BZY88C/LED-RED/FUSE/SWITCH` fails. I’m reducing only that five-family interaction now.
+
+Files edited: `context.md`.
+
+### Agent response - 2026-07-16 16:28 +05:00
+
+The Zener pair is clean. The interaction is narrowed to `LED-RED`, `FUSE`, or `SWITCH` alongside the first native set; I’m testing each with the same placed 43-component base and full catalogue context.
+
+Files edited: `context.md`.
+
+### Agent response - 2026-07-16 16:32 +05:00
+
+It is now down to one native family: `SWITCH`. `LED-RED` and `FUSE` pass in the same full context; only `SWITCH` plus the first native set causes the loader dialog. I’m comparing the passing and failing Switch attachment bytes directly before changing its additive branch.
+
+Files edited: `context.md`.
+
+### Agent response - 2026-07-16 16:36 +05:00
+
+The direct comparison confirms the outer DSN pointers are correct: only the expected object-data and default-section addresses change from the bare 3× project. I’m testing the remaining exact end-of-stream difference (`FF FF` versus the accepted donor’s `00 FF`) on a disposable fresh copy now.
+
+Files edited: `context.md`.
+
+### Agent response - 2026-07-16 16:38 +05:00
+
+The finalizer variation also fails, so it is not the missing byte. I’m using the allowed recovery diagnostic on a disposable copy: dismiss the loader dialog, let Proteus continue, save only if it actually opens, then compare exactly what Proteus normalizes.
+
+Files edited: `context.md`.
+
+### Agent response - 2026-07-16 16:42 +05:00
+
+The cumulative test is conclusive: the stream stays valid through LED, then fails exactly when Switch attachment is added; later additions do not change that. I’m now separating Switch’s local stream grammar from the full-address rebasing step on the same candidate.
+
+Files edited: `context.md`.
+
+### User message - 2026-07-16 16:54 +05:00
+
+u can take out switch
+
+### Agent response - 2026-07-16 16:54 +05:00
+
+Understood. I’ll exclude `SWITCH` from the mixed route only—its existing standalone behavior stays untouched—and prove the full remaining 42-component mix at 3× before doing anything else.
+
+Files edited: `context.md`.
+
+### Agent response - 2026-07-16 16:55 +05:00
+
+I’m generating the same original-order mixed route with `SWITCH` completely omitted, not left bare. It will contain all other 42 currently supported families with terminals and short wires, then I’ll loader-gate 1× and 3×.
+
+Files edited: `context.md`.
+
+### Agent response - 2026-07-16 16:57 +05:00
+
+Removing `SWITCH` fixes the 1× mixed project, but the 3× route still has a separate scale interaction. I’m keeping Switch excluded and isolating the remaining three native additions (`BZY88C`, `BZX79C5V1`, `FUSE`) against the proven 3× baseline now.
+
+Files edited: `context.md`.
+
+### User message - 2026-07-16 16:58 +05:00
+
+how about u try and locate the excate error, open it ill tell u the excate words it says in not in library and u screach for that in bytes
+
+### Agent response - 2026-07-16 16:58 +05:00
+
+Yes. I’ll open the failing 3× switch-excluded mix and leave Proteus on the error dialog. Send me the exact `Device '…' used but not in library` text—including every character—and I’ll search that byte sequence directly in its ROOT.DSN.
+
+Files edited: `context.md`.
+
+### Agent response - 2026-07-16 16:18 +05:00
+
+Youâ€™re right to call this out. The mix route is the critical path, and I have not yet isolated its remaining binary defect. Iâ€™m stopping all side work and auditing the generated 3Ã— mixed DSN directly against your accepted 3Ã— project until the exact attachment-record difference is proven.
+
+Files edited: `context.md`.
+
+### Agent response - 2026-07-16 12:57 +05:00
+
+I’ve stopped the display repair and frozen the accepted 43-family route. The 13 components still outside that mix are: 7SEG-COM-AN-BLUE, 7SEG-COM-CAT-BLUE, 4027, 4511, 74HC00, 74HC02, 74HC04, 74HC08, 74HC32, 74HC76, 74HC86, 74HC151, and 74HC266. I’m now locking the 43 route through a real 3× gate before scaling it further.
+
+Files edited: `context.md`.
 
 ### User message - 2026-07-16 12:57 +05:00
 

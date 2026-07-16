@@ -53,17 +53,6 @@ RIGHT_SIDE_ANGLE = 0
 # Per-route catalogue evidence selects it; merely allowing it must not mutate
 # any accepted standalone family path.
 COMPONENT_PIN_LINK_TRAILERS = (b"\x01\x00", b"\x02\x00", b"\x03\x00")
-LEGACY_LOW16_WIRE_LINK_ENCODING = "legacy_low16_suffix"
-FULL_ABSOLUTE_WIRE_LINK_ENCODING = "full_absolute_wire_address"
-SUPPORTED_FINAL_WIRE_LINK_ENCODINGS = {
-    LEGACY_LOW16_WIRE_LINK_ENCODING,
-    FULL_ABSOLUTE_WIRE_LINK_ENCODING,
-}
-# User-directed safety withdrawal for the active totalmix work.  These are not
-# removed from their historical standalone files; a mixed request must omit
-# them entirely until an authoritative donor proves their combined-stream
-# grammar.  Reject rather than silently emitting a partially terminalized mix.
-TOTALMIX_BLOCKED_FAMILIES = frozenset({"FUSE", "SWITCH"})
 RESISTOR_PIN_SPAN = 1_270_000
 CAP_PIN_HALF_SPAN = 508_000
 CAP_TERMINAL_SYMBOL_TO_PIN = 254_000
@@ -4025,7 +4014,6 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
     use_donor_terminal_labels: bool = False,
     stream_mode: str = "conservative",
     force_grid_contact_short_wires: bool = False,
-    final_wire_link_encoding: str = LEGACY_LOW16_WIRE_LINK_ENCODING,
 ) -> dict[str, Any]:
     """Attach accepted two-pin and catalogue multi-pin terminals in one stream.
 
@@ -4044,20 +4032,6 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         catalog = load_component_catalog()
     combined_stream_profile = _combined_totalmix_stream_profile(catalog, stream_mode)
     is_totalmix_combined = bool(combined_stream_profile)
-    if final_wire_link_encoding not in SUPPORTED_FINAL_WIRE_LINK_ENCODINGS:
-        raise ValueError(
-            "Unsupported final WIRE link encoding "
-            f"{final_wire_link_encoding!r}; expected one of "
-            f"{sorted(SUPPORTED_FINAL_WIRE_LINK_ENCODINGS)}."
-        )
-    if (
-        final_wire_link_encoding == FULL_ABSOLUTE_WIRE_LINK_ENCODING
-        and not is_totalmix_combined
-    ):
-        raise ValueError(
-            "Full absolute WIRE-address links are currently proven only for "
-            "the explicit totalmix scale route."
-        )
     # A totalmix is the integration route that must prove real terminal
     # attachment across families.  The audit found that allowing this flag to
     # default to false silently emitted zero-length units for the DIL gates.
@@ -4120,14 +4094,6 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         id(group) for group in ordered_groups
     ) != tuple(id(group) for group in source_component_order)
     families = {_group_family(group) for group in ordered_groups}
-    if is_totalmix_combined:
-        blocked = sorted(families & TOTALMIX_BLOCKED_FAMILIES)
-        if blocked:
-            raise ValueError(
-                "totalmix_combined_v1 explicitly blocks unresolved families "
-                f"{blocked}. Remove them from the component-placer request; "
-                "do not emit them bare or terminalized in this mixed route."
-            )
     native_accepted = set(ACCEPTED_TERMINAL_FAMILY_ORDER)
     native_available = tuple(
         dict.fromkeys(
@@ -5184,16 +5150,11 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                 tail_attachment_records_emitted += len(zone_records)
         if index == native_leading_prefix_group_index:
             local_records.extend(native_leading_records)
-            # The separator belongs directly before a component packet, never
-            # between two terminal records.  The accepted R/C donor proves
-            # `C1`, `R001A`, `R001B`, `00`, then R1.  CAP-only proves
-            # `C1`, `C0`, `00`, then C1.  When CAP is the localized-prefix
-            # group it still has its local C0 terminal to emit below, so defer
-            # the separator to the existing CAP component-prefix branch.
-            # This depends only on the next emitted record class and preserves
-            # the component placer's original packet order for uneven mixes.
-            if not native_terminal_by_group_id.get(group_id):
-                local_records.append(b"\x00")
+            # In the accepted donor this is the sole terminal-to-native-packet
+            # separator: `C1`, `R001A`, `R001B`, `00`, then the R1 packet.
+            # It must travel with the localized prefix rather than depend on
+            # the first record of the overall mixed stream.
+            local_records.append(b"\x00")
         stream_profile = mixed_stream_profile(family)
         if index:
             raw_preceding_boundary = stream_profile.get("preceding_boundary")
@@ -5546,7 +5507,6 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         "stage": "terminal_placer",
         "family_handler": "MIXED/native-two-pin-plus-catalogue-v1",
         "status": "pending_proteus_user_acceptance",
-        "final_wire_link_encoding": final_wire_link_encoding,
         "attachment_policy": (
             "preserve_native_stream_with_profile-driven_catalogue_terminal_units"
         ),
@@ -9556,7 +9516,6 @@ def _wire_rows_from_chunk(
                     "<" + "i" * (point_count * 2),
                     chunk[coordinate_start:full_coordinate_end],
                 ),
-                "link_address": chunk_start + marker - 24,
                 "suffix": (chunk_start + marker - 24) & 0xFFFF,
             }
         )
@@ -10294,54 +10253,26 @@ def _rebase_terminal_links_to_final_wire_addresses(
 ) -> dict[str, Any]:
     """Allocate active terminal links from final WIRE addresses.
 
-    The temporary emitter uses a unique low-16-bit suffix plus a legacy
-    activity trailer.  The final ROOT.DSN route chooses its proven link
-    encoding explicitly.  For the original accepted routes this remains the
-    low 16 bits of the byte immediately before the linked WIRE.  The scaled
-    totalmix route instead needs the complete little-endian 32-bit address;
-    its high two bytes must be rebased as well.
+    Proteus 8.13 stores the low 16 bits of the absolute byte immediately before
+    the linked 50-byte WIRE record. Since ``\x7fWIRE`` begins at record byte 23,
+    the link is ``absolute_object_start + marker_offset - 24``.
     """
 
     destination = Path(output)
     dsn = read_internal_file(destination, "ROOT.DSN")
     chunk = _extract_object_chunk(dsn)
     bindings = _terminal_wire_bindings(report)
-    link_encoding = str(
-        report.get("final_wire_link_encoding", LEGACY_LOW16_WIRE_LINK_ENCODING)
+    dsn, chunk, chunk_start, wire_rows, label_jitter_events = (
+        _ensure_unique_final_wire_suffixes(
+            destination,
+            dsn,
+            chunk,
+            expected_wire_count=len(bindings),
+            report=report,
+        )
     )
-    if link_encoding not in SUPPORTED_FINAL_WIRE_LINK_ENCODINGS:
-        raise ValueError(
-            "Unsupported final WIRE link encoding "
-            f"{link_encoding!r}; expected one of "
-            f"{sorted(SUPPORTED_FINAL_WIRE_LINK_ENCODINGS)}."
-        )
-    full_pointer_mode = link_encoding == FULL_ABSOLUTE_WIRE_LINK_ENCODING
-    if full_pointer_mode:
-        # Full addresses are naturally unique in one ROOT.DSN stream.  Do not
-        # perturb labels merely because their low words happen to collide.
-        chunk_start = _object_chunk_absolute_start(dsn)
-        wire_rows = _wire_rows_from_chunk(chunk, chunk_start=chunk_start)
-        if len(wire_rows) != len(bindings):
-            raise ValueError(
-                f"Terminal/WIRE count mismatch: {len(bindings)} bindings for "
-                f"{len(wire_rows)} WIRE records."
-            )
-        final_link_addresses = [int(row["link_address"]) for row in wire_rows]
-        if len(final_link_addresses) != len(set(final_link_addresses)):
-            raise ValueError("Final complete WIRE link addresses are not unique.")
-        label_jitter_events: list[dict[str, Any]] = []
-    else:
-        dsn, chunk, chunk_start, wire_rows, label_jitter_events = (
-            _ensure_unique_final_wire_suffixes(
-                destination,
-                dsn,
-                chunk,
-                expected_wire_count=len(bindings),
-                report=report,
-            )
-        )
-        if label_jitter_events:
-            bindings = _terminal_wire_bindings(report)
+    if label_jitter_events:
+        bindings = _terminal_wire_bindings(report)
 
     available_by_coordinates: dict[
         tuple[int, int, int, int],
@@ -10391,31 +10322,20 @@ def _rebase_terminal_links_to_final_wire_addresses(
             )
         wire = candidates.pop(0)
         new_suffix = int(wire["suffix"])
-        new_link_address = int(wire["link_address"])
         allocations.append(
             {
                 **binding,
                 "wire_marker_offset": wire["marker_offset"],
                 "wire_absolute_marker": chunk_start + wire["marker_offset"],
                 "new_suffix": new_suffix,
-                "new_link_address": new_link_address,
             }
         )
     unused_wires = sum(len(rows) for rows in available_by_coordinates.values())
     if unused_wires:
         raise ValueError(f"{unused_wires} emitted WIRE records were not allocated.")
     new_suffixes = [allocation["new_suffix"] for allocation in allocations]
-    new_link_addresses = [allocation["new_link_address"] for allocation in allocations]
-    if (
-        not full_pointer_mode
-        and len(new_suffixes) != len(set(new_suffixes))
-    ):
+    if len(new_suffixes) != len(set(new_suffixes)):
         raise ValueError("Final WIRE-address terminal suffixes are not unique.")
-    if (
-        full_pointer_mode
-        and len(new_link_addresses) != len(set(new_link_addresses))
-    ):
-        raise ValueError("Final complete WIRE link addresses are not unique.")
 
     terminal_suffix_positions = _bidir_terminal_suffix_positions(chunk)
     all_terminal_suffix_positions = {
@@ -10470,13 +10390,9 @@ def _rebase_terminal_links_to_final_wire_addresses(
 
     rebased = bytearray(chunk)
     for allocation in allocations:
-        new_value = (
-            struct.pack("<I", allocation["new_link_address"])
-            if full_pointer_mode
-            else struct.pack("<H", allocation["new_suffix"])
-        )
+        new_value = struct.pack("<H", allocation["new_suffix"])
         for position in patch_positions[allocation["old_suffix"]]:
-            rebased[position : position + len(new_value)] = new_value
+            rebased[position : position + 2] = new_value
         allocation["terminal"]["suffix"] = f"{allocation['new_suffix']:04x}"
 
     rebased_chunk = bytes(rebased)
@@ -10503,50 +10419,29 @@ def _rebase_terminal_links_to_final_wire_addresses(
         f"{suffix:04x}"
         for suffix in new_suffixes
     ]
-    report["terminal_low_suffixes_unique"] = len(new_suffixes) == len(set(new_suffixes))
-    report["terminal_link_addresses"] = [
-        f"{address:08x}"
-        for address in new_link_addresses
-    ]
-    report["terminal_link_addresses_unique"] = (
-        len(new_link_addresses) == len(set(new_link_addresses))
-    )
-    report["terminal_suffixes_unique"] = (
-        report["terminal_link_addresses_unique"]
-        if full_pointer_mode
-        else report["terminal_low_suffixes_unique"]
-    )
+    report["terminal_suffixes_unique"] = len(new_suffixes) == len(set(new_suffixes))
     suffix_link_checks: list[dict[str, Any]] = []
     for allocation in allocations:
         terminal_position, component_position = patch_positions[allocation["old_suffix"]]
+        suffix_bytes = struct.pack("<H", allocation["new_suffix"])
         terminal_field = written_chunk[terminal_position : terminal_position + 4]
         component_field = written_chunk[component_position : component_position + 4]
-        if full_pointer_mode:
-            expected_link_bytes = struct.pack("<I", allocation["new_link_address"])
-            terminal_valid = terminal_field == expected_link_bytes
-            component_valid = component_field == expected_link_bytes
-        else:
-            suffix_bytes = struct.pack("<H", allocation["new_suffix"])
-            terminal_valid = (
-                terminal_field[:2] == suffix_bytes
-                and terminal_field[2:4] in COMPONENT_PIN_LINK_TRAILERS
-            )
-            component_valid = (
-                component_field[:2] == suffix_bytes
-                and component_field[2:4] in COMPONENT_PIN_LINK_TRAILERS
-            )
+        terminal_valid = (
+            terminal_field[:2] == suffix_bytes
+            and terminal_field[2:4] in COMPONENT_PIN_LINK_TRAILERS
+        )
+        component_valid = (
+            component_field[:2] == suffix_bytes
+            and component_field[2:4] in COMPONENT_PIN_LINK_TRAILERS
+        )
         suffix_link_checks.append(
             {
                 "component_key": allocation["component_key"],
                 "component_family": allocation["component_family"],
                 "role": allocation["role"],
-                "link_encoding": link_encoding,
-                "link_address": f"{allocation['new_link_address']:08x}",
                 "suffix": f"{allocation['new_suffix']:04x}",
                 "terminal_suffix_position": terminal_position,
                 "component_link_position": component_position,
-                "terminal_value": terminal_field.hex(),
-                "component_value": component_field.hex(),
                 "terminal_trailer": terminal_field[2:4].hex(),
                 "component_trailer": component_field[2:4].hex(),
                 "terminal_valid": terminal_valid,
@@ -10559,7 +10454,6 @@ def _rebase_terminal_links_to_final_wire_addresses(
         for row in suffix_link_checks
     )
     report["wire_address_label_jitter"] = {
-        "link_encoding": link_encoding,
         "applied": bool(label_jitter_events),
         "event_count": len(label_jitter_events),
         "events": label_jitter_events,
@@ -10570,12 +10464,7 @@ def _rebase_terminal_links_to_final_wire_addresses(
     report["wire_count_after"] = written_chunk.count(b"\x7fWIRE")
     report["link_allocation"] = {
         "method": "final_root_dsn_wire_address",
-        "encoding": link_encoding,
-        "formula": (
-            "absolute_object_start + wire_marker_offset - 24"
-            if full_pointer_mode
-            else "(absolute_object_start + wire_marker_offset - 24) & 0xffff"
-        ),
+        "formula": "(absolute_object_start + wire_marker_offset - 24) & 0xffff",
         "object_chunk_absolute_start": chunk_start,
         "runtime_donor_dependency": False,
         "allocation_count": len(allocations),
@@ -10586,15 +10475,10 @@ def _rebase_terminal_links_to_final_wire_addresses(
                 "role": allocation["role"],
                 "old_suffix": f"{allocation['old_suffix']:04x}",
                 "suffix": f"{allocation['new_suffix']:04x}",
-                "link_address": f"{allocation['new_link_address']:08x}",
                 "wire_marker_offset": allocation["wire_marker_offset"],
                 "wire_absolute_marker": allocation["wire_absolute_marker"],
                 "terminal_suffix_position": allocation["terminal_suffix_position"],
                 "component_link_position": allocation["component_link_position"],
-                "component_link_value": written_chunk[
-                    allocation["component_link_position"]
-                    : allocation["component_link_position"] + 4
-                ].hex(),
                 "component_link_trailer": written_chunk[
                     allocation["component_link_position"] + 2
                     : allocation["component_link_position"] + 4

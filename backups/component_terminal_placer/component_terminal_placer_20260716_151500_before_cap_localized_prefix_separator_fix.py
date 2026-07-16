@@ -59,11 +59,6 @@ SUPPORTED_FINAL_WIRE_LINK_ENCODINGS = {
     LEGACY_LOW16_WIRE_LINK_ENCODING,
     FULL_ABSOLUTE_WIRE_LINK_ENCODING,
 }
-# User-directed safety withdrawal for the active totalmix work.  These are not
-# removed from their historical standalone files; a mixed request must omit
-# them entirely until an authoritative donor proves their combined-stream
-# grammar.  Reject rather than silently emitting a partially terminalized mix.
-TOTALMIX_BLOCKED_FAMILIES = frozenset({"FUSE", "SWITCH"})
 RESISTOR_PIN_SPAN = 1_270_000
 CAP_PIN_HALF_SPAN = 508_000
 CAP_TERMINAL_SYMBOL_TO_PIN = 254_000
@@ -4120,14 +4115,6 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
         id(group) for group in ordered_groups
     ) != tuple(id(group) for group in source_component_order)
     families = {_group_family(group) for group in ordered_groups}
-    if is_totalmix_combined:
-        blocked = sorted(families & TOTALMIX_BLOCKED_FAMILIES)
-        if blocked:
-            raise ValueError(
-                "totalmix_combined_v1 explicitly blocks unresolved families "
-                f"{blocked}. Remove them from the component-placer request; "
-                "do not emit them bare or terminalized in this mixed route."
-            )
     native_accepted = set(ACCEPTED_TERMINAL_FAMILY_ORDER)
     native_available = tuple(
         dict.fromkeys(
@@ -5184,16 +5171,11 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                 tail_attachment_records_emitted += len(zone_records)
         if index == native_leading_prefix_group_index:
             local_records.extend(native_leading_records)
-            # The separator belongs directly before a component packet, never
-            # between two terminal records.  The accepted R/C donor proves
-            # `C1`, `R001A`, `R001B`, `00`, then R1.  CAP-only proves
-            # `C1`, `C0`, `00`, then C1.  When CAP is the localized-prefix
-            # group it still has its local C0 terminal to emit below, so defer
-            # the separator to the existing CAP component-prefix branch.
-            # This depends only on the next emitted record class and preserves
-            # the component placer's original packet order for uneven mixes.
-            if not native_terminal_by_group_id.get(group_id):
-                local_records.append(b"\x00")
+            # In the accepted donor this is the sole terminal-to-native-packet
+            # separator: `C1`, `R001A`, `R001B`, `00`, then the R1 packet.
+            # It must travel with the localized prefix rather than depend on
+            # the first record of the overall mixed stream.
+            local_records.append(b"\x00")
         stream_profile = mixed_stream_profile(family)
         if index:
             raw_preceding_boundary = stream_profile.get("preceding_boundary")

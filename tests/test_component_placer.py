@@ -116,6 +116,31 @@ CURRENT_GROUP_CATALOGUE_TAIL_FAMILIES = (
     "2N3904",
     "2N4401",
 )
+FROZEN_43_CATALOGUE_TERMINAL_FAMILIES = (
+    "2N3904",
+    "2N4401",
+    "2N7000",
+    "7447",
+    "7490",
+    "74HC157",
+    "74HC160",
+    "74HC174",
+    "74HC192",
+    "74HC283",
+    "74HC85",
+    "BS170",
+    "LM317T",
+    "LM741",
+    "NE555",
+    "NMOSFET",
+    "NPN",
+    "OPAMP",
+    "PNP",
+    "POT-HG",
+    "74HC74",
+    "BRIDGE",
+    "TRAN-2P2S",
+)
 DIL14_QUAD_2INPUT_FAMILIES = (
     "74HC00",
     "74HC02",
@@ -2975,18 +3000,56 @@ def test_mixed_two_pin_and_catalogue_terminalizer_handles_three_control_combo(
     assert chunk.endswith(b"\xff\xff")
 
 
+@pytest.mark.parametrize("blocked_family", ("FUSE", "SWITCH"))
+def test_totalmix_rejects_user_blocked_families(
+    tmp_path: Path,
+    blocked_family: str,
+) -> None:
+    """The active totalmix route must not silently leave blocked parts bare."""
+
+    base = tmp_path / f"blocked_{blocked_family}_base.pdsprj"
+    output = tmp_path / f"blocked_{blocked_family}_terminalized.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": {
+                "RESISTOR": 1,
+                "CAP": 1,
+                blocked_family: 1,
+                "OPAMP": 1,
+            },
+            "layout": {
+                "strategy": "beautify",
+                "binary_coordinate_mutation": True,
+            },
+        },
+        base,
+        full_cdb=True,
+    )
+
+    with pytest.raises(ValueError, match="explicitly blocks unresolved families"):
+        attach_mixed_component_and_catalogue_bidir_terminals_to_project(
+            base,
+            output,
+            result.selected_groups,
+            native_terminal_families=("RESISTOR", "CAP", blocked_family),
+            catalogue_terminal_families=("OPAMP",),
+            stream_mode="totalmix_combined_v1",
+        )
+
+
 def test_totalmix_dense_grid_contacts_retarget_donor_evidence_without_zero_wires(
     tmp_path: Path,
 ) -> None:
     """Dense all-family layouts keep every terminal contact on-grid and wired.
 
     The opt-in path must handle all evidence classes together: native two-pin
-    shapes, native SWITCH endpoint correction, BJT donor-tail geometry, and
+    shapes, BJT donor-tail geometry, and
     catalogue donor-polylines. It is deliberately separate from frozen default
     routes so existing accepted-family geometry remains unchanged.
     """
 
-    native_families = ("RESISTOR", "CAP", "SWITCH")
+    native_families = ("RESISTOR", "CAP", "DIODE")
     catalogue_families = ("NPN", "NMOSFET", "OPAMP", "LM317T", "4511", "74HC08")
     base = tmp_path / "totalmix_dense_grid_base.pdsprj"
     output = tmp_path / "totalmix_dense_grid_terminalized.pdsprj"
@@ -3032,6 +3095,81 @@ def test_totalmix_dense_grid_contacts_retarget_donor_evidence_without_zero_wires
         and row["wire_is_nonzero"]
         for row in report["wire_path_contact_checks"]
     )
+
+
+def test_totalmix_cap_localized_prefix_does_not_split_cap_terminal_pair(
+    tmp_path: Path,
+) -> None:
+    """CAP's localized prefix leaves its two terminal records contiguous.
+
+    The accepted CAP solo donor proves ``C1 terminal -> C0 terminal -> 00 ->
+    CAP packet``.  A former totalmix-only prefix path emitted an extra ``00``
+    between C1 and C0 whenever CAP was the first R/C component; Proteus then
+    raised a VGDVC fatal error once a POT-HG tail zone was present.
+    """
+
+    def generate(components: dict[str, int], stem: str) -> bytes:
+        base = tmp_path / f"{stem}_base.pdsprj"
+        output = tmp_path / f"{stem}_terminalized.pdsprj"
+        result = generate_component_placement_project(
+            {
+                "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+                "components": components,
+                "layout": {
+                    "strategy": "beautify",
+                    "binary_coordinate_mutation": True,
+                },
+            },
+            base,
+            full_cdb=True,
+        )
+        report = attach_mixed_component_and_catalogue_bidir_terminals_to_project(
+            base,
+            output,
+            result.selected_groups,
+            native_terminal_families=tuple(
+                family
+                for family in ("RESISTOR", "CAP")
+                if family in components
+            ),
+            catalogue_terminal_families=("POT-HG",),
+            use_donor_terminal_labels=True,
+            stream_mode="totalmix_combined_v1",
+            force_grid_contact_short_wires=True,
+        )
+        assert result.valid
+        assert report["valid"] is True
+        return _extract_object_chunk(read_internal_file(output, "ROOT.DSN"))
+
+    cap_first_chunk = generate({"CAP": 1, "POT-HG": 1}, "cap_pot")
+    cap_first_rows = [
+        row
+        for row in terminal_placer._bidir_label_records(cap_first_chunk)
+        if row["label"] in {"C1", "C0"}
+    ]
+    assert [row["label"] for row in cap_first_rows] == ["C1", "C0"]
+    c1, c0 = cap_first_rows
+    c1_end = int(c1["start"]) + 101 + int(c1["label_length"])
+    c0_end = int(c0["start"]) + 101 + int(c0["label_length"])
+    assert c1_end == int(c0["start"])
+    assert cap_first_chunk[c0_end] == 0x00
+
+    resistor_prefix_chunk = generate(
+        {"RESISTOR": 1, "CAP": 1, "POT-HG": 1},
+        "resistor_cap_pot",
+    )
+    prefix_rows = terminal_placer._bidir_label_records(resistor_prefix_chunk)
+    leading_rows = [
+        row for row in prefix_rows if row["label"] in {"C1", "R001A", "R001B"}
+    ]
+    assert [row["label"] for row in leading_rows] == ["C1", "R001A", "R001B"]
+    for current, following in zip(leading_rows, leading_rows[1:]):
+        current_end = int(current["start"]) + 101 + int(current["label_length"])
+        assert current_end == int(following["start"])
+    resistor_terminal_end = int(leading_rows[-1]["start"]) + 101 + int(
+        leading_rows[-1]["label_length"]
+    )
+    assert resistor_prefix_chunk[resistor_terminal_end] == 0x00
 
 
 def test_mixed_family_interleave_changes_visual_schedule_not_component_stream(
@@ -4185,6 +4323,97 @@ def test_totalmix_all_49_keeps_every_component_after_4511_inline_repair(
     ) == sorted(
         keys_at_the_old_4511_boundary,
         key=lambda key: base_stream_groups[key].start,
+    )
+
+
+def test_frozen_43_uniform_3x_rebases_complete_wire_pointer_links(
+    tmp_path: Path,
+) -> None:
+    """Scaled totalmix links must retain their final address high words.
+
+    The original component stream remains in its native selected order.  This
+    regression specifically catches the historical bug where a 3x stream
+    patched only each active link's low word and left its inherited activity
+    trailer in the upper word.
+    """
+
+    native_families = tuple(
+        family
+        for family in CURRENT_GROUP_NATIVE_FAMILIES
+        if family not in terminal_placer.TOTALMIX_BLOCKED_FAMILIES
+    )
+    catalogue_families = FROZEN_43_CATALOGUE_TERMINAL_FAMILIES
+    components = {
+        family: 3 for family in (*native_families, *catalogue_families)
+    }
+    base = tmp_path / "frozen_43_uniform_3x_base.pdsprj"
+    output = tmp_path / "frozen_43_uniform_3x_terminalized.pdsprj"
+    result = generate_component_placement_project(
+        {
+            "donor": str(_repo_path(NEW_COMPONENT_MEGA_DONOR)),
+            "components": components,
+            "layout": {
+                "strategy": "beautify",
+                "binary_coordinate_mutation": True,
+                "compact_family_flow": True,
+                "mixed_family_interleave": True,
+                "shelf_width": 50_000_000,
+                "terminal_grid_alignment": True,
+            },
+        },
+        base,
+        full_cdb=True,
+    )
+    report = attach_mixed_component_and_catalogue_bidir_terminals_to_project(
+        base,
+        output,
+        result.selected_groups,
+        native_terminal_families=native_families,
+        catalogue_terminal_families=catalogue_families,
+        use_donor_terminal_labels=True,
+        stream_mode="totalmix_combined_v1",
+        force_grid_contact_short_wires=True,
+        final_wire_link_encoding=(
+            terminal_placer.FULL_ABSOLUTE_WIRE_LINK_ENCODING
+        ),
+    )
+
+    dsn = read_internal_file(output, "ROOT.DSN")
+    chunk = _extract_object_chunk(dsn)
+    terminals = terminal_placer._bidir_label_records(chunk)
+    wires = terminal_placer._wire_rows_from_chunk(
+        chunk,
+        chunk_start=terminal_placer._object_chunk_absolute_start(dsn),
+    )
+    expected_link_addresses = {int(row["link_address"]) for row in wires}
+    terminal_link_addresses = {
+        struct.unpack(
+            "<I",
+            chunk[
+                int(row["start"]) + 101 + int(row["label_length"]) - 4
+                : int(row["start"]) + 101 + int(row["label_length"])
+            ],
+        )[0]
+        for row in terminals
+    }
+
+    assert result.valid
+    assert len(result.selected_groups) == 41 * 3
+    assert report["valid"] is True
+    assert report["final_wire_link_encoding"] == (
+        terminal_placer.FULL_ABSOLUTE_WIRE_LINK_ENCODING
+    )
+    assert report["link_allocation"]["encoding"] == (
+        terminal_placer.FULL_ABSOLUTE_WIRE_LINK_ENCODING
+    )
+    assert report["wire_address_label_jitter"]["event_count"] == 0
+    assert report["terminal_suffix_links_valid"] is True
+    assert len(terminals) == len(wires) == 627
+    assert len(expected_link_addresses) == len(wires)
+    assert terminal_link_addresses == expected_link_addresses
+    assert all(
+        row["terminal_valid"] and row["component_valid"]
+        for row in report["terminal_suffix_link_checks"]
     )
 
 
