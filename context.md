@@ -11987,3 +11987,36 @@ Visible assistant final response (verbatim):
 > Verification passed: 106 backend tests (1 optional skip), frontend build and lint, one real streamed API generation/download, JSON-Lab validation/regeneration, and the full website-level 100-circuit replay (100/100).
 >
 > Verified scope is deliberately bounded: ground, R, C, L, voltage/current/signal sources; 43 components maximum; physical wires only. It does not bundle LTspice/Wine or claim universal LTspice support. The existing Proteus list/15-per-IC rule is transparently documented as a registry target still awaiting exporter-level audit.
+
+## 2026-07-16T17:50:51+05:00 — EasyEDA Pro feasibility research
+
+User request (verbatim):
+
+> just a yes or no
+> can u do the same but for easyeda?
+> obv not the properties part rather components placed wired terminals if supported etc?
+> the quickest route, reusing as much as u can from here kicad. but independent wihtout touching kicad in a sperate folder called Easyeda?
+> answer after thorough resreach. here have this zip file, inside it u can find alot of stuff
+> in recourses then app then assessts, there is propcd prosch, and all other places too, screach and see what u can learn directly from it, what u can import into generator.
+> i just want 40 components and a total placement per circuit limit of 80 total. no more then 80 collective no of component, thi can be 2x of each supported, or any other combination of any number of components out fo that 40.
+> the 40 supported, 10 should be most basic used, like resistor, then 15 to 20 should be most used in electrical eng labs like lca ena eda dld edc. and remaining should be the most commonly used microcontrollers and stuff, especially if supported esp32 etc stuff
+
+Visible assistant responses (verbatim):
+
+> I’ll verify this against the actual EasyEDA Pro package and the existing portable architecture, then I’ll give you only the yes/no answer you asked for.
+
+> The package has the native schematic module, an auto-wiring worker, a PCB router, and real SQLite project/library stores. I’m checking the project schema and component records now so the answer rests on the native format rather than assumptions.
+
+> Yes, and I can give the useful version of that answer now: I’m checking the bundled standard library itself to separate what we can technically emit from what must be independently rebuilt rather than copied.
+
+> The native shape is clear now: an `.eprj` is a SQLite project; each schematic page is a command stream with actual `COMPONENT`, `WIRE`, `ATTR NET`, `NETFLAG`, and `NETPORT` records. I’m doing one last catalogue check for the proposed 40-part scope, including ESP32-class devices.
+
+> I have enough evidence to answer this decisively. I’m recording the feasibility finding in the repository’s continuation log, then I’ll give you the concrete scope, reuse plan, and the one important licensing boundary.
+
+Research record:
+
+> Inspected `/home/zaruka/Downloads/easyeda-pro-linux-x64-3.2.149.zip` directly. It contains the native `pro-sch` extension (`sch.js`, `sch-main.js`, `sch-auto-wiring-worker.js`), `pro-pcb` router/DRC assets, the 490 MB `easyeda-std.elib` SQLite library, and local example `.eprj` projects. The inspected quick-start `.eprj` is SQLite and its schematic document `dataStr` is a line-oriented JSON command stream containing `COMPONENT`, `WIRE`, and `ATTR NET` records. The standard library has 20,882 component records and includes the required families such as ESP32-WROOM-32, ESP-12F, ATmega328P, STM32F103C8T6, CP2102, CH340, BME280, DS3231, LM358, NE555, LM7805, LM317, 1N4007/1N4148, and 74HC logic. Official EasyEDA Pro documentation confirms local project archives, native netlist export, and text file-source export. The desktop bundle is proprietary JLC software, so its executable code and library database must be treated as research/compatibility references and not redistributed wholesale without an appropriate license. The proposed implementation remains technically feasible as a separate `Easyeda/` backend that reuses only our own backend-neutral contracts/algorithms and emits independently implemented native project records.
+
+Follow-up user request (verbatim):
+
+> u can give more details then a yes and no
