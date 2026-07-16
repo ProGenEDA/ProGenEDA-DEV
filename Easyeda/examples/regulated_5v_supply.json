@@ -1,0 +1,95 @@
+{
+  "schema_version": "progeneda-main-json-contract/v1",
+  "project": {
+    "name": "easyeda_regulated_5v_supply",
+    "title": "Regulated 5V Supply with Reverse Protection",
+    "target": "easyeda_pro"
+  },
+  "routing": {
+    "mode": "combination"
+  },
+  "components": [
+    {
+      "id": "J1",
+      "ref": "J1",
+      "kind": "TERMINAL_BLOCK",
+      "value": "DC Input",
+      "pins": {
+        "1": "VIN_RAW",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "D1",
+      "ref": "D1",
+      "kind": "1N4007",
+      "value": "1N4007",
+      "pins": {
+        "A": "VIN_RAW",
+        "K": "VIN_PROTECTED"
+      }
+    },
+    {
+      "id": "U1",
+      "ref": "U1",
+      "kind": "LM7805",
+      "value": "LM7805",
+      "pins": {
+        "IN": "VIN_PROTECTED",
+        "GND": "GND",
+        "OUT": "+5V",
+        "TAB": "GND"
+      }
+    },
+    {
+      "id": "C1",
+      "ref": "C1",
+      "kind": "CAP_ELEC",
+      "value": "100uF",
+      "pins": {
+        "1": "VIN_PROTECTED",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "C2",
+      "ref": "C2",
+      "kind": "C",
+      "value": "100nF",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "R1",
+      "ref": "R1",
+      "kind": "R",
+      "value": "1k",
+      "pins": {
+        "1": "+5V",
+        "2": "LED_A"
+      }
+    },
+    {
+      "id": "LED1",
+      "ref": "LED1",
+      "kind": "LED",
+      "value": "Power",
+      "pins": {
+        "A": "LED_A",
+        "K": "GND"
+      }
+    },
+    {
+      "id": "J2",
+      "ref": "J2",
+      "kind": "TERMINAL_BLOCK",
+      "value": "5V Output",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    }
+  ]
+}

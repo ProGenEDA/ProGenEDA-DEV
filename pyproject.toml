@@ -14,10 +14,11 @@ test = ["pytest>=8.0"]
 
 [project.scripts]
 proteusgen = "proteusgen.cli:main"
+progen-easyeda = "Easyeda.executable:main"
 
 [tool.setuptools.packages.find]
 where = ["src", "."]
-include = ["proteusgen*", "kicad*", "ltspice*"]
+include = ["proteusgen*", "kicad*", "ltspice*", "Easyeda*"]
 
 [tool.setuptools.package-data]
 kicad = ["source_pack/downloaded_zip/*.zip", "rules/*.json", "examples/json/*.json", "targets/*.md", "pipeline/catelogues/*.json"]

@@ -1,0 +1,156 @@
+{
+  "components": [
+    {
+      "block": "main",
+      "id": "J1",
+      "kind": "TERMINAL_BLOCK",
+      "pins": {
+        "1": "VIN_RAW",
+        "2": "GND"
+      },
+      "ref": "J1",
+      "role": "",
+      "value": "DC Input"
+    },
+    {
+      "block": "main",
+      "id": "D1",
+      "kind": "1N4007",
+      "pins": {
+        "A": "VIN_RAW",
+        "K": "VIN_PROTECTED"
+      },
+      "ref": "D1",
+      "role": "",
+      "value": "1N4007"
+    },
+    {
+      "block": "main",
+      "id": "U1",
+      "kind": "LM7805",
+      "pins": {
+        "GND": "GND",
+        "IN": "VIN_PROTECTED",
+        "OUT": "+5V",
+        "TAB": "GND"
+      },
+      "ref": "U1",
+      "role": "",
+      "value": "LM7805"
+    },
+    {
+      "block": "main",
+      "id": "C1",
+      "kind": "CAP_ELEC",
+      "pins": {
+        "1": "VIN_PROTECTED",
+        "2": "GND"
+      },
+      "ref": "C1",
+      "role": "",
+      "value": "100uF"
+    },
+    {
+      "block": "main",
+      "id": "C2",
+      "kind": "C",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      },
+      "ref": "C2",
+      "role": "",
+      "value": "100nF"
+    },
+    {
+      "block": "main",
+      "id": "R1",
+      "kind": "R",
+      "pins": {
+        "1": "+5V",
+        "2": "LED_A"
+      },
+      "ref": "R1",
+      "role": "",
+      "value": "1k"
+    },
+    {
+      "block": "main",
+      "id": "LED1",
+      "kind": "LED",
+      "pins": {
+        "A": "LED_A",
+        "K": "GND"
+      },
+      "ref": "LED1",
+      "role": "",
+      "value": "Power"
+    },
+    {
+      "block": "main",
+      "id": "J2",
+      "kind": "TERMINAL_BLOCK",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      },
+      "ref": "J2",
+      "role": "",
+      "value": "5V Output"
+    }
+  ],
+  "nets": [
+    {
+      "members": [
+        "C2.1",
+        "J2.1",
+        "R1.1",
+        "U1.OUT"
+      ],
+      "name": "+5V"
+    },
+    {
+      "members": [
+        "C1.2",
+        "C2.2",
+        "J1.2",
+        "J2.2",
+        "LED1.K",
+        "U1.GND",
+        "U1.TAB"
+      ],
+      "name": "GND"
+    },
+    {
+      "members": [
+        "LED1.A",
+        "R1.2"
+      ],
+      "name": "LED_A"
+    },
+    {
+      "members": [
+        "C1.1",
+        "D1.K",
+        "U1.IN"
+      ],
+      "name": "VIN_PROTECTED"
+    },
+    {
+      "members": [
+        "D1.A",
+        "J1.1"
+      ],
+      "name": "VIN_RAW"
+    }
+  ],
+  "project": {
+    "name": "easyeda_regulated_5v_supply",
+    "target": "easyeda_pro",
+    "title": "Regulated 5V Supply with Reverse Protection"
+  },
+  "routing": {
+    "mode": "combination"
+  },
+  "schema_version": "progen-easyeda-circuit-ir/v1"
+}

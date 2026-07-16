@@ -12020,3 +12020,124 @@ Research record:
 Follow-up user request (verbatim):
 
 > u can give more details then a yes and no
+
+## 2026-07-16T19:35:11+05:00 — EasyEDA donor-native implementation
+
+User request (verbatim):
+
+> can u do all this reliably?
+> make a plan especially about the We can use the supplied package to study native compatibility and resolve part profiles, but should not redistribute its compiled code or entire library. The generator should ship independently authored/curated project-local records instead.
+> ill install easyeda here on this env too for instant openning n ss testing
+
+> donot invent symbols and library always copy directly from the source
+> ull learn from them how to actually make a real replicas of files, as if hand made on the software itself
+
+> if u are worried about liciesing dw, we have permission, we will not be distributing anything else thenthe project files at all, nothing other then what a hand made project file will
+> we have permission to do this, if u want i can give u the copy of orginal private nondisclosed agreement
+> u can check the memory repo we have this with Ltspice and proteus as well. so donot worry about it
+
+> implement the plan to its fullest.
+> chose the fastest route u can find
+
+Visible assistant responses (verbatim):
+
+> I’m picking up the EasyEDA implementation now. I’ll keep it independent from KiCad, build it around direct donor-native records from the supplied package, and validate the emitted `.eprj` rather than treating a visually plausible file as success.
+
+> I’ll include the EasyEDA install in this pass. First I’m checking whether the unpacked bundle already has a native launcher and which desktop integration it needs, while I continue building the backend against that exact source package.
+
+Follow-up user request (verbatim):
+
+> and i donot think it installed properly, the unziped is here at /shared/easyeda-pro-linux-x64-3.2.149/
+> could u install it as well
+
+Visible assistant response (verbatim):
+
+> The supplied folder is a valid portable EasyEDA Pro bundle, not a partial extraction. Its official installer copies it to `/opt/apps/easyeda-pro`, installs the launcher and icons, then asks about rebooting; I’ll install it without triggering a reboot and verify the desktop entry afterward.
+
+## 2026-07-16T21:26:13+05:00 - EasyEDA native-open fix and shared power terminals
+
+User requests (verbatim):
+
+> continue
+
+> open checks are must, so make sure easyeda is installed and its file, .eprj opens directly in it and the output of generator will be .eprj file
+
+> where is the gui? i cant see u openning any files
+
+> now open file and take quick screenshots error seem to disappear rathe quickly.
+> one i recieved was failed due to historical something
+
+> [Error] : Failed to open project, Non-3.0 project conversion failed,Failed to get historical project data!
+
+Visible assistant responses (verbatim):
+
+> That error is precise enough to act on. It points to our generated project still looking like a legacy pre-3.0 database, so EasyEDA attempts historical conversion and fails; I’m checking the project identity/history tables now, then I’ll regenerate a fresh file, open it in the GUI, and capture the result immediately.
+
+> I found the concrete mismatch: the emitter clones an old `db_version 0.0.3` donor and gives the project a new UUID, but inherited history/member rows still reference the donor UUID. EasyEDA 3.x sees no valid branch identity, enters legacy conversion, then cannot retrieve the donor’s historical data. I’m correcting both parts: emit an explicit 3.x branch identity and remove/rebind every stale donor-scoped row.
+
+> Before changing the emitter, I’m doing one isolated binary experiment on a copied project: add the real `branch_uuid` column/value that EasyEDA 3.x checks, rebind `project_members`, and delete inherited donor PCB caches. That will tell us whether the conversion error is fully explained or whether EasyEDA expects another 3.x history record.
+
+> The isolated file no longer triggers EasyEDA’s conversion path: it stays intact, produces no `.eprj2`, and the old `copyProject`/historical-data error is absent. I’m now putting that fix into the real emitter and validator, and I’m also restoring the launcher to the compatibility runtime that rendered EasyEDA correctly on this NixOS desktop; the lean direct runtime launched but rendered a black window.
+
+> The permanent fix is in place now: every generated project gets a deterministic 3.x branch UUID, its membership row is rebound to the generated project, and donor copper/text caches are prohibited by validation. I’ve added regression assertions for exactly the failure you saw; next I’m regenerating the supply project and rebuilding the desktop compatibility launcher for the final open check.
+
+> The regenerated project passes all deterministic checks and now has the exact corrected metadata: non-empty 3.x branch identity, only the generated project UUID in membership, zero inherited cache rows, full schematic net match, and PCB validation clean. The remaining wait is only the one-time Nix compatibility runtime build so I can open this fresh file visibly and confirm the editor view.
+
+> The GUI result is now decisive: the project opened successfully and EasyEDA populated the real project tree with both `Schematic` and `PCB`. The `.eprj2` file is EasyEDA’s normal in-place database upgrade, not the failed historical conversion; the previous error dialog is gone. I’m dismissing the one-time editor preference prompt and opening the schematic sheet for the final visual proof.
+
+> The visual acceptance is complete: EasyEDA rendered the generated schematic and PCB, with the project tree intact. One cleanup remains before I package this: opening a project makes EasyEDA migrate it to `.eprj2`, so I’m preserving the final deliverable as a fresh unopened `.eprj` and recording the opened copy separately; I’m also simplifying the installer to the now-proven direct Nix library runtime instead of the much heavier Steam runtime.
+
+Follow-up user request (verbatim):
+
+> u did good, but do u have to use so many gnd and 5v? cant u use 1 and route them proeprly
+
+Visible assistant responses (verbatim):
+
+> Yes, one `GND` and one `+5V` symbol per net is cleaner here. The current combination mode places a terminal beside every endpoint, which is electrically valid but visually repetitive; I’ll change power-net handling to use one shared terminal anchor and route all members into it, while keeping per-pin terminals only when a net truly needs terminal-only fallback.
+
+> I’ve found the exact switch: combination mode currently classifies every power net as terminal-only before the router even tries it. I’m changing that order so power nets are routed first, then receive one shared named terminal at the routed root; only an actually unroutable power net will fall back to per-pin terminals. Terminal-only mode will keep its existing semantics.
+
+> The routing itself passed; the only failing assertion exposed a metadata ambiguity, not an electrical problem. Both shared power terminals use the same native EasyEDA port donor, so the manifest deduplicated them as one packet type. I’m adding an explicit terminal-instance list so metadata records “one GND instance, one +5V instance” independently from donor packet reuse.
+
+> The new generation now passes all 11 tests and deterministic net validation. Its routing metadata shows `GND` and `+5V` each physically routed with `shared_power_terminal`, and exactly two terminal instances total. I’m opening a disposable copy now to verify the visual result is also one symbol per power net.
+
+> The screenshot confirms the intended behavior: one `+5V` terminal and one `GND` terminal, with every corresponding pin joined by physical wire. The deterministic validator still reports complete expected-net membership and zero geometry errors. I’m preserving this as a separate visual experiment, updating the architecture note, rebuilding the portable executable, then I’ll commit and push the complete EasyEDA checkpoint.
+
+Files added or edited in this checkpoint:
+
+- `AGENTS.md`
+- `pyproject.toml`
+- `Easyeda/ARCHITECTURE.md`
+- `Easyeda/INPUT_JSON.md`
+- `Easyeda/README.md`
+- `Easyeda/SUPPORTED_COMPONENTS.md`
+- `Easyeda/catalogue.py`
+- `Easyeda/donor_source.py`
+- `Easyeda/executable.py`
+- `Easyeda/geometry.py`
+- `Easyeda/gui_acceptance.py`
+- `Easyeda/ir.py`
+- `Easyeda/native.py`
+- `Easyeda/pipeline.py`
+- `Easyeda/validator.py`
+- `Easyeda/tests/test_catalogue.py`
+- `Easyeda/tests/test_ir.py`
+- `Easyeda/tests/test_source_and_pipeline.py`
+- `Easyeda/tools/build_portable.py`
+- `Easyeda/tools/install_local_easyeda.sh`
+- `Easyeda/tools/kwin_activate_easyeda.js`
+- `Easyeda/dist/progen-easyeda`
+- `Easyeda/examples/regulated_5v_supply.json`
+- `Easyeda/examples/all_40_components.json`
+- immutable generated EasyEDA runs under `Easyeda/examples/generated_runs/`
+- `Easyeda/experiments/2026_07_16_shared_power_terminal_visual_v1/`
+- `context.md`
+
+Verification:
+
+- `11 passed` in the complete EasyEDA test suite.
+- Portable executable generated and validated the regulated supply.
+- Installed `.eprj` association resolves to `easyeda-pro.desktop`.
+- EasyEDA Pro 3.2.149 opened and rendered the generated schematic and PCB.
+- Shared power visual acceptance showed one `GND` and one `+5V` terminal.
+- Expected power-net membership passed with zero geometry errors.
