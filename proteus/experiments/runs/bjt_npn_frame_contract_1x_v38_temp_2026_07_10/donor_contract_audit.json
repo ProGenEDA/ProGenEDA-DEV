@@ -1,0 +1,79 @@
+{
+  "status": "complete_static_audit_pending_proteus_acceptance",
+  "authoritative_npn_donor": {
+    "path": "proteus_ic/donors/terminalized_catalogue_evidence/three_pin_transistor/NPN/NPN_terminalized_primary.pdsprj",
+    "sha256": "ffcbcf427978fce1a3eb83ab3914ff58f15719f906f7fdcb1a1f0db114192f7c"
+  },
+  "accepted_component_first_frame_donor": {
+    "path": "proteus_ic/donors/terminalized_catalogue_evidence/three_pin_transistor/NMOSFET/NMOSFET_user_terminalized_july04.pdsprj",
+    "sha256": "0b12c3aa5b9d443930ad37df0ae5f97e98604943a499dbe4aa6fa5af40ae455b"
+  },
+  "component_placer_control": {
+    "path": "00_no_terminal_control/N001_NPN_1x_NO_TERMINAL/N001_NPN_1x_NO_TERMINAL.pdsprj",
+    "sha256": "570200cc0ff1464861f218fb1247c58714938936aaa464c304becd99180137f5"
+  },
+  "candidate": {
+    "path": "01_test_this_one/T001_NPN_1x_FRAME_CONTRACT/T001_NPN_1x_FRAME_CONTRACT_sa.pdsprj",
+    "sha256": "4a82019a5dc89e78bddad8e5b0efb900ed2b5c409c53ec873005c8aae81df5ef"
+  },
+  "project_member_audit": {
+    "same_member_set_as_component_placer_control": true,
+    "only_changed_member": "ROOT.DSN",
+    "root_cdb_exact_component_placer_control": true,
+    "root_cdb_exact_accepted_generated_nmos_frame": true,
+    "root_dsn_exactly_rebuilt_from_control_and_candidate_object_chunk": true,
+    "terbidir_device_definition_exact_accepted_component_first_frame": true
+  },
+  "root_dsn_frame_audit": {
+    "object_chunk_absolute_start": 144163,
+    "control_prefix_hex": "0000ff",
+    "candidate_prefix_hex": "0000ff",
+    "candidate_finalizer_hex": "ffff",
+    "pointer_values": {
+      "insert": 136714,
+      "first_isis": 144117,
+      "second_isis": 144982,
+      "second_object_data": 145017,
+      "object_data_pointer": 145030
+    }
+  },
+  "npn_donor_local_schema_audit": {
+    "all_three_terminal_templates_exact_after_masking_only_coordinates_and_active_addresses": true,
+    "all_three_wire_templates_exact_after_masking_only_coordinates": true,
+    "pin_geometry_derived_from_actual_npn_donor": true,
+    "zero_length_wire_count": 3,
+    "terminal_count": 3,
+    "wire_count": 3
+  },
+  "component_first_frame_contract": {
+    "event_order": [
+      "component",
+      "BASE terminal",
+      "BASE WIRE",
+      "COLLECTOR terminal",
+      "COLLECTOR WIRE",
+      "EMITTER terminal",
+      "EMITTER WIRE"
+    ],
+    "terminal_link_trailer_hex": "0200",
+    "component_link_trailer_hex": "0200",
+    "finalizer_hex": "ffff",
+    "matches_accepted_component_first_attachment_unit_grammar": true
+  },
+  "final_link_audit": {
+    "method": "final_root_dsn_wire_address",
+    "formula": "(absolute_object_start + wire_marker_offset - 24) & 0xffff",
+    "all_suffixes_match_formula": true,
+    "all_suffixes_unique": true,
+    "terminal_and_component_fields_match_each_wire": true,
+    "terminal_suffix_links_valid": true
+  },
+  "known_intentional_differences_from_standalone_npn_donor": [
+    "The placed component reference and coordinates come from the locked mega component placer, not donor Q1 coordinates.",
+    "The standalone NPN donor is terminal-leading and uses 0100 links; V34 proved that complete project-frame order cannot replace the locked-mega component prefix.",
+    "The candidate therefore combines donor-exact NPN local terminal/WIRE/pin evidence with the accepted locked-mega component-first frame's interleaved attachment units, 0200 links, and FF FF finalizer.",
+    "ROOT.CDB remains the locked-mega component-placer CDB rather than the standalone donor's reduced CDB."
+  ],
+  "unexplained_structural_differences": [],
+  "manual_acceptance_required": true
+}
