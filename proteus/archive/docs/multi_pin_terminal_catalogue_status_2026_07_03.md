@@ -1,0 +1,460 @@
+# Multi-pin terminal catalogue status - 2026-07-03
+
+This checkpoint is Proteus-only and uses the unified shared terminal placer:
+`src/proteusgen/component_terminal_placer.py`.
+
+## Generated solo checkpoints
+
+V2 generated pack:
+
+- Folder: `experiments/multi_pin_catalogue_terminal_solo_v2_temp_2026_07_03/`
+- Archive: `experiments/MULTI_PIN_CATALOGUE_TERMINAL_SOLO_V2_TEMP_2026_07_03.zip`
+
+User Proteus result on 2026-07-04: rejected. The problem was shared across the
+zip, not specific to `74HC157`: terminals were placed far away from their
+components because the emitter used donor WIRE-row coordinates as placement
+coordinates. Those WIRE rows are valid only as byte/link identity anchors after
+component placement/beautification.
+
+V3 corrected pack:
+
+- Folder: `experiments/multi_pin_catalogue_terminal_solo_v3_temp_2026_07_04/`
+- Archive: `experiments/MULTI_PIN_CATALOGUE_TERMINAL_SOLO_V3_TEMP_2026_07_04.zip`
+
+V3 changes the shared planner/emitter so pin coordinates are decoded from the
+current component body bbox plus catalogue component-relative pin offsets. The
+existing WIRE rows remain in use only for WIRE order, suffix/link patching, and
+record identity.
+
+User Proteus result on 2026-07-04: V3 still produced Bad Object Record errors
+across the pack. The user supplied a Proteus-saved no-error NE555 file as an
+oracle. Comparing generated V3 NE555 to that saved file showed the terminal,
+WIRE, and CDB data were byte-compatible; the saved file's ROOT.DSN object chunk
+was exactly the generated object chunk plus one final `FF` byte. Root cause:
+the emitter treated a last packet byte of `FF` as if it were already the
+object-stream terminator.
+
+V4 corrected pack:
+
+- Folder: `experiments/multi_pin_catalogue_terminal_solo_v4_temp_2026_07_04/`
+- Archive: `experiments/MULTI_PIN_CATALOGUE_TERMINAL_SOLO_V4_TEMP_2026_07_04.zip`
+
+V4 writes an explicit double-`FF` ROOT.DSN object-stream ending. The V4 NE555
+object chunk matches the user's Proteus-saved no-error NE555 object chunk
+byte-for-byte.
+
+User Proteus result on 2026-07-04: the following V4 cases still had placement
+problems already visible since V2/V3: `4017`, `4020`, `74HC4024`, `74HC4040`,
+`74HC4060`, `74HC161`, `74HC163`, `74HC193`, `74HC273`, `74HC165`,
+`74HC595`, and `7447`. Terminals were still in the old coordinate cluster
+instead of near the placed component. `74HC74` had a separate component-location
+issue while its terminals were visually near the right pins.
+
+Root cause for the listed counters/registers/decoder cases: the
+component placer/beautifier used the rejected broad `component_text_or_body`
+coordinate scanner for these supported IC families. That broad scan moved a
+mixed set of label/body/WIRE coordinates and left the terminal catalogue tied
+to the wrong coordinate frame.
+
+V5 corrected pack:
+
+- Folder: `experiments/multi_pin_catalogue_terminal_solo_v5_temp_2026_07_04/`
+- Archive: `experiments/MULTI_PIN_CATALOGUE_TERMINAL_SOLO_V5_TEMP_2026_07_04.zip`
+
+V5 keeps the V4 double-`FF` Bad Object Record fix, moves the affected families
+onto parsed IC coordinate extraction, and uses marker-body-anchor pin offsets
+from the catalogue. All V5 component placements statically validate, no V5
+manifest reports `E_OUTPUT_LAYOUT_BROAD_SCAN`, and all V5 terminal reports use
+`component_marker_anchor_offset_existing_wire_identity`.
+
+All cases below were generated through catalogue-driven pin geometry plus the
+accepted terminal mechanics: grid-snapped bidirectional terminal contact,
+180 degrees for left-side pins, 0 degrees for right-side pins, short WIRE from
+terminal contact to exact pin, and final ROOT.DSN link rebasing.
+
+V5 static-valid, pending Proteus user testing:
+
+- `NPN`
+- `PNP`
+- `NE555`
+- `LM741`
+- `4017`
+- `4020`
+- `4027`
+- `7490`
+- `74HC4024`
+- `74HC4040`
+- `74HC4060`
+- `74HC160`
+- `74HC161`
+- `74HC163`
+- `74HC192`
+- `74HC193`
+- `74HC174`
+- `74HC273`
+- `74HC74`
+- `74HC76`
+- `74HC157`
+- `74HC165`
+- `74HC283`
+- `74HC595`
+- `74HC85`
+- `7447`
+
+## V5 user result and V6 coordinate correction
+
+User Proteus testing on 2026-07-04 reported that all V5 files opened and were
+mostly visually good, with three remaining coordinate issues:
+
+- `4027`: terminals for one `U1:A` subpart were placed on top of the other
+  subpart.
+- `74HC4060`: terminals and component labels moved to the new location, but the
+  actual component body stayed at the old donor location.
+- `74HC192`: pin 9 / `D3` terminal was placed on top of pin 5 / `UP`.
+
+V6 fixes these in the shared route:
+
+- `4027` now stores two strict component body anchors in the catalogue and each
+  pin selects its own `component_anchor_index`.
+- `74HC4060` now uses the actual Proteus body marker `4060` as its coordinate
+  frame, and the beautifier moves that marker along with the visible labels.
+- `74HC192` catalogue geometry separates package pin 9 / `D3` from package pin
+  5 / `UP`; the donor's misleading `UP PIN 9` label is recorded as corrected
+  catalogue evidence for pin 5.
+
+Generated V6 pack:
+
+- Folder: `experiments/multi_pin_catalogue_terminal_solo_v6_temp_2026_07_04/`
+- Archive: `experiments/MULTI_PIN_CATALOGUE_TERMINAL_SOLO_V6_TEMP_2026_07_04.zip`
+- Static summary: 26 cases, all terminal reports valid, all grid/short-wire
+  checks valid.
+
+Generated missing-geometry donor-base pack:
+
+- Folder: `experiments/multi_pin_missing_terminal_donor_bases_v1_temp_2026_07_04/`
+- Archive: `experiments/MULTI_PIN_MISSING_TERMINAL_DONOR_BASES_V1_TEMP_2026_07_04.zip`
+- Purpose: bare component-placer outputs for >2-pin families whose terminal
+  geometry is not yet in the catalogue, so the user can manually add terminals
+  and return saved donor evidence.
+- Static summary: 19 cases generated, 17 static-valid; `4518` and `74HC4520`
+  are included but marked static-invalid for triage.
+
+## Current limits
+
+The requested `3x/13x/23x` pattern is reduced to `1x` at this checkpoint.
+Reason: duplicated native component packets do not yet preserve a verified
+per-copy pin-link table for every pin. Emitting larger packs without that link
+evidence would repeat the unsafe/fake multi-pin route the user rejected.
+
+Mixed one-each multi-pin output is blocked at this checkpoint. Reason: the
+current mixed component-placer path selects a mega donor whose bare component
+packets do not contain the donor WIRE/link skeleton required by the safe
+catalogue emitter.
+
+## Families needing more donor/link evidence
+
+These are not solved by adding a new terminal-placement script. They need
+catalogue evidence, backend pin descriptors, or component-placer contract work
+so the same shared placer can emit them safely.
+
+- `4518`, `74HC4520`: current evidence exposes only one seven-pin subpart WIRE
+  skeleton. Need a full two-subpart/package terminalized donor skeleton or
+  equivalent link-map evidence.
+- `7SEG-COM-AN-BLUE`, `7SEG-COM-CAT-BLUE`: need labelled full-display donors
+  for all exposed display pins. The `D20` display bridge/sentinel must remain
+  ignored and byte-preserved.
+- `74HC00`, `74HC02`, `74HC04`, `74HC08`, `74HC32`, `74HC86`, `74HC266`:
+  need gate/subpart WIRE-link mapping before catalogue terminal emission.
+- `74HC151`, `4511`: no geometry-ready registry donor was promoted in this
+  pass.
+- `2N3904`, `2N4401`, `NMOSFET`, `2N7000`, `BS170`, `BRIDGE`, `LM317T`,
+  `OPAMP`, `POT-HG`, `SWITCH`, `TRAN-2P2S`: need terminalized donor evidence
+  or direct backend pin-link offsets before shared terminal emission.
+- `POWER`, `GROUND`, `TERMINAL`, `LOGICSTATE`, `LOGICPROBE`: these are
+  terminal/source/probe primitives or infrastructure and should not be treated
+  as ordinary components needing external terminals without a specific circuit
+  use case.
+
+## Implementation rule
+
+All future multi-pin expansion must follow this path:
+
+1. Identify the component family through the catalogue/profile registry.
+2. Record normalized pin number, name, role, side, electrical type, relative
+   pin coordinates, donor terminal suffix evidence, WIRE order/index evidence,
+   and caveats in `knowledge/component_catalog_v0.json`.
+3. Emit through `src/proteusgen/component_terminal_placer.py`.
+4. Generate a focused evidence pack.
+5. Record static checks and user Proteus feedback in `knowledge/test_results.jsonl`.
+
+Do not reintroduce label-only terminals, side-terminal diagnostics, component
+specific terminal scripts, or family-specific terminal workflows.
+
+## V7 donor-evidence promotion - 2026-07-04
+
+User-saved terminalized donor-base files were parsed as Proteus donor evidence.
+The catalogue now contains component-relative pin geometry for `4511`,
+`74HC00`, `74HC02`, `74HC04`, `74HC08`, `74HC151`, `74HC266`, `74HC32`,
+`74HC86`, `BRIDGE`, and `LM317T`.  `74HC266` records a corrected donor-label
+typo where the second `Pin5...` terminal is treated as package pin 6.  `BRIDGE`
+records the ambiguous `pin` terminal as the missing package pin 4.
+
+V7 user Proteus result:
+
+- Rejected as a user-test pack because it included `_placed.pdsprj`
+  component-placer intermediates alongside final `_sa.pdsprj` outputs. The
+  intermediates are not terminal-placer deliverables and must not be presented
+  for user testing.
+- `4511` and `74HC151` final `_sa` outputs were visually correct enough to keep
+  as safe evidence.
+- `74HC04` final `_sa` output is rejected. The old HC04 evidence still needs a
+  cleaner component-placer packet without old I/O artifacts before it can be
+  treated as a safe terminalized deliverable.
+
+Generated V8 final-only solo pack:
+
+- Folder: `experiments/new_catalogue_terminal_solo_v8_final_only_temp_2026_07_04/`
+- Archive: `experiments/NEW_CATALOGUE_TERMINAL_SOLO_V8_FINAL_ONLY_TEMP_2026_07_04.zip`
+- Safe generated cases: `4511` and `74HC151`.
+- Static summary: both terminal reports are valid, all grid/short-wire checks
+  pass, and final ROOT.DSN streams have the required double `FF` object
+  termination.
+
+Blocked at this checkpoint:
+
+- `74HC00`, `74HC02`, `74HC04`, `74HC08`, `74HC32`, `74HC86`, `74HC266`: saved donor
+  geometry exists, but the saved packets do not expose a complete active
+  component pin-link table for every visible pin.
+- `BRIDGE`, `LM317T`: saved donor geometry exists, but no active component
+  pin-link fields were found.
+- `7SEG-COM-AN-BLUE`, `7SEG-COM-CAT-BLUE`: display terminal evidence is still
+  separate from the display/D20 grouping path and was not promoted into active
+  emission.
+- 15x and mixed multi-pin generation remain blocked for families whose selected
+  packets lack complete active WIRE/link evidence. No unsafe fake mixed pack was
+  emitted.
+
+## V10 main/component-placer donor scalable terminal pack - 2026-07-07
+
+V10 supersedes the V8/V9 scaled-generation blockers for the promoted families.
+The fix is Proteus-specific: no KiCad backend data or KiCad emitters were
+imported. The KiCad work was used only as an architectural reminder to keep one
+normalized catalogue and backend-specific profiles.
+
+Implementation changes:
+
+- Complete-package ICs (`74HC00`, `74HC02`, `74HC04`, `74HC08`, `74HC32`,
+  `74HC86`, `74HC266`) now select the main mega donor before registry fallback,
+  so HC04/gates are produced by the component placer from complete same-ref
+  package groups.
+- `knowledge/component_catalog_v0.json` now stores Proteus
+  `component_link_offset_from_component_end` and `component_link_trailer`
+  evidence for promoted multi-pin families.
+- `src/proteusgen/component_terminal_placer.py` can terminalize clean bare
+  component-placer packets that contain no old WIRE records: it patches the
+  catalogue-proven component pin-link fields, appends canonical short WIRE
+  records, and rebases terminal/component links from final ROOT.DSN WIRE
+  addresses.
+- Common-cathode seven-segment displays are handled as a Proteus display block
+  because the common-cathode link field crosses into the following
+  display/sentinel packet. `D20` and display sentinels remain infrastructure
+  and are never terminalized as user components.
+- `74HC266` no longer inherits the `74HC08` pin model. It has its own corrected
+  open-drain XNOR pin order: pin 4 is `2Y`, pins 5/6 are `2A`/`2B`.
+
+Generated V10 pack:
+
+- Folder: `experiments/catalogue_terminal_main_donor_v10_temp_2026_07_07/`
+- Archive: `experiments/CATALOGUE_TERMINAL_MAIN_DONOR_V10_TEMP_2026_07_07.zip`
+- Archive SHA256:
+  `9b75825902d5b9dd7f0b15f85a0d2920251c8dbde5e0bceaf4a2535d4b033217`
+- Runner:
+  `tools/proteus_generation/2026-07-04/generate_catalogue_terminal_safe_solos_temp.py`
+
+Static result:
+
+- 68 terminalized solo cases generated and statically valid.
+- 68 matching no-terminal controls generated and statically valid.
+- Counts generated for each promoted family: `1x`, `9x`, `15x`, `23x`.
+- Mixed 3x all-promoted pack generated and statically valid.
+- Mixed 3x terminal count: 444 active `$TERBIDIR` terminals and 444 WIRE
+  records.
+- All terminal reports show valid grid contacts, WIRE-to-pin endpoints, final
+  suffix rebasing, and double-`FF` object stream termination.
+
+Promoted V10 families:
+
+- `4511`
+- `74HC00`
+- `74HC02`
+- `74HC04`
+- `74HC08`
+- `74HC151`
+- `74HC266`
+- `74HC32`
+- `74HC86`
+- `7SEG-COM-AN-BLUE`
+- `7SEG-COM-CAT-BLUE`
+- `BRIDGE`
+- `LM317T`
+- `NMOSFET`
+- `OPAMP`
+- `POT-HG`
+- `TRAN-2P2S`
+
+Still not promoted:
+
+- `4518`
+- `74HC4520`
+
+Verification run:
+
+```powershell
+$env:PYTHONPATH = "src"
+python -m pytest tests/test_component_catalog.py::test_catalogue_pin_emitter_appends_wires_from_main_donor_link_offsets tests/test_component_catalog.py::test_catalogue_display_block_handles_cathode_links_before_anode_packets -q
+python -m pytest tests/test_component_catalog.py tests/test_component_placer.py -q
+python -m compileall -q src tests tools/proteus_generation
+```
+
+Result: focused tests `2 passed`; component/catalogue regression suite
+`111 passed`; compile check passed.
+
+Status: pending user Proteus open/render testing. Static binary validation is
+clean, but Proteus UI acceptance is the final authority.
+
+## V10 Rejected / 1x Recovery Pack - 2026-07-08
+
+User Proteus testing reported that all V10 generated terminal files failed.
+The V10 approach is therefore rejected despite static validation passing.
+
+Rejected V10 mechanism:
+
+- Catalogue `component_link_offset_from_component_end` on bare
+  component-placer packets.
+- Newly appended catalogue WIRE records for multi-pin/gate/display families.
+- Display block link-offset emission for `7SEG-COM-CAT-BLUE` /
+  `7SEG-COM-AN-BLUE`.
+
+Current guardrail:
+
+- `src/proteusgen/component_terminal_placer.py` now refuses catalogue
+  terminalization when a pin has no donor-native existing WIRE anchor.
+- The display V10 link-offset block is disabled until there is accepted
+  donor-native display evidence.
+- Existing V9 donor-native WIRE-anchor catalogue emission remains enabled.
+- Accepted two-pin terminal emission remains enabled through
+  `attach_component_bidir_terminals_to_project`.
+
+Generated recovery pack:
+
+- Folder: `experiments/terminal_recovery_solo_1x_temp_2026_07_08/`
+- Archive: `experiments/TERMINAL_RECOVERY_SOLO_1X_TEMP_2026_07_08.zip`
+- Archive SHA256:
+  `1710e4d381c61b76f400f3f8ea9684644b4d2a21f6054813a6eba0a7f81aebcc`
+- Runner:
+  `tools/proteus_generation/2026-07-04/generate_catalogue_terminal_safe_solos_temp.py`
+
+Recovery scope:
+
+- 1x only; no multi-count and no mixed pack.
+- Every generated case includes `input.json`.
+- 27 terminalized solo cases, 0 terminal generation errors.
+- 19 accepted two-pin families generated through the current component placer,
+  beautifier, and shared terminal placer using the accepted two-pin route:
+  `RESISTOR`, `CAP`, `DIODE`, `VSINE`, `VSOURCE`, `CSOURCE`, `VPULSE`,
+  `LED-RED`, `1N4733A`, `40EPS08`, `BZY88C`, `1N4007`, `1N4148`,
+  `1N6000B`, `BZX55C5V1`, `BZX79C5V1`, `FUSE`, `REALIND`, `CAP-ELEC`.
+- 8 V9 existing-anchor multi-pin families generated through donor-native
+  terminal/WIRE skeletons: `4511`, `74HC151`, `BRIDGE`, `LM317T`,
+  `NMOSFET`, `OPAMP`, `POT-HG`, `TRAN-2P2S`.
+- 38 no-terminal controls generated for comparison.
+
+Still blocked for terminalized output:
+
+- `4518`
+- `74HC00`
+- `74HC02`
+- `74HC04`
+- `74HC08`
+- `74HC266`
+- `74HC32`
+- `74HC4520`
+- `74HC86`
+- `7SEG-COM-AN-BLUE`
+- `7SEG-COM-CAT-BLUE`
+
+Verification run:
+
+```powershell
+$env:PYTHONPATH = "src"
+python tools/proteus_generation/2026-07-04/generate_catalogue_terminal_safe_solos_temp.py
+python -m pytest tests/test_component_catalog.py tests/test_component_placer.py -q
+python -m compileall -q src tests tools/proteus_generation
+```
+
+Result: recovery generation produced 27 terminalized 1x cases and 0 terminal
+errors; catalogue/component regression suite `111 passed`; compile check
+passed.
+
+## V10 Failure Root Cause / Clean Catalogue V2 - 2026-07-08
+
+User Proteus testing of the 1x recovery pack reported that every existing-anchor
+case except `4511` failed; `74HC151` still had terminal geometry issues and the
+remaining anchor cases did not open. The important root cause found in the repo
+was that the generated `_placed` inputs for those anchor cases were not clean
+component-placer outputs: they already contained donor `$TERBIDIR` and WIRE
+records from the terminalized evidence donors. That violated the placed-design
+contract.
+
+Correction:
+
+- Terminalized donors are now evidence only.
+- Catalogue multi-pin generation starts from normal clean component-placer
+  output.
+- The shared terminal placer computes current pin coordinates from catalogue
+  component-relative geometry and the placed packet's current anchor.
+- The terminal contact is snapped to the Proteus grid, moved outward from the
+  exact pin, connected with a short WIRE, and linked by final ROOT.DSN WIRE
+  address rebasing.
+- The user-test artifact retains only final `*_sa.pdsprj` terminalized files;
+  temporary `_placed`/work projects are deleted.
+
+Generated clean recovery pack:
+
+- Folder:
+  `experiments/terminal_recovery_solo_1x_catalogue_v2_temp_2026_07_08/`
+- Archive:
+  `experiments/TERMINAL_RECOVERY_SOLO_1X_CATALOGUE_V2_TEMP_2026_07_08.zip`
+- Archive SHA256:
+  `4010508a7bbb8fad2f0af66211d7b0f3bc6ffacceaceea2b93c591c45060c21d`
+- Terminalized final `_sa` cases: 34.
+- Terminal generation errors: 0.
+- Temporary `_placed` projects and work manifests retained: 0.
+- Catalogue donor-comparison reports: valid for every catalogue multi-pin case.
+
+Terminalized scope:
+
+- 19 accepted two-pin families.
+- 15 catalogue bare-pin multi-pin families:
+  `4511`, `74HC00`, `74HC02`, `74HC04`, `74HC08`, `74HC151`, `74HC266`,
+  `74HC32`, `74HC86`, `BRIDGE`, `LM317T`, `NMOSFET`, `OPAMP`, `POT-HG`,
+  `TRAN-2P2S`.
+
+Still blocked:
+
+- `4518` and `74HC4520`: no accepted terminal/link evidence in the current
+  catalogue.
+- `7SEG-COM-AN-BLUE`: component-link offsets exist, but donor label/source
+  evidence is incomplete, so it is not shipped as a good terminalized case.
+- `7SEG-COM-CAT-BLUE`: D20/display grouping remains blocked.
+
+Verification run:
+
+```powershell
+$env:PYTHONPATH = "src"
+python tools/proteus_generation/2026-07-04/generate_catalogue_terminal_safe_solos_temp.py
+python -m pytest tests/test_component_catalog.py tests/test_component_placer.py -q
+python -m compileall -q src tests tools/proteus_generation
+```
+
+Result: `111 passed`; compile check passed.

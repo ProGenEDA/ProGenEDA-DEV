@@ -1,0 +1,261 @@
+# Progen EDA Canonical Pipeline
+
+> **GPT-5.6 continuity and consolidation.** The GPT-5.6 phase substantially advanced the earlier GPT-5.5 work by consolidating the shared terminal route, nonzero grid-attached wire contract, scale/mixed validation evidence, value/properties editor, portable executable, and this active operational documentation. Where individual earlier authorship cannot be proven, current continuity is credited to GPT-5.6 consolidation work.
+>
+> **Active-location update — 2026-07-16.** This is current Proteus material. Pre-consolidation root-relative paths translate as follows: `src/`, `knowledge/`, `fixtures/`, `schemas/`, `examples/`, and active `tools/` are below `proteus/active/`; `experiments/` is below `proteus/experiments/runs/`; and `proteus_ic/{donors,registry}` is now `proteus/active/evidence/{donors,registry}`. For current commands, support boundaries, and limitations, start at `proteus/active/README.md`.
+
+This is the authoritative high-level architecture supplied by the project
+owner on 2026-06-29. Older experiment documents must not silently reorder it.
+
+## Main Flow
+
+```text
+Natural-language prompt
+  -> Prompt Enhancer
+  -> Prompt-to-JSON Converter
+  -> JSON Enhancer
+  -> JSON Validator
+  -> File Name Decider
+  -> Arrangement Decider
+  -> Component Selector
+  -> Component/Logic Validator
+  -> Component Placer
+  -> Placement Validator
+  -> User Specification Validator
+  -> Beautifier
+  -> Beautifier Validator
+  -> Routing Decision: Wire / Terminal / Combination
+```
+
+## Wire Route
+
+```text
+Routing Decision: Wire
+  -> Wire Planner
+  <-> Beautifier
+  -> Wire Maker
+  -> Value Editor
+  -> Value Validator
+  -> Final Validator
+  -> Output
+```
+
+The Wire Planner and Beautifier iterate until component coordinates and wire
+paths are mutually acceptable. The Wire Maker emits actual Proteus wire
+records only after that loop converges.
+
+## Terminal Route
+
+```text
+Routing Decision: Terminal
+  -> Terminal Placer
+  -> Value Editor
+  -> Value Validator
+  -> Final Validator
+  -> Output
+```
+
+The terminal placer owns terminal record selection, pin attachment,
+orientation, coordinates, labels, suffix links, and any family-required short
+wire. There is exactly one terminal implementation:
+
+```text
+src/proteusgen/component_terminal_placer.py
+```
+
+Families are added as researched handlers inside that module. Dated scripts
+under `tools/proteus_generation/` only regenerate test packs; they are not
+alternate implementations.
+
+## Value & Properties Editor Contract
+
+The shared value stage is
+`src/proteusgen/component_value_changer.py` and its post-terminal entry point
+is `edit_project_values_and_properties(project, output, payload)`. It accepts
+reference-based input such as:
+
+```json
+{
+  "values": {"R1": "47k", "C1": "2nF"},
+  "properties": {"L1": {"ESR": "0.3"}, "RV1": {"POS": "75"}}
+}
+```
+
+Every accepted edit must be a same-byte-length numeric replacement found in
+both the selected ROOT.DSN packet and its matching ROOT.CDB property row. The
+editor runs after terminal attachment, preserves terminal/WIRE record counts
+and link addresses, emits an audit sidecar, and rejects model/package/loader
+fields, variable-length text, ambiguous fields, and families without actual
+donor evidence.
+
+## Combination Route
+
+```text
+Routing Decision: Combination
+  -> Combination Decider
+  -> Wire Planner
+  <-> Beautifier
+  -> Wire Maker
+  -> Terminal Placer
+  -> Terminal Validator
+  -> Value Editor
+  -> Value Validator
+  -> Final Validator
+  -> Output
+```
+
+The Combination Decider chooses the connection method per pin. Wires are made
+first, then terminals are attached to the remaining selected pins.
+
+## Current Implementation Map
+
+| Stage | Status | Current owner |
+|---|---|---|
+| Prompt Enhancer | Placeholder | `pipeline_stages/prompt_enhancer.py` |
+| Prompt-to-JSON Converter | External/partial | ProgenLive model prompt |
+| JSON Enhancer | Placeholder | `pipeline_stages/json_enhancer.py` |
+| JSON Validator | Partial | `validation.py`, `component_placer.py` |
+| File Name Decider | Placeholder | `pipeline_stages/file_name_decider.py` |
+| Arrangement Decider | Partial | layout input and deterministic defaults |
+| Component Selector | Accepted for placement inventory | `component_placer.py` |
+| Component/Logic Validator | Partial | CircuitIR and placement validators |
+| Component Placer | Accepted removal-only route | `component_placer.py` |
+| Placement Validator | Accepted static checks | `component_pipeline.py`, `component_placer.py` |
+| User Specification Validator | Placeholder | `pipeline_stages/user_specification_validator.py` |
+| Beautifier | Accepted coordinate mutation per tested family | `component_beautifier.py` |
+| Beautifier Validator | Partial | overlap, marker, ref, and coordinate reports |
+| Routing Decision | Placeholder | `pipeline_stages/routing_decider.py` |
+| Wire Planner | Partial intent only | `component_pipeline.py` |
+| Wire Maker | Placeholder | `pipeline_stages/wire_maker.py` |
+| Combination Decider | Placeholder | `pipeline_stages/combination_decider.py` |
+| Terminal Placer | V31 accepted current mixed scope pending Proteus confirmation; V32 transistor catalogue terminals statically pass through 20x transistor-only | `component_terminal_placer.py` |
+| Terminal Validator | Family-specific partial checks | terminal reports/tests |
+| Value Editor | Implemented: donor-backed post-terminal numeric values/properties | `component_value_changer.py` |
+| Value Validator | Partial | family-specific value checks |
+| Information Completer | Placeholder | `pipeline_stages/information_completer.py` |
+| Final Validator | Partial | generated-output reports |
+| Output | Working for accepted routes | `.pdsprj` writers |
+
+## Accepted Terminal Progress
+
+`RESISTOR/v3` passed 1x, 3x, and 15x Proteus tests on 2026-06-29. It uses
+matched terminal suffixes, resistor pin-link fields, and donor-derived short
+wires.
+
+`CAP/v2` passed user Proteus testing on 2026-06-30 and is locked. `CAP/v1` was
+invalidated by donor comparison. `REALIND/v1` was rejected by user testing;
+its donor-researched `REALIND/v2` replacement passed user Proteus testing on
+2026-06-30 and is locked. `CAP-ELEC/v3`, `VSOURCE/v4`, and `CSOURCE/v4` also
+passed their 1x/3x/15x Proteus tests on 2026-06-30.
+
+The first mixed selective candidate is rejected because it rebuilt
+independently accepted family blocks. V3 retained the complete beautified
+component stream, but the user rejected its full attachment cases. Only its
+T01 no-wire case supplied useful evidence: the component-first stream and
+RESISTOR/CAP/REALIND/CAP-ELEC/VSOURCE/CSOURCE terminal order opened and placed
+terminals correctly. The user confirmed that terminal-to-pin attachment still
+requires a Proteus `WIRE` record.
+
+V5 still produced Bad Object Record. A user-supplied Proteus Ctrl+S repair
+proved that inactive appended terminal suffix/link tails must be zero and that
+the final terminal record must remain complete before a separate final `FF`
+sentinel. The generated terminal-only control now matches that saved object
+chunk exactly.
+
+V6 was rejected because standalone trailing wires did not render. V7 proved
+the complete active terminal/component-link/WIRE unit for all six families,
+but mixed N07-N09 failed because family-local link numbers were not rebased
+after final serialization.
+
+V9 kept the beautified component order and used no runtime circuit donor.
+`$TERBIDIR` and 50-byte WIRE records are schema-encoded. After ROOT.DSN is
+built, each terminal and component pin receives the low 16 bits of the absolute
+byte immediately before its associated WIRE record. The user rejected every
+mixed V9 case because the terminal coordinates copied beautified off-grid pin
+coordinates.
+
+V10 preserves the final-address rule and changes only endpoint geometry:
+terminal contacts snap to the nearest Proteus `254000`-unit grid intersection,
+and a short WIRE runs from the grid contact to the exact component pin.
+Components remain at their beautified coordinates. This rule is a Proteus
+backend profile; the stage still consumes placed packets and pin descriptors,
+not donor identity.
+
+For a family whose accepted donor proves a zero-length native WIRE unit at a
+grid-aligned pin (such as 4027), that unit proves the loader-required packet,
+link, and record grammar only. The native-contact diagnostic preserves it.
+The grid and final stages still place the terminal contact on the grid and use
+a nonzero short WIRE to the exact pin; they never move the component packet.
+The catalogue declares both the exceptional native grammar and the final
+contact policy, physical subpart anchor, and proof source.
+
+When that opt-in moves a native IC packet, it must move every donor-proven
+visible-frame coordinate, not only the ordinary length-prefixed reference and
+value labels. The 4027 packet also has a non-length-prefixed `SUBCKT NAME`
+coordinate pair. This field is translated only through the explicit
+terminal-grid opt-in parser; arbitrary opaque 32-bit values remain untouched,
+and frozen accepted-family beautifier paths retain their existing output.
+
+When IC and non-IC packets coexist, the packet beautifier uses separate
+vertical bands with at least 5,080,000 internal units between the parsed IC
+maximum Y and non-IC minimum Y. This is a static correction for the reported
+mixed visual overlap and remains pending Proteus inspection.
+
+V12 extends the shared native terminal route to 19 accepted two-pin families:
+VSOURCE, CSOURCE, VSINE, VPULSE, CAP, CAP-ELEC, REALIND, RESISTOR, DIODE,
+1N4007, 1N4148, 1N4733A, 1N6000B, 40EPS08, BZX55C5V1, BZX79C5V1, BZY88C,
+LED-RED, and FUSE. The terminal dispatcher must still preserve Proteus
+infrastructure records such as the seven-segment `D20` bridge and display
+sentinel packets byte-for-byte, even when their stored family resembles an
+accepted user component. A visible `$TERBIDIR` beside a component is not
+attachment proof. The complete donor request is
+`docs/complete_component_donor_request.md`.
+
+## Non-Negotiable Rules
+
+1. Component placement, placement validation, and beautification run before
+   the terminal stage.
+2. Terminal behavior is added to the single unified terminal module.
+   Experiment scripts may regenerate packs through that module, but must not
+   contain terminal-placement logic, pin geometry, WIRE/link emission, or
+   component-specific terminal exceptions.
+3. A family handler must be learned from accepted donors and byte comparisons.
+4. Unsupported attachment fails loudly; bounding-box guesses are rejected.
+5. Every stage eventually needs a direct stage-output validator and a
+   cumulative validator covering all accepted earlier stages.
+6. User-specification validation and information completion are separate from
+   binary-format validation.
+7. Results go into the experiment README and `knowledge/test_results.jsonl`;
+   confirmed behavior is promoted to `knowledge/rules.json`.
+8. Mixed dispatch must use an explicit family allowlist. Unsupported
+   components must remain byte-identical and receive zero terminal records.
+   Infrastructure records such as the seven-segment D20 bridge are never
+   terminalized even if their internal family name matches an accepted family.
+9. A mixed terminal route must preserve the component-placer stream order;
+   independently rebuilding and concatenating accepted family-native blocks is
+   rejected evidence.
+10. A terminal touching a pin geometrically is not attachment proof. Every
+    accepted terminal endpoint requires its family-derived `WIRE` record, even
+    when that record has zero geometric length.
+11. Mixed terminal-family order must follow the opening T01 component/terminal
+    stream; do not silently reorder accepted families through dispatcher
+    priority.
+12. The component placer is replaceable. Every placer must emit the stable
+    placed-design contract documented in `docs/architecture.md`; downstream
+    stages must not depend on mega-donor filenames, donor slots, or fixed
+    template coordinates.
+13. IC pin meaning comes from normalized backend pin metadata, not geometry.
+    Terminal/wire stages consume pin number, name, role, electrical type, and
+    connection coordinates from the placed-design contract.
+14. IC and three-pin terminal work starts in the catalogue/node layer. The
+    `pin_terminal_planner` may classify and name their endpoints, but Proteus
+    binary terminal emission remains disabled for those endpoints until the
+    catalogue has backend pin-coordinate evidence and donor-derived attachment
+    records for the family.
+15. Multi-pin pin coordinates are component-relative catalogue data, not
+    absolute sheet coordinates. Store donor-derived pin offsets with a declared
+    coordinate frame, recalculate absolute pins from the placed component, snap
+    terminal contacts to the Proteus grid, and connect with short WIRE records.
+    If the accepted family proves a zero-length native WIRE attachment, preserve
+    that grammar only in the native loader diagnostic. The final route must use
+    a grid-aligned contact and nonzero short WIRE to the exact pin.

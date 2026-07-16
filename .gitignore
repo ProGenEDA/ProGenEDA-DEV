@@ -7,14 +7,24 @@
 __pycache__/
 *.py[cod]
 .pytest_cache/
+/.pytest_tmp*/
 /.codex_tmp/
+/.codex_pytest*/
 /.vscode/
 *.workspace
 *.pdsprj.*.workspace
+# Local Proteus loader-gate copies are reproducible diagnostics, not evidence.
+# Keep their screenshots/reports, but do not version the disposable project copies.
+**/*_COPY.pdsprj
+**/*_GATE.pdsprj
 **/Project Backups/
-experiments/_debug*
-experiments/_probe*
-experiments/_value_*
+**/*local*gate*/**/*.pdsprj
+**/*_GATE_COPY.pdsprj
+**/*_ACTIVE_GATE_COPY.pdsprj
+**/*_COLD_COPY.pdsprj
+**/*_COLD_REOPEN_COPY.pdsprj
+**/*_NORMAL_COPY.pdsprj
+**/*_OPEN_CHECK_COPY.pdsprj
 /kicad/experiments/
 /component_placer_latest_regenerated.zip
 **/target/
