@@ -148,6 +148,7 @@ class ComponentCatalog:
     proteus_route_profiles: Mapping[str, Mapping[str, Any]] = field(
         default_factory=dict
     )
+    value_editor_policy: Mapping[str, Any] = field(default_factory=dict)
 
     def normalize_part(self, value: str) -> str:
         token = _token(value)
@@ -175,6 +176,11 @@ class ComponentCatalog:
 
         value = self.proteus_route_profiles.get(str(name), {})
         return value if isinstance(value, Mapping) else {}
+
+    def proteus_value_editor_policy(self) -> Mapping[str, Any]:
+        """Return the catalogue-owned Proteus value/property editing policy."""
+
+        return self.value_editor_policy
 
     def pin_vocabulary(
         self,
@@ -338,4 +344,5 @@ def load_component_catalog(path: str | Path | None = None) -> ComponentCatalog:
             for name, value in dict(raw.get("proteus_route_profiles", {})).items()
             if isinstance(value, Mapping)
         },
+        value_editor_policy=dict(raw.get("proteus_value_editor_policy", {})),
     )

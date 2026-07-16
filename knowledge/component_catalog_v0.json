@@ -18562,6 +18562,53 @@
     "long_or_colliding_nets": "deterministic N000/N001 labels",
     "power_default": "V0"
   },
+  "proteus_value_editor_policy": {
+    "stage": "value_and_properties_editor",
+    "mode": "same_length_numeric_selected_packet_and_matching_cdb_row",
+    "source_of_truth": "actual received ROOT.DSN component packet plus matching ROOT.CDB property row",
+    "visible_value_policy": "Only a donor-exposed numeric COMPONENT ID field is mutable; COMPONENT VALUE device/model names are immutable.",
+    "property_policy": "Only one donor-exposed numeric {NAME=value} assignment present in both selected packet and matching CDB row is mutable.",
+    "verified_visible_value_families": [
+      "RESISTOR",
+      "CAP",
+      "CAP-ELEC",
+      "REALIND",
+      "POT-HG",
+      "VSOURCE",
+      "CSOURCE"
+    ],
+    "verified_numeric_property_families": [
+      "DIODE",
+      "LED-RED",
+      "NMOSFET",
+      "POT-HG",
+      "REALIND",
+      "OPAMP",
+      "LM317T",
+      "BZY88C",
+      "1N6000B",
+      "BZX55C5V1",
+      "BZX79C5V1"
+    ],
+    "verified_on": "2026-07-16 local Proteus normal-open and cold-reopen matrix",
+    "immutable_property_names": [
+      "DCPATH",
+      "ITFMOD",
+      "MODEL",
+      "MODDLL",
+      "MODFILE",
+      "PACKAGE",
+      "PRIMITIVE",
+      "PRIMTYPE",
+      "SPICELIB",
+      "SPICEMODEL",
+      "SPICEPINS"
+    ],
+    "unproven_families": {
+      "VPULSE": "No donor-exposed numeric visible-value/property field in the current accepted project.",
+      "VSINE": "No donor-exposed numeric visible-value/property field in the current accepted project."
+    }
+  },
   "update_policy": [
     "Keep component aliases, pin names, pin aliases, roles, electrical types, backend markers, and terminal support notes in this catalogue instead of duplicating them across stages.",
     "Use explicit pin roles only where donor evidence or stable package knowledge exists; otherwise keep role/electrical_type as unknown until researched.",

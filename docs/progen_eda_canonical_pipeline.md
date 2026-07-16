@@ -63,6 +63,27 @@ Families are added as researched handlers inside that module. Dated scripts
 under `tools/proteus_generation/` only regenerate test packs; they are not
 alternate implementations.
 
+## Value & Properties Editor Contract
+
+The shared value stage is
+`src/proteusgen/component_value_changer.py` and its post-terminal entry point
+is `edit_project_values_and_properties(project, output, payload)`. It accepts
+reference-based input such as:
+
+```json
+{
+  "values": {"R1": "47k", "C1": "2nF"},
+  "properties": {"L1": {"ESR": "0.3"}, "RV1": {"POS": "75"}}
+}
+```
+
+Every accepted edit must be a same-byte-length numeric replacement found in
+both the selected ROOT.DSN packet and its matching ROOT.CDB property row. The
+editor runs after terminal attachment, preserves terminal/WIRE record counts
+and link addresses, emits an audit sidecar, and rejects model/package/loader
+fields, variable-length text, ambiguous fields, and families without actual
+donor evidence.
+
 ## Combination Route
 
 ```text
@@ -105,7 +126,7 @@ first, then terminals are attached to the remaining selected pins.
 | Combination Decider | Placeholder | `pipeline_stages/combination_decider.py` |
 | Terminal Placer | V31 accepted current mixed scope pending Proteus confirmation; V32 transistor catalogue terminals statically pass through 20x transistor-only | `component_terminal_placer.py` |
 | Terminal Validator | Family-specific partial checks | terminal reports/tests |
-| Value Editor | Lightly tested | `component_value_changer.py` |
+| Value Editor | Implemented: donor-backed post-terminal numeric values/properties | `component_value_changer.py` |
 | Value Validator | Partial | family-specific value checks |
 | Information Completer | Placeholder | `pipeline_stages/information_completer.py` |
 | Final Validator | Partial | generated-output reports |

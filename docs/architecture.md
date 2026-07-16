@@ -136,6 +136,18 @@ proven families are `RESISTOR`, `CAP`, `CAP-ELEC`, `REALIND`, `POT-HG`,
 mutation until their property rows are decoded. The wiring planner emits net
 intent only and never emits Proteus wire records.
 
+The canonical post-terminal **Value & Properties Editor** is the same shared
+module, `component_value_changer.py`, through
+`edit_project_values_and_properties(project, output, payload)`. It edits an
+already terminalized project by reference, for example
+`{"values":{"R1":"47k"},"properties":{"L1":{"ESR":"0.3"}}}`.
+It changes only a same-length donor-exposed numeric `COMPONENT ID` value or a
+single same-length numeric `{FIELD=value}` assignment that exists in both the
+selected ROOT.DSN packet and matching ROOT.CDB row. This keeps packet lengths,
+terminal records, WIRE records, and final address-rebased links intact. Model,
+package, and loader fields are deliberately immutable; unsupported value
+grammar must fail clearly rather than guess.
+
 The generic all-family bounding-box experiment and the inactive-terminal plus
 trailing-wire V6 experiment were rejected. A Proteus wire is not standalone
 geometry: native attachment requires an active terminal suffix, the same
