@@ -16079,3 +16079,29 @@ The rebuilt executable now completes the full shared pipeline successfully: plac
 Proteus accepted the `.exe` output on both cold opens with no loader or library dialog. Iâ€™m doing the final source regression/build audit now, then Iâ€™ll package the binary and its documented example into a scoped commit.
 
 Files edited: `src/proteusgen/templates.py`, `src/proteusgen/proteus_app.py`, `src/proteusgen/proteus_cli.py`, `tools/build_progen_proteus_exe.py`, `tools/progen_proteus_entry.py`, `pyproject.toml`, `README.md`, `tests/test_proteus_app.py`, `examples/progen_proteus_r_c_value_edit.json`, `release/README.md`, `knowledge/progen_proteus_executable_preflight_2026_07_16.md`, `experiments/progen_proteus_executable_v1_temp_2026_07_16/README.md`, and `context.md`. Files generated: `release/ProgenProteus.exe` and the curated executable smoke output under `experiments/progen_proteus_executable_v1_temp_2026_07_16/03_executable_smoke/`.
+
+### Agent response - 2026-07-16 20:22 +05:00
+
+The executableâ€™s `generate`, `inspect`, and help commands all work from the packaged binary, and the focused regression suite is green. Iâ€™m staging only the executable, its shared-runtime code, documentation, and the successful smoke artifactâ€”not the workspaceâ€™s unrelated experiment history.
+
+### Agent response - 2026-07-16 20:22 +05:00
+
+The staged change is clean and contains exactly the executable implementation and proof artifacts. Iâ€™m committing this as a single scoped checkpoint now, then Iâ€™ll push it and verify the remote hash.
+
+### Agent response - 2026-07-16 20:22 +05:00
+
+Committed as `aa170478`. Iâ€™m pushing that checkpoint now; after the remote matches, Iâ€™ll record the handoff in the persistent context log and push that final log update too.
+
+### Agent response - 2026-07-16 20:22 +05:00
+
+The remote now matches `aa170478` exactly. Iâ€™m making the required final context-log checkpoint, then Iâ€™ll push that too so the executable handoff is preserved in the repository.
+
+### Agent response - 2026-07-16 20:22 +05:00
+
+Done â€” `release/ProgenProteus.exe` is a portable Proteus-only console executable for the implemented shared pipeline: component placement, beautification, terminal placement, and optional post-terminal value/properties editing. It bundles the locked mega donor and required shared metadata, and rejects unsupported physical wiring rather than falsely claiming it was emitted.
+
+The actual executable produced `experiments/progen_proteus_executable_v1_temp_2026_07_16/03_executable_smoke/R_C_FROM_EXE.pdsprj`, with four grid-aligned terminals, four nonzero terminal-to-pin wires, and the requested R/C value edits. That output passed local Proteus 8 cold-open and cold-reopen checks with no loader, object-record, or library dialog. Focused tests: 12 passed. Build SHA-256: `7D26E96A8CE6B0F0906A0644696E0EB2563B0F5F1EC012B29E1D7B9C3548D895`.
+
+Use: `release\\ProgenProteus.exe generate examples\\progen_proteus_r_c_value_edit.json --output out\\circuit.pdsprj`. The code/binary checkpoint is `aa1704785628e1fcf28f976052a5f349e8fc02f6`, pushed and remote-verified.
+
+Files edited: `context.md`.
