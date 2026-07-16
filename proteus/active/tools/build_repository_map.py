@@ -106,12 +106,19 @@ def _git_lines(*args: str) -> list[str]:
 
 
 def _relative(path: Path) -> str:
-    return path.resolve().relative_to(REPOSITORY_ROOT).as_posix()
+    # ``os.walk(REPOSITORY_ROOT)`` and all inventory callers already produce
+    # absolute paths.  Avoid a costly Win32 ``resolve()`` call for each of the
+    # tens of thousands of files in the retained evidence corpus; preserving
+    # the supplied absolute path also preserves the same repository-relative
+    # identity.  Relative callers retain the original resolved behavior.
+    absolute = path if path.is_absolute() else (REPOSITORY_ROOT / path).resolve()
+    return absolute.relative_to(REPOSITORY_ROOT).as_posix()
 
 
 def _sha256(path: Path) -> str:
     digest = hashlib.sha256()
-    native_path = str(path.resolve())
+    absolute = path if path.is_absolute() else (REPOSITORY_ROOT / path).resolve()
+    native_path = str(absolute)
     # Several preserved donor names exceed Win32's legacy 260-character path
     # limit.  Do not rename them merely to make an inventory pass; use the
     # extended path prefix while reading the original bytes.
@@ -124,7 +131,8 @@ def _sha256(path: Path) -> str:
 
 
 def _is_file(path: Path) -> bool:
-    native_path = str(path.resolve())
+    absolute = path if path.is_absolute() else (REPOSITORY_ROOT / path).resolve()
+    native_path = str(absolute)
     if os.name == "nt" and not native_path.startswith("\\\\?\\"):
         native_path = "\\\\?\\" + native_path
     return os.path.isfile(native_path)
@@ -558,12 +566,11 @@ def build(baseline: str, *, check_only: bool = False) -> int:
         formatted = "\n".join(missing[:30])
         raise RuntimeError(f"Baseline files are not accounted for ({len(missing)}):\n{formatted}")
     if check_only:
-        for record in records:
-            if record.sha256 == "SELF_REFERENTIAL_GENERATED_OUTPUT":
-                continue
-            path = REPOSITORY_ROOT / record.destination_path
-            if not _is_file(path) or _sha256(path) != record.sha256:
-                raise RuntimeError(f"Hash mismatch: {record.destination_path}")
+        # ``_records`` has already read and SHA-256 hashed every
+        # non-self-referential file to construct ``records``. Re-hashing that
+        # same corpus immediately here doubles a Windows validation run without
+        # adding coverage; compare those freshly calculated records to the
+        # committed CSV/manifest below instead.
         if not MAP_PATH.is_file() or not IGNORED_PATH.is_file() or not MANIFEST_PATH.is_file():
             raise RuntimeError("Generated repository inventory is incomplete.")
         with MAP_PATH.open(newline="", encoding="utf-8") as stream:

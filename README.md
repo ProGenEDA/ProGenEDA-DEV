@@ -1,388 +1,167 @@
-# Progen
+# ProGenEDA-Memory
 
-> Current native Proteus implementation, commands, evidence, and limitations:
-> [`proteus/active/README.md`](proteus/active/README.md).
+## Proteus
 
-**A deterministic circuit compiler for native Proteus and KiCad projects.**
+ProGenEDA-Memory is an evidence-driven native Proteus circuit generator. It
+turns a structured circuit request into a `.pdsprj` project by selecting
+complete donor-native component packets, arranging them, adding supported
+grid-attached terminals and short pin wires, editing safe values, and
+validating the resulting project in Proteus.
 
-Progen learns from user-created schematic projects, converts that evidence into
-explicit binary and structural rules, and emits projects that open in the real
-EDA application. The core generator is deterministic: an AI may translate
-natural language into JSON, but it does not patch schematic binaries directly.
+The current Proteus implementation is in [`proteus/active`](proteus/active).
+Its portable application is
+[`proteus/active/release/ProgenProteus.exe`](proteus/active/release/ProgenProteus.exe).
 
-The project is deliberately evidence-driven. Donors, failed approaches,
-accepted workarounds, binary observations, validators, and user Proteus results
-are kept together so development can continue without rediscovering old
-loader, CDB, model, and object-boundary failures.
+### GPT-5.6 implementation phase
 
-## Project Status
+GPT-5.6 built the current operational Proteus system: it repaired and
+stabilized the component placer, consolidated terminal placement into one
+shared route, implemented grid-attached short-wire terminal behavior, added
+the value/properties editor, built the portable executable, and organized the
+runtime donors, catalogue, validation, and documentation into the active
+backend.
 
-Updated: **2026-06-29**
+It also directed automated analysis and local Proteus open/save/cold-reopen
+checks. That replaced the earlier workflow where every generated circuit had
+to be opened and checked manually, making large regression and scale testing
+practical.
 
-The active Proteus architecture is a **removal-only mega-donor component
-pipeline**. It selects complete native component packets from trusted donors,
-removes unrequested packets, preserves the accepted device/CDB skeleton, and
-then applies independently validated post-placement stages.
+For the detailed record, see
+[`proteus/active/GPT_5_6_PROGRESS.md`](proteus/active/GPT_5_6_PROGRESS.md).
+
+### Current pipeline
 
 ```text
-user text (outside deterministic core)
-  -> CircuitIR / component-placement JSON
-  -> user-input and readiness validation
-  -> donor selection
-  -> component packet placement
-  -> component/output validation
-  -> value mutation
-  -> wiring-intent planning
-  -> coordinate beautification
-  -> terminal/wire stages
-  -> final binary emission and validation
-  -> Proteus open/render/simulation acceptance
+Circuit JSON / CircuitIR
+  -> input and catalogue validation
+  -> donor-backed component placement
+  -> arrangement and coordinate beautification
+  -> shared catalogue-driven terminal placement
+  -> optional value/properties editing
+  -> binary validation and local Proteus acceptance gate
+  -> native .pdsprj output
 ```
 
-Current milestone:
+The component placer is deliberately replaceable. Downstream stages consume a
+placed-design contract—component identity, complete native packet, bounds and
+pin descriptors—rather than depending on a fixed mega-donor slot or template
+coordinate.
 
-- component placement is working from the trusted mega donors;
-- family-specific coordinate mutation is working for the accepted bare
-  component families;
-- the value changer has a conservative same-length DSN/CDB mutation path;
-- the terminal placer can append all-family bidirectional terminal records
-  with correct left/right orientation;
-- real pin attachment and donor-derived short-wire emission are the next
-  terminal milestone;
-- final arbitrary wiring remains intentionally unpromoted.
+### Use the latest executable
 
-## Why Removal-Only
+`ProgenProteus.exe` is rebuilt from the active source and includes its locked
+runtime donor closure. From the repository root:
 
-Proteus `.pdsprj` files contain related object, property, model, ID, and device
-metadata across `ROOT.DSN` and `ROOT.CDB`. Copying only a visible symbol or
-inventing records from scratch repeatedly caused:
+```powershell
+.\proteus\active\release\ProgenProteus.exe generate `
+  .\proteus\active\examples\progen_proteus_r_c_value_edit.json `
+  --output .\out\r_c_terminalized.pdsprj
+```
 
-- `ISIS.DLL`, `VGDVC.DLL`, and `LXLCORE.DLL` failures;
-- bad-object warnings;
-- duplicate package and object references;
-- missing simulation models;
-- projects that opened but failed during netlist compilation.
+Other commands:
 
-The current route therefore keeps complete donor-native packets and mutates
-only byte fields proven for that family.
+```powershell
+.\proteus\active\release\ProgenProteus.exe --help
+.\proteus\active\release\ProgenProteus.exe inspect .\out\r_c_terminalized.pdsprj
+.\proteus\active\release\ProgenProteus.exe edit-values <input.pdsprj> --edits <values.json> --output <output.pdsprj>
+```
 
-## Proteus Capabilities
+The executable uses the same pipeline as the Python interface. Its build and
+smoke-test record is in
+[`proteus/active/release/README.md`](proteus/active/release/README.md).
 
-### Locked legacy generators
+### Use the Python pipeline directly
 
-These routes predate the unified component placer and remain useful:
+No executable is required. Set the active source root, then use the same CLI
+entry point:
 
-- resistor networks with power and ground;
-- capacitor, inductor, RC, RL, LC, and RCL networks;
-- DC voltage, DC current, and AC voltage source-driven passive circuits;
-- bidirectional endpoint variants;
-- combinational logic generation for `74HC00`, `74HC02`, `74HC04`, `74HC08`,
-  `74HC32`, `74HC86`, and `74HC266`;
-- Boolean AND/OR trees and mixed combinational/RCL circuits.
+```powershell
+$env:PYTHONPATH = "proteus/active/src"
+python -m proteusgen.proteus_cli generate `
+  proteus/active/examples/progen_proteus_r_c_value_edit.json `
+  --output out/r_c_terminalized.pdsprj
+```
 
-### Unified component placer inventory
+When installed from the checkout, the equivalent public command is:
 
-The active mega-donor placer supports bare placement of:
+```powershell
+progen-proteus generate proteus/active/examples/progen_proteus_r_c_value_edit.json --output out/r_c_terminalized.pdsprj
+```
 
-**Passives and discrete devices**
+Python callers can build a request and invoke the application directly:
+
+```python
+import json
+from pathlib import Path
+from proteusgen.proteus_app import generate_proteus_project
+
+payload = json.loads(
+    Path("proteus/active/examples/progen_proteus_r_c_value_edit.json").read_text(
+        encoding="utf-8"
+    )
+)
+result = generate_proteus_project(
+    payload,
+    Path("out/r_c_terminalized.pdsprj"),
+)
+print(result.output)
+```
+
+The input schema, examples, catalogue, and supported property syntax are in
+[`proteus/active/schemas`](proteus/active/schemas),
+[`proteus/active/examples`](proteus/active/examples), and
+[`proteus/active/knowledge/component_catalog_v0.json`](proteus/active/knowledge/component_catalog_v0.json).
+
+### Current component support in the latest executable
+
+The locked mega donor supports bare placement of **56 component families**:
+
+| Group | Families |
+| --- | --- |
+| Passives and discrete (24) | `RESISTOR`, `CAP`, `CAP-ELEC`, `REALIND`, `DIODE`, `1N4007`, `1N4148`, `1N4733A`, `1N6000B`, `40EPS08`, `BZX55C5V1`, `BZX79C5V1`, `BZY88C`, `LED-RED`, `BRIDGE`, `FUSE`, `NPN`, `PNP`, `2N3904`, `2N4401`, `NMOSFET`, `2N7000`, `BS170`, `TRAN-2P2S` |
+| Analog, timing, controls (6) | `LM317T`, `LM741`, `OPAMP`, `NE555`, `POT-HG`, `SWITCH` |
+| Sources (4) | `VSOURCE`, `CSOURCE`, `VPULSE`, `VSINE` |
+| Displays (2) | `7SEG-COM-AN-BLUE` (`7SEGCOMA`), `7SEG-COM-CAT-BLUE` (`7SEGCOMK`) |
+| IC packages (20) | `4027`, `4511`, `7447`, `7490`, `74HC00`, `74HC02`, `74HC04`, `74HC08`, `74HC151`, `74HC157`, `74HC160`, `74HC174`, `74HC192`, `74HC266`, `74HC283`, `74HC32`, `74HC74`, `74HC76`, `74HC85`, `74HC86` |
+
+Default terminalized executable generation is currently promoted for these
+**18 two-pin families**:
 
 `RESISTOR`, `CAP`, `CAP-ELEC`, `REALIND`, `DIODE`, `1N4007`, `1N4148`,
-`1N4733A`, `1N6000B`, `40EPS08` (`IRDIODE` prompt alias), `BZX55C5V1`, `BZX79C5V1`,
-`BZY88C`, `LED-RED`, `BRIDGE`, `FUSE`, `NPN`, `PNP`, `2N3904`, `2N4401`,
-`NMOSFET`, `2N7000`, `BS170`, and `TRAN-2P2S`.
+`1N4733A`, `1N6000B`, `40EPS08`, `BZX55C5V1`, `BZX79C5V1`, `BZY88C`,
+`LED-RED`, `VSOURCE`, `CSOURCE`, `VSINE`, and `VPULSE`.
 
-**Analog, timing, and controls**
+All other placement-supported families can be deliberately emitted without
+terminals using `--no-terminals`. `FUSE` and `SWITCH` are explicitly blocked
+from the combined terminal route. Multi-pin terminal and arbitrary-net wiring
+are not promoted as general executable features yet; the generator rejects
+unsafe requests instead of silently inventing Proteus binary records.
 
-`LM317T`, `LM741`, `OPAMP`, `NE555`, `POT-HG`, and `SWITCH`.
-
-**Sources**
-
-`VSOURCE`, `CSOURCE`, `VSINE`, and `VPULSE`.
-
-**Displays**
-
-`7SEG-COM-AN-BLUE` (`7SEGCOMA`) and `7SEG-COM-CAT-BLUE` (`7SEGCOMK`).
-
-**IC packages**
-
-`4027`, `4511`, `7447`, `7490`, `74HC00`, `74HC02`, `74HC04`, `74HC08`,
-`74HC32`, `74HC74`, `74HC76`, `74HC85`, `74HC86`, `74HC151`, `74HC157`,
-`74HC160`, `74HC174`, `74HC192`, `74HC266`, and `74HC283`.
-
-Component aliases and the authoritative grouped list live in
-[`proteus_ic/registry/mega_component_support_20260618.json`](proteus_ic/registry/mega_component_support_20260618.json).
-
-Support here means a native packet can be selected and placed. It does not mean
-every arbitrary combination is already wired or simulation-certified.
-
-## Pipeline Stages
-
-| Stage | Current state |
-|---|---|
-| Input validation | Implemented for CircuitIR and component-placement payloads |
-| Donor selection | Implemented, including explicit donor selection |
-| Component placement | Implemented through complete donor-packet removal |
-| Packet/output validation | Implemented in generation manifests |
-| Value changer | Experimental, same-length family-safe tokens only |
-| Wiring planner | Implemented as logical intent; emits no Proteus wires |
-| Beautifier | Implemented through family-registered coordinate parsers |
-| Bidir terminal placer | Experimental all-family side-anchor stage |
-| Short-wire pin attachment | Next active terminal task |
-| Arbitrary binary wiring | Not promoted |
-| Power/ground terminal layer | Planned after attached bidirs |
-| Final whole-project validator | Partially implemented; still expanding |
-
-### Value changer
-
-Binary mutation is currently allowed for proven compact tokens in:
-
-- `RESISTOR`
-- `CAP`
-- `CAP-ELEC`
-- `REALIND`
-- `POT-HG`
-- `VSOURCE`
-- `CSOURCE`
-
-The mutation updates the selected DSN packet and a matching CDB property row
-when present. Unsupported syntax fails before mutation. `VSINE` and `VPULSE`
-value/property mutation remain blocked until their model fields are decoded.
-
-### Beautifier
-
-The component placer beautifier moves complete packets using coordinate fields
-registered per family. Multi-symbol packages are allocated by measured packet
-footprint rather than treated as one tiny IC rectangle.
-
-Do not reintroduce broad integer scanning or guessed fixed offsets. Those
-methods produced valid-looking files that crashed Proteus.
-
-### Bidirectional terminals
-
-The current terminal experiment:
-
-- covers every selected user component family;
-- owns generated terminal names;
-- uses 180 degrees on the left and 0 degrees on the right;
-- excludes D20 and display-final infrastructure;
-- appends complete donor-derived `$TERBIDIR` records.
-
-Its current policy is `bbox_side_anchor_no_wire`. This proves terminal record
-construction and orientation, not electrical attachment. Accepted donors show
-that some pins need a short `WIRE` record; that is the next implementation
-step.
-
-## Input Examples
-
-Component-placement JSON:
-
-```json
-{
-  "components": {
-    "RESISTOR": {
-      "count": 3,
-      "values": ["1k0", "4k7", "10k"]
-    },
-    "CAP": {
-      "count": 2,
-      "values": ["1uF", "2uF"]
-    },
-    "74HC08": 1
-  },
-  "connections": [
-    {
-      "net": "N_FILTER",
-      "endpoints": [
-        {"component": "R1", "pin": "2"},
-        {"component": "C1", "pin": "1"}
-      ]
-    }
-  ],
-  "layout": {
-    "strategy": "beautify"
-  }
-}
-```
-
-An explicit donor may be supplied with:
-
-```json
-{
-  "donor": "proteus_ic/donors/path/to/donor.pdsprj",
-  "components": {
-    "7490": 4
-  }
-}
-```
-
-## Installation And CLI
-
-Requires Python 3.11 or newer.
-
-```powershell
-python -m pip install -e .
-```
-
-Core commands:
-
-```powershell
-proteusgen validate examples\single_resistor_vcc_gnd.json
-proteusgen inspect donor.pdsprj
-proteusgen generate-resistors input.json --outdir out\resistor
-proteusgen generate-mixed-passives input.json --outdir out\passive
-proteusgen generate-mixed-rcl input.json --outdir out\rcl
-proteusgen generate-source-driven input.json --outdir out\source
-proteusgen generate-ic-combinational input.json --outdir out\logic
-proteusgen generate-ic-native input.json --outdir out\native
-proteusgen plan-component-placement input.json --output out\plan.json
-proteusgen generate-component-placement input.json --output out\components.pdsprj
-proteusgen plan-layout input.json --layout-strategy beautify
-proteusgen compare expected.pdsprj actual.pdsprj
-proteusgen record-result result.json
-```
-
-When the package is installed outside this checkout, set
-`PROTEUSGEN_REPO_ROOT` to this repository so donors, fixtures, schemas, and
-knowledge files can be found.
-
-## Portable Proteus Executable
-
-Build the Proteus-only Windows executable (no KiCad code or data is bundled):
-
-```powershell
-python -m pip install -e .[build-exe]
-python tools\build_progen_proteus_exe.py
-```
-
-The output is `release\ProgenProteus.exe`. It bundles the locked placement
-donor, shared terminal fixtures, and component catalogue. Run the complete
-currently implemented pipeline with:
-
-```powershell
-release\ProgenProteus.exe generate examples\progen_proteus_r_c_value_edit.json --output out\r_c_terminalized.pdsprj
-```
-
-`generate` runs component placement, the shared terminal placer, and an
-optional `post_terminal_edits` object. `edit-values` applies that same shared
-value/properties stage to an existing terminalized project:
-
-```powershell
-release\ProgenProteus.exe edit-values existing_terminalized.pdsprj --edits edits.json --output edited.pdsprj
-```
-
-The executable refuses to pretend that unimplemented physical wiring has been
-made. It also rejects mixed terminal requests containing a family without a
-proven active terminal route unless `--allow-unterminalized` is explicitly
-provided for a deliberate control project. It also refuses a zero-length
-terminal-to-pin WIRE; a grid-aligned terminal contact must still have a real,
-donor-proven short wire to the exact component pin.
-
-## Important Limits
-
-- The accepted resistor-heavy component-placer ceiling is `R91`.
-- The placer never creates extra `SWITCH` or `POT-HG` packets.
-- Seven-segment output requires donor-derived D20 infrastructure. D20 is not
-  counted as a requested diode and is not moved by the beautifier.
-- Common-cathode display output retains donor-final infrastructure required by
-  the accepted object stream.
-- The full donor CDB/device skeleton is currently safer than aggressive CDB
-  pruning.
-- Generated component counts cannot exceed usable packets in the selected
-  donor.
-- `VSINE` is emitted only when explicitly requested.
-- Proteus 8.13 is the final authority. Static validation cannot replace
-  open/render/simulation testing.
-
-See [`docs/current_limitations_bridges_costs_and_roadmap.md`](docs/current_limitations_bridges_costs_and_roadmap.md)
-for the operational details.
-
-## Validation Model
-
-Every stage is expected to provide:
-
-1. a validator for its direct output;
-2. a cumulative validator covering accepted earlier stages;
-3. user-specification checks;
-4. an information-completeness decision;
-5. participation in the final whole-project validator.
-
-Component-placement manifests currently record:
-
-- selected and hidden packets;
-- value mutation plans and errors;
-- wiring intent and same-net groups;
-- actual binary layout translations;
-- overlap and bounds checks;
-- component packet validation;
-- generated-output validation;
-- immutable infrastructure checks.
-
-## KiCad Backend
-
-The repository also includes an offline KiCad project writer. It is separate
-from the Proteus binary internals but shares the installed CLI:
-
-```powershell
-proteusgen generate-kicad input.json --outdir out\kicad
-proteusgen plan-kicad-layout input.json
-proteusgen generate-kicad-target-pack --outdir out\kicad-targets
-proteusgen quality-kicad path\to\project
-```
-
-The KiCad backend emits self-contained `.kicad_pro` and `.kicad_sch` projects,
-uses source-mined or embedded local symbols, and routes ordinary nets with
-orthogonal segments or local labels. Its generated run directories are local
-artifacts and are not committed.
-
-See [`kicad/README.md`](kicad/README.md).
-
-## Repository Map
+### Repository structure
 
 ```text
-src/proteusgen/  deterministic Proteus generators, parsers, planners, validators
-kicad/           separate KiCad backend and source-guided writer
-tests/           regression and contract tests
-knowledge/       accepted rules, open questions, test results, component data
-docs/            architecture, current status, binary research, continuation memory
-schemas/         CircuitIR, validation, manifest, and result contracts
-prompts/         planner guidance for converting text into JSON
-fixtures/        small clean projects with provenance and hashes
-proteus_ic/      IC registries and trusted manual donor corpus
-experiments/     committed acceptance packs and evidence; local runs are ignored
-tools/           reproducible analyzers and dated experiment generators
+proteus/
+  active/          current package, executable, tests, docs, schemas, catalogue,
+                   fixtures, runtime donor closure, and operational evidence
+  experiments/     dated trials, generated packs, runner scripts, imports, reports
+  archive/         retained historical donors, backups, legacy entry points, docs
 ```
 
-Start documentation reading at [`docs/README.md`](docs/README.md). The
-continuation memory is
-[`docs/active_working_memory_2026_06_23.md`](docs/active_working_memory_2026_06_23.md).
+The generated hash-backed map is
+[`proteus/active/REPOSITORY_MAP.md`](proteus/active/REPOSITORY_MAP.md). It
+links to the complete inventory, active manifest, ignored-local-items record,
+and archive indexes.
 
-## Engineering Rules
+### Verify a generated project locally
 
-No byte guess becomes a feature because it looked plausible once.
+Run the normal Proteus loader gate on a disposable copy:
 
-A rule is promoted only after:
+```powershell
+powershell -ExecutionPolicy Bypass -File proteus/active/tools/invoke_local_proteus_gate.ps1 `
+  -Project out/r_c_terminalized.pdsprj
+```
 
-1. byte-level donor comparison;
-2. deterministic generation through shared code;
-3. stage-specific validation;
-4. cumulative regression validation;
-5. Proteus open/render/simulation feedback;
-6. permanent recording in `docs/` and `knowledge/`.
-
-Experiments must update an existing shared script where possible, include a
-Markdown test description, and record user results before the next variant is
-built.
-
-## Repository Hygiene
-
-Do not commit:
-
-- Proteus `.workspace` sidecars;
-- `Project Backups` and autosaves;
-- debug/probe scratch outputs;
-- IDE and dependency caches;
-- generated KiCad run directories;
-- API keys, database URLs, Firebase credentials, or local `.env` files.
-
-Manual donors, source code, schemas, accepted evidence, and compact result
-records belong in the repository.
+This cold-opens the project, waits for the schematic to stabilize, checks for
+loader dialogs, cold-reopens it, and records whether Proteus changed the copy.
+For implementation details, current limitations, tests, and experiment
+evidence, start at [`proteus/active/README.md`](proteus/active/README.md).

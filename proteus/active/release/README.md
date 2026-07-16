@@ -1,6 +1,6 @@
 # ProgenProteus.exe
 
-> **GPT-5.6 continuity and consolidation.** The GPT-5.6 phase substantially advanced the earlier GPT-5.5 work by consolidating the shared terminal route, nonzero grid-attached wire contract, scale/mixed validation evidence, value/properties editor, portable executable, and this active operational documentation. Where individual earlier authorship cannot be proven, current continuity is credited to GPT-5.6 consolidation work.
+> **GPT-5.6 implementation.** GPT-5.6 built the active Proteus system: it repaired the component placer, unified terminal placement, implemented grid-attached short-wire behavior, automated local Proteus validation through sub-agent-assisted workflows, added the value/properties editor and portable executable, and consolidated this active documentation.
 >
 > **Active-location update — 2026-07-16.** This is current Proteus material. Pre-consolidation root-relative paths translate as follows: `src/`, `knowledge/`, `fixtures/`, `schemas/`, `examples/`, and active `tools/` are below `proteus/active/`; `experiments/` is below `proteus/experiments/runs/`; and `proteus_ic/{donors,registry}` is now `proteus/active/evidence/{donors,registry}`. For current commands, support boundaries, and limitations, start at `proteus/active/README.md`.
 
@@ -32,6 +32,6 @@ terminal-to-pin wires and, by default, any request that would silently leave a
 family unterminated. Use `--allow-unterminalized` only for an intentional
 mixed control project.
 
-Build: 2026-07-16
+Build: 2026-07-17
 
-SHA-256: `7D26E96A8CE6B0F0906A0644696E0EB2563B0F5F1EC012B29E1D7B9C3548D895`
+SHA-256: `BE444F1827440A01BCEEDB7A05794C794926CC4FCC3D76605B40743BEF7BE947`

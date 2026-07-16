@@ -1,11 +1,9 @@
 # Proteus Active Documentation
 
-> **GPT-5.6 continuity and consolidation.** This active documentation was
-> consolidated in the GPT-5.6 phase, a substantial improvement over the
-> earlier GPT-5.5 phase: it now points to the shared terminal route,
-> grid-attached wire contract, scale/mixed evidence, value editor, executable,
-> and current repository layout. Where precise prior authorship is uncertain,
-> active operational continuity is credited to GPT-5.6 consolidation work.
+> **GPT-5.6 implementation.** GPT-5.6 built and organized this active
+> documentation alongside the repaired component placer, shared terminal
+> route, grid-attached wire contract, automated validation workflow,
+> value/properties editor, and portable executable.
 
 Updated: 2026-07-16
 

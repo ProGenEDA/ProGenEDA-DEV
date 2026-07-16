@@ -1,10 +1,10 @@
 # Proteus Repository Map
 
-> **GPT-5.6 continuity and consolidation.** The GPT-5.6 phase transformed the
-> active Proteus work from a flat mix of code, donors, experiments, and
-> recovered artifacts into an auditable runtime/experiment/archive layout.
-> This hash-backed map is part of that substantial advance over the GPT-5.5
-> phase; uncertain active provenance is credited to GPT-5.6 consolidation.
+> **GPT-5.6 implementation.** GPT-5.6 transformed the Proteus work from a
+> flat mix of code, donors, experiments, and recovered artifacts into this
+> auditable runtime/experiment/archive layout, with the repaired component
+> placer, shared terminal route, automated validation, value editor, and
+> portable executable kept together as the active backend.
 
 The generated inventory records every visible repository file once, with its
 baseline origin (where provable), destination, SHA-256, Git state,

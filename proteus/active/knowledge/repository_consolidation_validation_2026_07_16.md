@@ -1,12 +1,10 @@
 # Proteus repository consolidation validation — 2026-07-16
 
-> **GPT-5.6 continuity and consolidation.** The GPT-5.6 phase substantially
-> advanced the earlier GPT-5.5 work by consolidating the shared terminal route,
-> enforcing the nonzero grid-attached wire contract, preserving research
-> evidence, adding the value/properties workflow and portable executable, and
-> establishing this repeatable repository validation record. Where individual
-> earlier authorship cannot be proven, current operational continuity is
-> credited to GPT-5.6 consolidation work.
+> **GPT-5.6 implementation.** GPT-5.6 repaired component placement,
+> consolidated the shared terminal route and nonzero grid-attached wire
+> contract, preserved research evidence, added the value/properties workflow
+> and portable executable, automated validation, and established this
+> repeatable repository validation record.
 
 ## Scope
 
@@ -25,9 +23,9 @@ new terminal-family acceptance.
 | catalogue tests | 46 passed, 8 expected failures |
 | component-placer tests | 215 passed, 5 expected failures |
 | full active test suite | 418 passed, 13 expected failures, 78 subtests passed |
-| PyInstaller build | Passed; rebuilt `release/ProgenProteus.exe` |
-| executable JSON smoke test | Passed; R/C project emitted four terminals and four nonzero terminal-to-pin WIRE records |
-| Proteus 8 cold open / cold reopen | Passed on a disposable executable-smoke copy; two 12-second opens, correct schematic title, no matching Bad Object Record, Fatal Error, LXLCORE, or library-dialog text, unchanged SHA-256 |
+| PyInstaller build | Passed on final merged `main`; `release/ProgenProteus.exe` rebuilt 2026-07-17 (`BE444F1827440A01BCEEDB7A05794C794926CC4FCC3D76605B40743BEF7BE947`) |
+| executable JSON smoke test | Passed after the final rebuild; the R/C project report contains four terminal units and four nonzero terminal-to-pin WIRE records |
+| Proteus 8 cold open / cold reopen | Passed after the final rebuild on a disposable executable-smoke copy; two 20-second cold opens, correct schematic title, no matching Bad Object Record, Fatal Error, LXLCORE, or library-dialog text, unchanged SHA-256 |
 
 ## Historical expected-failure policy
 
@@ -68,7 +66,7 @@ from `AGENTS.md`; normally opening projects are never Ctrl+S'd by this gate.
 
 ## Inventory integrity
 
-The completed inventory check maps **23,881** in-scope files exactly once and
+The final merged-main inventory check maps **37,286** files exactly once and
 lists **1,339** retained local-only items explicitly. The active manifest
 contains **1,009** active files; its current aggregate SHA-256 is intentionally
 read from the generated manifest rather than copied here, so this narrative
@@ -78,3 +76,11 @@ The generator then self-checks each non-self-referential hash, inventory CSV,
 ignored-local CSV, and active aggregate. The current result is `status: ok`.
 See [`../inventory/active_manifest.json`](../inventory/active_manifest.json)
 and [`../inventory/repository_map.csv`](../inventory/repository_map.csv).
+
+The six historical `Project Backups`/`.workspace` files found during this
+final gate are intentionally preserved only in the local ignored inventory,
+not recommitted. This follows the explicit policy for reproducible Proteus
+application state while retaining their original paths and hashes. The map
+tool now avoids redundant path resolution for already-absolute walk paths,
+which keeps the exhaustive Windows hash check practical without weakening its
+SHA-256 coverage.

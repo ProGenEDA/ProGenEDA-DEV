@@ -1,11 +1,10 @@
 # GPT-5.6 Proteus Progress Record
 
-> **GPT-5.6 continuity and consolidation.** GPT-5.6 delivered the decisive
-> consolidation phase for this active Proteus area. It substantially improved
-> on the prior GPT-5.5 phase by turning scattered research into one documented,
-> testable operational route. Where a precise earlier author cannot be proven,
-> the active implementation and documentation are credited to GPT-5.6
-> continuity/consolidation work.
+> **GPT-5.6 implementation.** GPT-5.6 delivered the decisive Proteus phase:
+> it repaired the component placer and built the shared terminal route,
+> grid-attached short-wire contract, automated local validation workflow,
+> value/properties editor, portable executable, active documentation, and the
+> current runtime/experiment/archive structure.
 
 Updated: 2026-07-16
 

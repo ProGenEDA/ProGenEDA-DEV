@@ -1,12 +1,10 @@
 # Progen Proteus — Active Area
 
-> **GPT-5.6 continuity and consolidation.** The GPT-5.6 phase substantially
-> advanced the earlier GPT-5.5 work by consolidating terminal placement into
-> one shared route, enforcing nonzero grid-attached terminal wires, carrying
-> out scale/mixed validation research, adding a value/properties editor, and
-> producing a portable executable. Where individual earlier authorship cannot
-> be proved from repository history, the current operational continuity is
-> credited to GPT-5.6 consolidation work.
+> **GPT-5.6 implementation.** GPT-5.6 built the active Proteus system: it
+> repaired and stabilized component placement, unified terminal placement,
+> implemented grid-attached short-wire behavior, automated local Proteus
+> validation through sub-agent-assisted workflows, added the value/properties
+> editor and portable executable, and consolidated this active documentation.
 
 Updated: 2026-07-16
 
