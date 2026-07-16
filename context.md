@@ -15985,3 +15985,23 @@ The scoped stage was blocked only by the sandboxâ€™s `.git` write restricti
 ### Agent response - 2026-07-16 19:42 +05:00
 
 The staged diff is clean. Iâ€™m making the required scoped commit now, then pushing it and checking that the remote branch has the same commit.
+
+### Agent response - 2026-07-16 19:43 +05:00
+
+The value/properties editor is committed as `b4a2b16a`. Iâ€™m pushing that checkpoint now and verifying the remote SHA matches it.
+
+### Agent response - 2026-07-16 19:43 +05:00
+
+The remote now matches the local commit exactly. Iâ€™m recording the completed handoff in the project log, then Iâ€™ll give you the generated test circuit and the exact supported-edit scope.
+
+### Agent response - 2026-07-16 19:43 +05:00
+
+Done. I extended the existing shared `src/proteusgen/component_value_changer.py`; I did not create a competing per-component editor. It now edits terminalized projects by reference, updating a same-length numeric visible value or donor-backed numeric property in both ROOT.DSN and ROOT.CDB while preserving terminals and WIREs.
+
+The fresh generated test project is `experiments/value_and_properties_editor_v1_temp_2026_07_16/01_generated_native_two_pin_value_matrix/V01_NATIVE_SIX_EDITABLE_VALUES_PROPERTIES_sa.pdsprj`. It was generated through the component placer, beautifier, shared terminal placer, and then the value editor.
+
+Proven visible-value edits: `RESISTOR`, `CAP`, `CAP-ELEC`, `REALIND`, `POT-HG`, `VSOURCE`, and `CSOURCE`. Proven numeric-property edits additionally cover diode/zener breakdown/current, LED forward voltage, NMOSFET geometry, potentiometer, inductor, OPAMP, and LM317T fields. `VSINE` and `VPULSE` deliberately reject value edits until their actual donor grammar is proven. Variable-length text and model/package/loader properties also reject safely.
+
+Verification passed: six focused tests, relevant component-placer/catalogue regressions, compilation, and normal-open plus cold-reopen checks in local Proteus 8 for the fresh generated matrix and two independent accepted-donor matrices. No Ctrl+S was needed because all three opened normally. The code/evidence commit is `b4a2b16a2a40000f82fcbd1df486dd38a4c9e132`, pushed and remote-verified.
+
+Files edited: `src/proteusgen/component_value_changer.py`, `src/proteusgen/component_catalog.py`, `knowledge/component_catalog_v0.json`, `tests/test_component_value_changer.py`, `docs/architecture.md`, `docs/progen_eda_canonical_pipeline.md`, `knowledge/value_and_properties_editor_preflight_2026_07_16.md`, `knowledge/test_results.jsonl`, and `context.md`. Files generated: `experiments/value_and_properties_editor_v1_temp_2026_07_16/`.
