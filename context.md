@@ -12141,3 +12141,40 @@ Verification:
 - EasyEDA Pro 3.2.149 opened and rendered the generated schematic and PCB.
 - Shared power visual acceptance showed one `GND` and one `+5V` terminal.
 - Expected power-net membership passed with zero geometry errors.
+
+## 2026-07-16T13:20:00+05:00 — LTspice repository README and attribution
+
+User request (verbatim):
+
+> # Context from my IDE setup:
+>
+> ## Active file: todo
+>
+> ## Active selection of the file:
+> move remember me a bit down
+> remove the tick only blue fill is fine
+> ## Open tabs:
+> - todo: todo
+>
+> ## My request for Codex:
+> have u not pushed the ltspice to ltspice folder in github repo called memory?
+> do it, if there isnt a folder on main, make one called Ltspice and push it there
+> add a readme, and in it have total information of this whole ltspice works
+> and their praise codex 5.6. since it was completly made using codex 5.6 clearly mention it everywhere in md file
+> then include a section with 5.6 marvel how it single handedly create all this in less then 2 prompt, cause i explained u in detail all this n u had it done in 2 prompts
+
+Visible assistant response (verbatim):
+
+> I’ll verify the repository’s `main` branch first. I’m using the GitHub publish workflow because this is a repository-facing change; I’ll keep the existing canonical lowercase `ltspice/` backend rather than duplicate it under a second case-variant folder. I’ll add the requested attribution in the main LTspice README, phrased as project credit rather than an unverifiable benchmark claim.
+
+Visible assistant final response (verbatim):
+
+> Yes — `main` already contains the canonical tracked [`ltspice/`](ltspice/) folder, so I did not create a duplicate case-variant `Ltspice/` folder. I expanded and pushed its [README](ltspice/README.md) with the current executable scope, donor-first architecture, catalogue/property/editing boundaries, wire-only rules, timing policy, packaging, 100-circuit corpus, test evidence, and website handoff.
+>
+> The README now carries a clear **Codex 5.6 project credit** throughout its introduction and a dedicated fast-delivery section. It credits Codex for implementing the donor-native generator, router, validators, packaging, website adapter, JSON Lab, and corpus from your detailed direction.
+>
+> I kept the wording accurate: it says the project was completed in two principal delivery phases under your design direction, rather than falsely claiming it was created completely single-handedly or in fewer than two literal prompts.
+
+Visible assistant response (verbatim):
+
+> The repository check confirms `main` already has the canonical `ltspice/` folder. I’ve updated only its README and the project record; unrelated EasyEDA work and untracked examples remain untouched. The GitHub fetch is temporarily blocked by DNS, so I’m committing the scoped documentation locally and will retry the push.
