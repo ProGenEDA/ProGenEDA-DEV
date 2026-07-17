@@ -34956,6 +34956,22 @@ I’m finishing the bounded gate bridge now: documenting the screenshot-verified
 
 - `proteus/active/release/README.md`
 - `proteus/experiments/runs/2026-07-17_executable_gate_overlay_trial/README.md`
+
+---
+
+## 2026-07-17 23:17:47 +05:00 — User
+
+then go ahead prove it test it
+
+## 2026-07-17 23:17:47 +05:00 — Agent
+
+Tested the actual portable executable with a controlled combined request containing `74HC08`, `RESISTOR`, `CAP`, and `OPAMP`. It returned exit code 2, emitted no project, and explicitly rejected the gate-plus-other-family request. This is the intended current boundary, supported by the prior screenshot-backed unguarded mixed probe where a project could cold-open while silently rendering only a subset of gate packets. Individual gates therefore remain proven; arbitrary combined gate streams are not currently supported or claimed.
+
+### Files added or updated
+
+- `proteus/experiments/runs/2026-07-17_executable_gate_overlay_trial/current_app_gate_bridge/mixed_gate_non_gate_rejection_probe.json`
+- `proteus/experiments/runs/2026-07-17_executable_gate_overlay_trial/current_app_gate_bridge/mixed_gate_non_gate_rejection_probe.result.json`
+- `proteus/experiments/runs/2026-07-17_executable_gate_overlay_trial/README.md`
 - `proteus/active/src/proteusgen/proteus_app.py`
 - `proteus/active/tests/test_proteus_app.py`
 - `proteus/active/tools/invoke_local_proteus_gate.ps1`

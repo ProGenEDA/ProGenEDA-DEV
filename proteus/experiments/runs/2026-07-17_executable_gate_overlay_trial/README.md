@@ -51,3 +51,9 @@ are not treated as visual proof. The executable consequently rejects multiple
 gate families and any gate plus another family. The investigation and the
 unchanged shared-placer guarantee are documented in
 `proteus/active/knowledge/catalogue_only_gate_totalmix_probe_2026_07_17.md`.
+
+The exact rebuilt executable was also directly checked with the controlled
+`74HC08 + RESISTOR + CAP + OPAMP` input in
+`current_app_gate_bridge/mixed_gate_non_gate_rejection_probe.json`. It correctly
+refused the request without writing a project; the reproducible result is in
+`current_app_gate_bridge/mixed_gate_non_gate_rejection_probe.result.json`.
