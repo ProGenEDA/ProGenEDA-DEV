@@ -34999,6 +34999,28 @@ Confirmed the collected projects are placement-only outputs, not terminalized re
 - `proteus/active/examples/proteus_200_circuits/corpus_manifest.json`
 - `proteus/experiments/runs/2026-07-17_pdf_200_circuit_placement_controls/10_most_impressive_generated_circuits/01_circuit_180_op_amp_led_level_indicator.pdsprj.progen_report.json`
 
+---
+
+## 2026-07-17 22:26:09 +05:00 — User
+
+then give me those ten terminalized
+
+## 2026-07-17 22:26:09 +05:00 — Agent
+
+Regenerated the same ten complex circuits through the current portable executable, using their placement controls without `--no-terminals` or `--allow-unterminalized`. Every generated report entered the shared terminal stage, had grid-attached terminal-to-pin wires, and had no skipped families. Each project then passed a 12-second Proteus cold open and cold reopen with no loader dialog; two screenshots were captured for every project.
+
+### Output
+
+- `proteus/experiments/runs/2026-07-17_pdf_200_circuit_placement_controls/10_most_impressive_terminalized_current_executable/`
+- 10 terminalized `.pdsprj` projects
+- 20 cold-open screenshots under `screenshots/`
+- generated inspection reports beside the projects, except the three long-name reports placed in `reports/` to remain within Windows path limits
+
+### Executable proof
+
+- `ProgenProteus.exe` SHA-256: `41C15EAE737E4A5617E79504C136129C3B970B376C127DDAD0454EC709086388`
+- terminalized-component / short-WIRE counts in rank order: `19/42`, `16/35`, `15/33`, `18/36`, `15/32`, `16/34`, `12/26`, `13/27`, `12/26`, `12/26`
+
 Files edited or added in `MuhammadTahaBinZaeem/ProGenEDA-WEB` (remote commits `0b5d386` and `82230b4`):
 
 - `apps/api/src/services/proteus-executable-service.mjs`
