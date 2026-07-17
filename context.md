@@ -22540,3 +22540,7 @@ Visible assistant final response (verbatim):
 > - It mirrors the Proteus README structure: overview, Codex 5.6 implementation phase, executable and Python use, pipeline, capability boundary, corpus/evidence, repository layout, and local verification.
 > - Three committed SVG graphics make it read like a technical campaign: a Codex 5.6 hero banner, an animated real-stage pipeline, and an evidence dashboard. The animation has high-contrast labels, an exact executor-stage legend, a static/reduced-motion fallback, and no premature-download claim.
 > - The evidence wording is deliberately precise: seven donor-observed families, 43-component limit, physical wires only, 100/100 website corpus replay, and 106 tests with one optional oracle skip. It celebrates Codex 5.6 without claiming universal LTspice support.
+
+Visible assistant response (verbatim):
+
+> The expanded section is ready in an isolated worktree, so it won’t carry the unrelated EasyEDA work currently ahead in the main checkout. I’ve validated the Markdown/SVG assets and am pushing only this README showcase commit to `main`.
