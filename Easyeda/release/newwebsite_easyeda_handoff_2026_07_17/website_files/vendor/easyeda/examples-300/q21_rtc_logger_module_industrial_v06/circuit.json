@@ -1,0 +1,537 @@
+{
+  "components": [
+    {
+      "block": "rtc_logger_module",
+      "id": "U1",
+      "kind": "DS3231",
+      "pins": {
+        "1": "IO_U1_1",
+        "10": "NC_U1_10",
+        "11": "NC_U1_11",
+        "12": "NC_U1_12",
+        "13": "GND",
+        "14": "+3V3",
+        "15": "I2C_SDA",
+        "16": "I2C_SCL",
+        "2": "+3V3",
+        "3": "IO_U1_3",
+        "4": "IO_U1_4",
+        "5": "NC_U1_5",
+        "6": "NC_U1_6",
+        "7": "NC_U1_7",
+        "8": "NC_U1_8",
+        "9": "NC_U1_9"
+      },
+      "ref": "U1",
+      "role": "functional",
+      "value": "DS3231"
+    },
+    {
+      "block": "rtc_logger_module",
+      "id": "U2",
+      "kind": "W25Q64",
+      "pins": {
+        "1": "IO_U2_1",
+        "2": "IO_U2_2",
+        "3": "IO_U2_3",
+        "4": "GND",
+        "5": "IO_U2_5",
+        "6": "SPI_CLK",
+        "7": "IO_U2_7",
+        "8": "+3V3",
+        "9": "GND"
+      },
+      "ref": "U2",
+      "role": "functional",
+      "value": "W25Q64"
+    },
+    {
+      "block": "expansion",
+      "id": "J2",
+      "kind": "HEADER_2X5_1P27",
+      "pins": {
+        "1": "IO_U3_3",
+        "10": "GND",
+        "2": "IO_U3_7",
+        "3": "GND",
+        "4": "GND",
+        "5": "GND",
+        "6": "GND",
+        "7": "GND",
+        "8": "GND",
+        "9": "GND"
+      },
+      "ref": "J2",
+      "role": "full_pin_breakout",
+      "value": "HEADER_2X5_1P27"
+    },
+    {
+      "block": "rtc_logger_module",
+      "id": "U3",
+      "kind": "AT24C256",
+      "pins": {
+        "1": "IO_U3_1",
+        "2": "IO_U3_2",
+        "3": "IO_U3_3",
+        "4": "GND",
+        "5": "I2C_SDA",
+        "6": "I2C_SCL",
+        "7": "IO_U3_7",
+        "8": "+3V3"
+      },
+      "ref": "U3",
+      "role": "functional",
+      "value": "AT24C256"
+    },
+    {
+      "block": "rtc_logger_module",
+      "id": "R1",
+      "kind": "R",
+      "pins": {
+        "1": "GND",
+        "2": "+3V3"
+      },
+      "ref": "R1",
+      "role": "functional",
+      "value": "220"
+    },
+    {
+      "block": "rtc_logger_module",
+      "id": "R2",
+      "kind": "R",
+      "pins": {
+        "1": "GND",
+        "2": "+3V3"
+      },
+      "ref": "R2",
+      "role": "functional",
+      "value": "220"
+    },
+    {
+      "block": "rtc_logger_module",
+      "id": "C1",
+      "kind": "C",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      },
+      "ref": "C1",
+      "role": "functional",
+      "value": "1uF"
+    },
+    {
+      "block": "rtc_logger_module",
+      "id": "C2",
+      "kind": "C",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      },
+      "ref": "C2",
+      "role": "functional",
+      "value": "1uF"
+    },
+    {
+      "block": "rtc_logger_module",
+      "id": "J1",
+      "kind": "HEADER_2X5_1P27",
+      "pins": {
+        "1": "IO_U1_1",
+        "10": "IO_U3_1",
+        "2": "IO_U1_3",
+        "3": "IO_U1_4",
+        "4": "SPI_CLK",
+        "5": "IO_U2_1",
+        "6": "IO_U2_2",
+        "7": "IO_U2_3",
+        "8": "IO_U2_5",
+        "9": "IO_U2_7"
+      },
+      "ref": "J1",
+      "role": "functional",
+      "value": "HEADER_2X5_1P27"
+    },
+    {
+      "block": "rtc_logger_module",
+      "id": "TP1",
+      "kind": "TEST_POINT",
+      "pins": {
+        "1": "IO_U3_2"
+      },
+      "ref": "TP1",
+      "role": "functional",
+      "value": "TEST_POINT"
+    },
+    {
+      "block": "rtc_logger_module",
+      "id": "LED1",
+      "kind": "LED",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      },
+      "ref": "LED1",
+      "role": "functional",
+      "value": "LED"
+    },
+    {
+      "block": "mechanical",
+      "id": "H1",
+      "kind": "MOUNTING_HOLE_PTH",
+      "pins": {
+        "1": "GND"
+      },
+      "ref": "H1",
+      "role": "mechanical_ground",
+      "value": "MOUNTING_HOLE_PTH"
+    },
+    {
+      "block": "mechanical",
+      "id": "H2",
+      "kind": "MOUNTING_HOLE_NPTH",
+      "pins": {
+        "1": "NC_CHASSIS_H2"
+      },
+      "ref": "H2",
+      "role": "mechanical",
+      "value": "MOUNTING_HOLE_NPTH"
+    }
+  ],
+  "expected_netlist": {
+    "+3V3": [
+      "C1.1",
+      "C2.1",
+      "LED1.1",
+      "R1.2",
+      "R2.2",
+      "U1.14",
+      "U1.2",
+      "U2.8",
+      "U3.8"
+    ],
+    "GND": [
+      "C1.2",
+      "C2.2",
+      "H1.1",
+      "J2.10",
+      "J2.3",
+      "J2.4",
+      "J2.5",
+      "J2.6",
+      "J2.7",
+      "J2.8",
+      "J2.9",
+      "LED1.2",
+      "R1.1",
+      "R2.1",
+      "U1.13",
+      "U2.4",
+      "U2.9",
+      "U3.4"
+    ],
+    "I2C_SCL": [
+      "U1.16",
+      "U3.6"
+    ],
+    "I2C_SDA": [
+      "U1.15",
+      "U3.5"
+    ],
+    "IO_U1_1": [
+      "J1.1",
+      "U1.1"
+    ],
+    "IO_U1_3": [
+      "J1.2",
+      "U1.3"
+    ],
+    "IO_U1_4": [
+      "J1.3",
+      "U1.4"
+    ],
+    "IO_U2_1": [
+      "J1.5",
+      "U2.1"
+    ],
+    "IO_U2_2": [
+      "J1.6",
+      "U2.2"
+    ],
+    "IO_U2_3": [
+      "J1.7",
+      "U2.3"
+    ],
+    "IO_U2_5": [
+      "J1.8",
+      "U2.5"
+    ],
+    "IO_U2_7": [
+      "J1.9",
+      "U2.7"
+    ],
+    "IO_U3_1": [
+      "J1.10",
+      "U3.1"
+    ],
+    "IO_U3_2": [
+      "TP1.1",
+      "U3.2"
+    ],
+    "IO_U3_3": [
+      "J2.1",
+      "U3.3"
+    ],
+    "IO_U3_7": [
+      "J2.2",
+      "U3.7"
+    ],
+    "NC_CHASSIS_H2": [
+      "H2.1"
+    ],
+    "NC_U1_10": [
+      "U1.10"
+    ],
+    "NC_U1_11": [
+      "U1.11"
+    ],
+    "NC_U1_12": [
+      "U1.12"
+    ],
+    "NC_U1_5": [
+      "U1.5"
+    ],
+    "NC_U1_6": [
+      "U1.6"
+    ],
+    "NC_U1_7": [
+      "U1.7"
+    ],
+    "NC_U1_8": [
+      "U1.8"
+    ],
+    "NC_U1_9": [
+      "U1.9"
+    ],
+    "SPI_CLK": [
+      "J1.4",
+      "U2.6"
+    ]
+  },
+  "nets": [
+    {
+      "members": [
+        "C1.1",
+        "C2.1",
+        "LED1.1",
+        "R1.2",
+        "R2.2",
+        "U1.14",
+        "U1.2",
+        "U2.8",
+        "U3.8"
+      ],
+      "name": "+3V3"
+    },
+    {
+      "members": [
+        "C1.2",
+        "C2.2",
+        "H1.1",
+        "J2.10",
+        "J2.3",
+        "J2.4",
+        "J2.5",
+        "J2.6",
+        "J2.7",
+        "J2.8",
+        "J2.9",
+        "LED1.2",
+        "R1.1",
+        "R2.1",
+        "U1.13",
+        "U2.4",
+        "U2.9",
+        "U3.4"
+      ],
+      "name": "GND"
+    },
+    {
+      "members": [
+        "U1.16",
+        "U3.6"
+      ],
+      "name": "I2C_SCL"
+    },
+    {
+      "members": [
+        "U1.15",
+        "U3.5"
+      ],
+      "name": "I2C_SDA"
+    },
+    {
+      "members": [
+        "J1.1",
+        "U1.1"
+      ],
+      "name": "IO_U1_1"
+    },
+    {
+      "members": [
+        "J1.2",
+        "U1.3"
+      ],
+      "name": "IO_U1_3"
+    },
+    {
+      "members": [
+        "J1.3",
+        "U1.4"
+      ],
+      "name": "IO_U1_4"
+    },
+    {
+      "members": [
+        "J1.5",
+        "U2.1"
+      ],
+      "name": "IO_U2_1"
+    },
+    {
+      "members": [
+        "J1.6",
+        "U2.2"
+      ],
+      "name": "IO_U2_2"
+    },
+    {
+      "members": [
+        "J1.7",
+        "U2.3"
+      ],
+      "name": "IO_U2_3"
+    },
+    {
+      "members": [
+        "J1.8",
+        "U2.5"
+      ],
+      "name": "IO_U2_5"
+    },
+    {
+      "members": [
+        "J1.9",
+        "U2.7"
+      ],
+      "name": "IO_U2_7"
+    },
+    {
+      "members": [
+        "J1.10",
+        "U3.1"
+      ],
+      "name": "IO_U3_1"
+    },
+    {
+      "members": [
+        "TP1.1",
+        "U3.2"
+      ],
+      "name": "IO_U3_2"
+    },
+    {
+      "members": [
+        "J2.1",
+        "U3.3"
+      ],
+      "name": "IO_U3_3"
+    },
+    {
+      "members": [
+        "J2.2",
+        "U3.7"
+      ],
+      "name": "IO_U3_7"
+    },
+    {
+      "members": [
+        "H2.1"
+      ],
+      "name": "NC_CHASSIS_H2"
+    },
+    {
+      "members": [
+        "U1.10"
+      ],
+      "name": "NC_U1_10"
+    },
+    {
+      "members": [
+        "U1.11"
+      ],
+      "name": "NC_U1_11"
+    },
+    {
+      "members": [
+        "U1.12"
+      ],
+      "name": "NC_U1_12"
+    },
+    {
+      "members": [
+        "U1.5"
+      ],
+      "name": "NC_U1_5"
+    },
+    {
+      "members": [
+        "U1.6"
+      ],
+      "name": "NC_U1_6"
+    },
+    {
+      "members": [
+        "U1.7"
+      ],
+      "name": "NC_U1_7"
+    },
+    {
+      "members": [
+        "U1.8"
+      ],
+      "name": "NC_U1_8"
+    },
+    {
+      "members": [
+        "U1.9"
+      ],
+      "name": "NC_U1_9"
+    },
+    {
+      "members": [
+        "J1.4",
+        "U2.6"
+      ],
+      "name": "SPI_CLK"
+    }
+  ],
+  "project": {
+    "name": "q21_rtc_logger_module_industrial_v06",
+    "target": "easyeda_pro",
+    "title": "RTC and Flash Logger Module - Industrial Variant"
+  },
+  "purpose": "Battery-backed timekeeping with SPI and I2C nonvolatile storage. Optimized for industrial control cabinet integration.",
+  "qualification": {
+    "archetype": "rtc_logger_module",
+    "profile": "industrial",
+    "require_complete_pin_coverage": true,
+    "require_pcb_when_routable": true,
+    "schema": "progen-easyeda-qualification-corpus/v1",
+    "source_basis": "RTC and memory application circuits",
+    "variant": 6
+  },
+  "routing": {
+    "mode": "combination"
+  },
+  "schema_version": "progen-easyeda-circuit-ir/v1"
+}

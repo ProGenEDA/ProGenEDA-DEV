@@ -1,0 +1,293 @@
+{
+  "components": [
+    {
+      "block": "rs485_transceiver_tester",
+      "id": "U1",
+      "kind": "MAX485",
+      "pins": {
+        "1": "RS485_RX",
+        "2": "RS485_ENABLE",
+        "3": "RS485_ENABLE",
+        "4": "RS485_TX",
+        "5": "GND",
+        "6": "RS485_A",
+        "7": "RS485_B",
+        "8": "+5V"
+      },
+      "ref": "U1",
+      "role": "functional",
+      "value": "MAX485"
+    },
+    {
+      "block": "rs485_transceiver_tester",
+      "id": "R1",
+      "kind": "R",
+      "pins": {
+        "1": "GND",
+        "2": "+5V"
+      },
+      "ref": "R1",
+      "role": "functional",
+      "value": "220"
+    },
+    {
+      "block": "rs485_transceiver_tester",
+      "id": "R2",
+      "kind": "R",
+      "pins": {
+        "1": "GND",
+        "2": "+5V"
+      },
+      "ref": "R2",
+      "role": "functional",
+      "value": "220"
+    },
+    {
+      "block": "rs485_transceiver_tester",
+      "id": "R3",
+      "kind": "R",
+      "pins": {
+        "1": "GND",
+        "2": "+5V"
+      },
+      "ref": "R3",
+      "role": "functional",
+      "value": "220"
+    },
+    {
+      "block": "rs485_transceiver_tester",
+      "id": "C1",
+      "kind": "C",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      },
+      "ref": "C1",
+      "role": "functional",
+      "value": "1uF"
+    },
+    {
+      "block": "rs485_transceiver_tester",
+      "id": "J1",
+      "kind": "TERMINAL_BLOCK",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      },
+      "ref": "J1",
+      "role": "functional",
+      "value": "TERMINAL_BLOCK"
+    },
+    {
+      "block": "rs485_transceiver_tester",
+      "id": "J2",
+      "kind": "HEADER_1X6",
+      "pins": {
+        "1": "RS485_RX",
+        "2": "RS485_TX",
+        "3": "RS485_A",
+        "4": "RS485_B",
+        "5": "GND",
+        "6": "GND"
+      },
+      "ref": "J2",
+      "role": "functional",
+      "value": "HEADER_1X6"
+    },
+    {
+      "block": "rs485_transceiver_tester",
+      "id": "TP1",
+      "kind": "TEST_POINT",
+      "pins": {
+        "1": "GND"
+      },
+      "ref": "TP1",
+      "role": "functional",
+      "value": "TEST_POINT"
+    },
+    {
+      "block": "rs485_transceiver_tester",
+      "id": "TP2",
+      "kind": "TEST_POINT",
+      "pins": {
+        "1": "GND"
+      },
+      "ref": "TP2",
+      "role": "functional",
+      "value": "TEST_POINT"
+    },
+    {
+      "block": "rs485_transceiver_tester",
+      "id": "LED1",
+      "kind": "LED",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      },
+      "ref": "LED1",
+      "role": "functional",
+      "value": "LED"
+    },
+    {
+      "block": "mechanical",
+      "id": "H1",
+      "kind": "MOUNTING_HOLE_PTH",
+      "pins": {
+        "1": "GND"
+      },
+      "ref": "H1",
+      "role": "mechanical_ground",
+      "value": "MOUNTING_HOLE_PTH"
+    },
+    {
+      "block": "mechanical",
+      "id": "H2",
+      "kind": "MOUNTING_HOLE_NPTH",
+      "pins": {
+        "1": "NC_CHASSIS_H2"
+      },
+      "ref": "H2",
+      "role": "mechanical",
+      "value": "MOUNTING_HOLE_NPTH"
+    }
+  ],
+  "expected_netlist": {
+    "+5V": [
+      "C1.1",
+      "J1.1",
+      "LED1.1",
+      "R1.2",
+      "R2.2",
+      "R3.2",
+      "U1.8"
+    ],
+    "GND": [
+      "C1.2",
+      "H1.1",
+      "J1.2",
+      "J2.5",
+      "J2.6",
+      "LED1.2",
+      "R1.1",
+      "R2.1",
+      "R3.1",
+      "TP1.1",
+      "TP2.1",
+      "U1.5"
+    ],
+    "NC_CHASSIS_H2": [
+      "H2.1"
+    ],
+    "RS485_A": [
+      "J2.3",
+      "U1.6"
+    ],
+    "RS485_B": [
+      "J2.4",
+      "U1.7"
+    ],
+    "RS485_ENABLE": [
+      "U1.2",
+      "U1.3"
+    ],
+    "RS485_RX": [
+      "J2.1",
+      "U1.1"
+    ],
+    "RS485_TX": [
+      "J2.2",
+      "U1.4"
+    ]
+  },
+  "nets": [
+    {
+      "members": [
+        "C1.1",
+        "J1.1",
+        "LED1.1",
+        "R1.2",
+        "R2.2",
+        "R3.2",
+        "U1.8"
+      ],
+      "name": "+5V"
+    },
+    {
+      "members": [
+        "C1.2",
+        "H1.1",
+        "J1.2",
+        "J2.5",
+        "J2.6",
+        "LED1.2",
+        "R1.1",
+        "R2.1",
+        "R3.1",
+        "TP1.1",
+        "TP2.1",
+        "U1.5"
+      ],
+      "name": "GND"
+    },
+    {
+      "members": [
+        "H2.1"
+      ],
+      "name": "NC_CHASSIS_H2"
+    },
+    {
+      "members": [
+        "J2.3",
+        "U1.6"
+      ],
+      "name": "RS485_A"
+    },
+    {
+      "members": [
+        "J2.4",
+        "U1.7"
+      ],
+      "name": "RS485_B"
+    },
+    {
+      "members": [
+        "U1.2",
+        "U1.3"
+      ],
+      "name": "RS485_ENABLE"
+    },
+    {
+      "members": [
+        "J2.1",
+        "U1.1"
+      ],
+      "name": "RS485_RX"
+    },
+    {
+      "members": [
+        "J2.2",
+        "U1.4"
+      ],
+      "name": "RS485_TX"
+    }
+  ],
+  "project": {
+    "name": "q16_rs485_transceiver_tester_industrial_v06",
+    "target": "easyeda_pro",
+    "title": "RS485 Physical Layer Tester - Industrial Variant"
+  },
+  "purpose": "RS485 transceiver fixture with termination, bias, and test access. Optimized for industrial control cabinet integration.",
+  "qualification": {
+    "archetype": "rs485_transceiver_tester",
+    "profile": "industrial",
+    "require_complete_pin_coverage": true,
+    "require_pcb_when_routable": true,
+    "schema": "progen-easyeda-qualification-corpus/v1",
+    "source_basis": "RS485 application circuits",
+    "variant": 6
+  },
+  "routing": {
+    "mode": "combination"
+  },
+  "schema_version": "progen-easyeda-circuit-ir/v1"
+}

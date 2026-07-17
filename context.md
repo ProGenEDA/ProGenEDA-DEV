@@ -33252,6 +33252,158 @@ Files edited:
 
 - `context.md`
 
+## 2026-07-17 15:40:44 PKT - EasyEDA shipping executable and website handoff
+
+User message (verbatim):
+
+> # Context from my IDE setup:
+>
+> ## Active file: todo
+>
+> ## Active selection of the file:
+> move remember me a bit down
+> remove the tick only blue fill is fine
+> ## Open tabs:
+> - todo: todo
+> - geometry.py: kicad/Easyeda/geometry.py
+>
+> ## My request for Codex:
+> continue
+
+Visible assistant responses (verbatim, chronological):
+
+> Yes, the EasyEDA backend itself is at release-candidate quality, but I’ll treat this as the actual shipping gate rather than relying on the previous checkpoint. I’m going to verify the current executable against all 300 untouched named circuits, audit their circuit metadata and output artifacts without opening the GUI, then map the entire `newwebsite` integration surface and build a self-contained EasyEDA website handoff ZIP with the executable, catalogue/UI data, contract docs, integration code, and all 300 inputs.
+
+> The repository checkpoint is synchronized, and the previous generated runs are still isolated as untracked evidence. The website is a Vite/React application with generated `dist` and browser profiles present, so I’m limiting the integration audit to authored source, public contracts, configuration, API/server code, and tests; I’ll trace every Proteus-specific assumption before designing the EasyEDA handoff.
+
+> I found that the website is no longer Proteus-only internally: KiCad and LTspice already establish the exact multi-backend pattern EasyEDA should follow. The integration surface is broader than one menu entry: target normalization, prompt-to-JSON planning, deterministic JSON editing, executable invocation, worker dispatch, artifact naming/storage, component registry, progress stages, frontend target selectors, supported-components data, environment configuration, and corpus tests all need an EasyEDA branch.
+> Plan:
+> 1. Audit the authored website and extract the reusable KiCad/LTspice backend contract.
+> 2. Re-audit all 300 EasyEDA JSON names, titles, pins, nets, and fixer status.
+> 3. Run the current portable executable over all 300 untouched inputs and perform non-GUI SQLite/netlist/geometry/PCB validation.
+> 4. Build a versioned website handoff folder containing the portable executable, 300 JSONs, registry/UI payloads, service adapters, tests, docs, env examples, and checksums.
+> 5. Package it as a ZIP, test extraction and integration tests in isolation, then commit and push the release evidence.
+
+> Continuing from the website contract audit. The executable adapter pattern is clear: EasyEDA needs its own `EA` service code, environment paths, deterministic planner/editor adapters, native `.eprj` artifact handling, internal audit ZIP retention, and progress/validation records; I’m now tracing the frontend and registry schemas so the handoff updates every visible and server-side location consistently.
+
+> The prior KiCad handoff confirms the intended deliverable: a ready-to-copy website overlay plus executable and integration documentation, not risky edits to the live website checkout. For EasyEDA I’m making that package more complete: it will include every new/modified website file, a service registry, frontend catalogue, API adapter, planner/editor hooks, target/UI changes, env example, corpus test runner, all 300 named JSONs, and an installation script that applies the overlay deterministically to `newwebsite`.
+
+> The portable probe exposed one website-specific gap: unlike LTspice, EasyEDA currently prints only its final JSON summary, so the UI cannot receive truthful live stages. I’m including a small backward-compatible executable upgrade in this shipping pass: `run --events ndjson` will emit real pipeline stage events while ordinary `run` keeps the existing final JSON behavior. The website adapter can then stream actual input-fix, donor-resolution, placement, routing, native-write, PCB, validation, and packaging stages instead of guessing animation timing.
+
+> I’m editing the portable now in a backward-compatible way. Existing callers still receive one pretty JSON summary; website callers can opt into NDJSON, and each event is emitted immediately after the corresponding real stage completes. I’m also adding a focused regression so this cannot silently drift back to guessed progress later.
+
+> The streaming executable is now real and tested: eight stage events arrive in order, followed by the accepted summary, while the old summary mode remains unchanged. I’m moving to the 300-input audit next, with stricter shipping checks than the generator alone: filename equals canonical project name, every title and purpose is meaningful, all 30 archetypes and 10 profiles are represented exactly once, every reference/pin/net is internally consistent, every source pin is accounted for, and the deterministic fixer must make zero changes.
+
+> I’m adding a reusable corpus release auditor rather than relying on one-off shell checks. It will independently rebuild each net from component pin maps, compare it with both `nets` and `expected_netlist`, resolve every component against the embedded donor bundle, prove complete donor-pin coverage, verify the 30-by-10 naming matrix and manifest, and reject any fixer change, guessed net, duplicate identity, generic title, or limit violation.
+
+> The stricter audit found one semantic accounting issue in the audit itself, not in the 300 circuits: `GND` and `VCC` are native terminal families generated from named power nets, so they correctly do not appear as physical input components. The corpus covers all 57 physical families and exercises both terminal families throughout. I’m correcting the audit to count those two from actual net usage, then rerunning it; no circuit JSON is being changed.
+
+> The 300-input release audit is clean: 300 unique filenames match 300 canonical project names, 300 unique descriptive titles, 30 named circuit archetypes × 10 deployment profiles, 4,670 component instances, 11,440 exact nets, all 57 physical donor families plus both native terminal families, zero fixer changes, zero guessed nets, and complete donor-pin coverage. I’m now feeding those exact files to the rebuilt portable with eight isolated workers; this is the requested non-GUI shipping run, and every result must pass native SQLite, source-hash, netlist, geometry, pin-coverage, and PCB validation.
+
+> The first 80 of 300 executable runs have completed with 80 passes and no failures; the slowest is 11.65 seconds. While that continues, I’m constructing the integration against a detached temporary worktree of the exact clean `newwebsite` commit, so the live website remains untouched. The handoff installer will carry baseline hashes and refuse to overwrite an incompatible website version, which is safer than a blind folder copy.
+
+> The integration data will be generated from `Easyeda/catalogue.py`, not maintained as a second handwritten list. I’m adding one payload builder that deterministically emits both the website’s `EA-A` serial registry and the frontend supported-components document, including aliases, value rules, terminal/PCB flags, limits, and routing modes. This makes future component expansion a catalogue change plus regeneration, rather than edits scattered across the website.
+
+> The 300-circuit executable run is still the main release gate, so I’m resuming that exact process rather than restarting it. In parallel I’ll finish the staged website overlay, run its build and API smoke tests, package the executable plus all named corpus inputs, then validate the handoff from a clean extracted copy.
+
+> The full run completed in 192 seconds: 290 passed, and all 10 failures are the ten profile variants of one archetype, `q21_rtc_logger_module`. That consistency is useful: this is one deterministic backend defect, not scattered corpus quality. I’m isolating its exact validator failure now, then I’ll rerun only those ten before doing a final 300 confirmation.
+
+> The defect is precise: one left-facing native NC terminal is legally placed 120.28 units beyond the physical-body envelope, while the compactness validator allows exactly 120. The extra 0.28 comes from donor-native fractional symbol bounds, not a runaway route. I’m making the compactness allowance grid-aware at 132 units, preserving the upper 280-unit anti-sprawl cap, and adding the failing RTC logger as a regression before rebuilding the portable.
+
+> The regression exposed why a fixed floor was insufficient: this circuit’s 18% adaptive margin is 143.72, already larger than the floor, and the native endpoint lies on the next exact EasyEDA grid coordinate. I’m correcting the rule itself by rounding the adaptive allowance outward to the next 12-unit grid line; that addresses donor fractions without broadly relaxing compactness.
+
+> The isolated fix is proven across all ten RTC logger profiles: 10/10 pass, all ten PCBs are ready, netlists match, every pin is accounted for, and validation has no errors. I’m starting one final full 300 run on the rebuilt executable now; it is a confirmation run, while I finish and compile the website package in parallel.
+
+> The website source passes JavaScript syntax checks, and the help content update is present. I caught one guided-editor edge case before build: changing a reference correctly rewrites every net endpoint, but the topology proof was still hashing those display references, so it would falsely reject its own safe edit. I’m changing that proof to canonical component IDs, which preserves the electrical graph while allowing reference renames exactly as intended.
+
+> The production frontend now builds cleanly. The website’s deterministic adapter also passed a native end-to-end smoke: it streamed all eight real stages, returned a 5.85 MB `.eprj`, retained the private audit bundle, reported donor hashes/pin coverage/netlist/geometry/PCB checks, and the JSON Lab safely renamed a reference while proving topology unchanged. Next I’m exercising the actual API route and artifact persistence, then I’ll freeze these files into the handoff.
+
+> The API route itself is now proven, not just the adapter: a real `/api/generate/stream` request returned `200`, emitted eight native stage events, persisted the circuit under a new `EA-A-...` serial, and exposed the `.eprj` download URL. I’m freezing the release as an overlay with baseline hashes and a guarded installer, so it can be applied to the audited website commit without silently overwriting a different codebase.
+
+> The final executable run is clean: 300/300 passed in 175.68 seconds, all 300 generated native projects passed netlist and complete-pin validation, and all 300 bounded PCBs were accepted. Average generation time was 4.63 seconds; worst case was 28.35 seconds. That is the release evidence I’ll embed in the handoff rather than the earlier 290/300 diagnostic run.
+
+> The handoff is built: 81 MB compressed, with 300 canonical inputs, 300 byte-identical website example entries, the 79 MB portable, guarded installer, full overlay, evidence, and SHA-256 manifest. I’m doing the last important test now: extract that ZIP into a fresh location, apply it to a second clean worktree of the audited website commit, rebuild from there, and run the packaged adapter rather than any staging file.
+
+> The extracted handoff passes independently: its guarded installer applied 633 hashed files to a pristine website worktree, the production build succeeded, and the packaged executable generated the regulated 5 V supply with all eight stages and a passing native report. The packaged JSON editor also preserved topology through a reference edit. I’m at the final backend regression and repository hygiene pass now.
+
+> The complete backend regression is green: 27/27 tests passed, including the real RTC logger failure case, full corpus audit, progress protocol, value editor, donor resolution, routing readability, and native pipeline tests. The final extracted website package also passes its new one-command integration test and production build. I’m updating the permanent release record and preparing the scoped commit now; unrelated historical generated runs remain untouched.
+
+> One final audit catch surfaced in the optional AI fixture path: the planner looked for flat JSON files, while the website example library intentionally stores each circuit as `<name>/circuit.json`. Direct generation was unaffected, but fixture-mode prompt planning would fail. I’m fixing both layouts and adding a packaged integration test that covers fixture planning, JSON validation/editing, real stage streaming, and native generation as one command.
+
+> The complete backend regression is green: 27/27 tests passed, including the real RTC logger failure case, full corpus audit, progress protocol, value editor, donor resolution, routing readability, and native pipeline tests. The final extracted website package also passes its new one-command integration test and production build. I’m updating the permanent release record and preparing the scoped commit now; unrelated historical generated runs remain untouched.
+
+> I’m writing the continuation record with the exact release numbers, artifact paths, website baseline, all visible progress updates, and the scoped file list. After that I’ll stage only this EasyEDA release work, verify the large artifacts are below GitHub’s file limit, commit, push normally, and compare local, fetched, and direct remote hashes.
+
+Implementation and release results:
+
+- Final executable qualification: 300/300 passed, 300/300 PCB ready, zero failures.
+- Average generation: 4.6313 seconds; maximum: 28.3512 seconds; wall time: 175.6825 seconds with eight workers.
+- Independent corpus audit: 300 unique names/titles, 30 archetypes, 10 profiles, 4,670 component instances, 11,440 nets, all 59 logical catalogue entries, zero fixer changes or guesses.
+- Backend tests: 27 passed in 95.16 seconds.
+- Python compile and `git diff --check`: passed.
+- Website `npm run lint`: passed.
+- Website production TypeScript/Vite/SSR build: passed from staging and from a clean extracted handoff.
+- Website direct adapter and real `/api/generate/stream` route: passed with all eight real stages.
+- Packaged `npm run test:easyeda:integration`: passed from a clean extracted handoff.
+- ZIP integrity: no errors.
+
+Primary artifacts:
+
+- `Easyeda/dist/progen-easyeda`
+- `Easyeda/release/newwebsite_easyeda_handoff_2026_07_17/`
+- `Easyeda/release/newwebsite-easyeda-handoff-2026_07_17.zip`
+- `/home/zaruka/Documents/easyeda_shipping_runs/2026_07_17_152456_997186_qualification/qualification_report.json`
+- `/tmp/easyeda_release_corpus_audit_20260717.json`
+
+Repository files edited or added:
+
+- `Easyeda/README.md`
+- `Easyeda/dist/progen-easyeda`
+- `Easyeda/executable.py`
+- `Easyeda/pipeline.py`
+- `Easyeda/qualification/RESULTS_2026_07_17.md`
+- `Easyeda/release_audit.py`
+- `Easyeda/tests/test_release_audit.py`
+- `Easyeda/tests/test_source_and_pipeline.py`
+- `Easyeda/tools/build_website_handoff.py`
+- `Easyeda/tools/build_website_payloads.py`
+- `Easyeda/validator.py`
+- `Easyeda/release_templates/newwebsite_easyeda/`
+- `Easyeda/release/newwebsite_easyeda_handoff_2026_07_17/`
+- `Easyeda/release/newwebsite-easyeda-handoff-2026_07_17.zip`
+- `context.md`
+
+The website was analyzed and modified only in detached temporary worktrees.
+The live `/home/zaruka/Documents/newwebsite` checkout was not changed. Its
+audited baseline commit is `a236ecdb509fbdba7322d4f62360e9f4435b9225`.
+
+Commit-stage visible assistant response (verbatim):
+
+> The release commit is `1e0f00072`, containing only the EasyEDA shipping scope and no historical generated runs. I’m appending that checkpoint to the project record, amending the same commit, then I’ll push the 160 MB object set and verify the final hash against GitHub directly.
+
+Provisional release commit before this append-only record amendment:
+
+- `1e0f00072` (`Ship EasyEDA portable and website handoff`).
+
+Push/rebase visible assistant responses (verbatim):
+
+> GitHub advanced while the large release was being prepared, so the normal push correctly refused a non-fast-forward update. I’m fetching and rebasing this single scoped release over the new remote tip now, preserving all unrelated local generated directories, then I’ll rerun the lightweight integrity checks and push again without force.
+
+> The release rebased cleanly over two new, unrelated Proteus commits. ZIP integrity, Python compilation, diff checks, and both embedded executable hashes still pass; the post-rebase EasyEDA suite is currently in its native generation cases with no failures. Once it finishes, I’ll push the rebased hash.
+
+> The post-rebase suite is green again: 27/27 passed in 90.76 seconds. I’m recording the rebase and that final verification in `context.md`, amending the release commit once more, then pushing the resulting hash; no generated/debug directories will be added.
+
+Rebase and verification:
+
+- Remote advanced to `17fcb02dd` with two unrelated Proteus commits.
+- The EasyEDA release rebased without conflict.
+- Provisional rebased release commit before this record amendment: `2051d16c587e443858543709a8c9daba922a679b`.
+- `git diff origin/main..HEAD --check`: passed.
+- `.venv/bin/python -m compileall -q Easyeda`: passed.
+- ZIP integrity: passed.
+- Embedded portable hashes matched at `1094fe32d60d6389f86f94e190863a7efe695478e2318d549283afa786966d85`.
+- Post-rebase test suite: 27 passed in 90.76 seconds.
+
 ## 2026-07-17T03:00:00+05:00 — Final EasyEDA complex native-open gate
 
 User request (verbatim):

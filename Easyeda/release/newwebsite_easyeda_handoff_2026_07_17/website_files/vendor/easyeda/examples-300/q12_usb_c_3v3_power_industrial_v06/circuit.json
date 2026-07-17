@@ -1,0 +1,426 @@
+{
+  "components": [
+    {
+      "block": "usb_c_3v3_power",
+      "id": "J1",
+      "kind": "USB_C_RECEPTACLE",
+      "pins": {
+        "0": "GND",
+        "A1": "GND",
+        "A12": "GND",
+        "A4": "USB_VBUS",
+        "A5": "USB_CC1",
+        "A6": "USB_DP",
+        "A7": "USB_DM",
+        "A8": "NC_J1_A8",
+        "A9": "USB_VBUS",
+        "B1": "GND",
+        "B12": "GND",
+        "B4": "USB_VBUS",
+        "B5": "USB_CC2",
+        "B6": "USB_DP",
+        "B7": "USB_DM",
+        "B8": "NC_J1_B8",
+        "B9": "USB_VBUS"
+      },
+      "ref": "J1",
+      "role": "functional",
+      "value": "USB_C_RECEPTACLE"
+    },
+    {
+      "block": "expansion",
+      "id": "J3",
+      "kind": "HEADER_2X5_1P27",
+      "pins": {
+        "1": "USB_CC2",
+        "10": "GND",
+        "2": "USB_CC1",
+        "3": "GND",
+        "4": "GND",
+        "5": "GND",
+        "6": "GND",
+        "7": "GND",
+        "8": "GND",
+        "9": "GND"
+      },
+      "ref": "J3",
+      "role": "full_pin_breakout",
+      "value": "HEADER_2X5_1P27"
+    },
+    {
+      "block": "usb_c_3v3_power",
+      "id": "U1",
+      "kind": "USBLC6_2SC6",
+      "pins": {
+        "1": "USB_DP",
+        "2": "GND",
+        "3": "USB_DM",
+        "4": "USB_DM",
+        "5": "USB_VBUS",
+        "6": "USB_DP"
+      },
+      "ref": "U1",
+      "role": "functional",
+      "value": "USBLC6_2SC6"
+    },
+    {
+      "block": "usb_c_3v3_power",
+      "id": "F1",
+      "kind": "PTC_FUSE",
+      "pins": {
+        "1": "+5V_FUSED",
+        "2": "USB_VBUS"
+      },
+      "ref": "F1",
+      "role": "functional",
+      "value": "750mA"
+    },
+    {
+      "block": "usb_c_3v3_power",
+      "id": "FB1",
+      "kind": "FERRITE_BEAD",
+      "pins": {
+        "1": "+5V_FUSED",
+        "2": "+5V"
+      },
+      "ref": "FB1",
+      "role": "functional",
+      "value": "600"
+    },
+    {
+      "block": "usb_c_3v3_power",
+      "id": "U2",
+      "kind": "AP2112K_3V3",
+      "pins": {
+        "1": "+5V",
+        "2": "GND",
+        "3": "+5V",
+        "4": "NC_U2_4",
+        "5": "+3V3"
+      },
+      "ref": "U2",
+      "role": "functional",
+      "value": "AP2112K_3V3"
+    },
+    {
+      "block": "usb_c_3v3_power",
+      "id": "C1",
+      "kind": "CAP_ELEC",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      },
+      "ref": "C1",
+      "role": "functional",
+      "value": "220uF"
+    },
+    {
+      "block": "usb_c_3v3_power",
+      "id": "C2",
+      "kind": "C",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      },
+      "ref": "C2",
+      "role": "functional",
+      "value": "1uF"
+    },
+    {
+      "block": "usb_c_3v3_power",
+      "id": "C3",
+      "kind": "C",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      },
+      "ref": "C3",
+      "role": "functional",
+      "value": "1uF"
+    },
+    {
+      "block": "usb_c_3v3_power",
+      "id": "R1",
+      "kind": "R",
+      "pins": {
+        "1": "GND",
+        "2": "+3V3"
+      },
+      "ref": "R1",
+      "role": "functional",
+      "value": "220"
+    },
+    {
+      "block": "usb_c_3v3_power",
+      "id": "LED1",
+      "kind": "LED",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      },
+      "ref": "LED1",
+      "role": "functional",
+      "value": "LED"
+    },
+    {
+      "block": "usb_c_3v3_power",
+      "id": "J2",
+      "kind": "TERMINAL_BLOCK",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      },
+      "ref": "J2",
+      "role": "functional",
+      "value": "TERMINAL_BLOCK"
+    },
+    {
+      "block": "mechanical",
+      "id": "H1",
+      "kind": "MOUNTING_HOLE_PTH",
+      "pins": {
+        "1": "GND"
+      },
+      "ref": "H1",
+      "role": "mechanical_ground",
+      "value": "MOUNTING_HOLE_PTH"
+    },
+    {
+      "block": "mechanical",
+      "id": "H2",
+      "kind": "MOUNTING_HOLE_NPTH",
+      "pins": {
+        "1": "NC_CHASSIS_H2"
+      },
+      "ref": "H2",
+      "role": "mechanical",
+      "value": "MOUNTING_HOLE_NPTH"
+    }
+  ],
+  "expected_netlist": {
+    "+3V3": [
+      "C1.1",
+      "C2.1",
+      "C3.1",
+      "J2.1",
+      "LED1.1",
+      "R1.2",
+      "U2.5"
+    ],
+    "+5V": [
+      "FB1.2",
+      "U2.1",
+      "U2.3"
+    ],
+    "+5V_FUSED": [
+      "F1.1",
+      "FB1.1"
+    ],
+    "GND": [
+      "C1.2",
+      "C2.2",
+      "C3.2",
+      "H1.1",
+      "J1.0",
+      "J1.A1",
+      "J1.A12",
+      "J1.B1",
+      "J1.B12",
+      "J2.2",
+      "J3.10",
+      "J3.3",
+      "J3.4",
+      "J3.5",
+      "J3.6",
+      "J3.7",
+      "J3.8",
+      "J3.9",
+      "LED1.2",
+      "R1.1",
+      "U1.2",
+      "U2.2"
+    ],
+    "NC_CHASSIS_H2": [
+      "H2.1"
+    ],
+    "NC_J1_A8": [
+      "J1.A8"
+    ],
+    "NC_J1_B8": [
+      "J1.B8"
+    ],
+    "NC_U2_4": [
+      "U2.4"
+    ],
+    "USB_CC1": [
+      "J1.A5",
+      "J3.2"
+    ],
+    "USB_CC2": [
+      "J1.B5",
+      "J3.1"
+    ],
+    "USB_DM": [
+      "J1.A7",
+      "J1.B7",
+      "U1.3",
+      "U1.4"
+    ],
+    "USB_DP": [
+      "J1.A6",
+      "J1.B6",
+      "U1.1",
+      "U1.6"
+    ],
+    "USB_VBUS": [
+      "F1.2",
+      "J1.A4",
+      "J1.A9",
+      "J1.B4",
+      "J1.B9",
+      "U1.5"
+    ]
+  },
+  "nets": [
+    {
+      "members": [
+        "C1.1",
+        "C2.1",
+        "C3.1",
+        "J2.1",
+        "LED1.1",
+        "R1.2",
+        "U2.5"
+      ],
+      "name": "+3V3"
+    },
+    {
+      "members": [
+        "FB1.2",
+        "U2.1",
+        "U2.3"
+      ],
+      "name": "+5V"
+    },
+    {
+      "members": [
+        "F1.1",
+        "FB1.1"
+      ],
+      "name": "+5V_FUSED"
+    },
+    {
+      "members": [
+        "C1.2",
+        "C2.2",
+        "C3.2",
+        "H1.1",
+        "J1.0",
+        "J1.A1",
+        "J1.A12",
+        "J1.B1",
+        "J1.B12",
+        "J2.2",
+        "J3.10",
+        "J3.3",
+        "J3.4",
+        "J3.5",
+        "J3.6",
+        "J3.7",
+        "J3.8",
+        "J3.9",
+        "LED1.2",
+        "R1.1",
+        "U1.2",
+        "U2.2"
+      ],
+      "name": "GND"
+    },
+    {
+      "members": [
+        "H2.1"
+      ],
+      "name": "NC_CHASSIS_H2"
+    },
+    {
+      "members": [
+        "J1.A8"
+      ],
+      "name": "NC_J1_A8"
+    },
+    {
+      "members": [
+        "J1.B8"
+      ],
+      "name": "NC_J1_B8"
+    },
+    {
+      "members": [
+        "U2.4"
+      ],
+      "name": "NC_U2_4"
+    },
+    {
+      "members": [
+        "J1.A5",
+        "J3.2"
+      ],
+      "name": "USB_CC1"
+    },
+    {
+      "members": [
+        "J1.B5",
+        "J3.1"
+      ],
+      "name": "USB_CC2"
+    },
+    {
+      "members": [
+        "J1.A7",
+        "J1.B7",
+        "U1.3",
+        "U1.4"
+      ],
+      "name": "USB_DM"
+    },
+    {
+      "members": [
+        "J1.A6",
+        "J1.B6",
+        "U1.1",
+        "U1.6"
+      ],
+      "name": "USB_DP"
+    },
+    {
+      "members": [
+        "F1.2",
+        "J1.A4",
+        "J1.A9",
+        "J1.B4",
+        "J1.B9",
+        "U1.5"
+      ],
+      "name": "USB_VBUS"
+    }
+  ],
+  "project": {
+    "name": "q12_usb_c_3v3_power_industrial_v06",
+    "target": "easyeda_pro",
+    "title": "USB-C Protected 3V3 Power Module - Industrial Variant"
+  },
+  "purpose": "USB-C input, ESD protection, resettable fuse, filtering, and 3.3 V regulation. Optimized for industrial control cabinet integration.",
+  "qualification": {
+    "archetype": "usb_c_3v3_power",
+    "profile": "industrial",
+    "require_complete_pin_coverage": true,
+    "require_pcb_when_routable": true,
+    "schema": "progen-easyeda-qualification-corpus/v1",
+    "source_basis": "USB-C power-input reference practice",
+    "variant": 6
+  },
+  "routing": {
+    "mode": "combination"
+  },
+  "schema_version": "progen-easyeda-circuit-ir/v1"
+}

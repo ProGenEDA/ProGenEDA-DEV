@@ -39,6 +39,9 @@ Easyeda/dist/progen-easyeda editable circuit.json
 
 # Apply validated value/reference edits to canonical JSON.
 Easyeda/dist/progen-easyeda edit circuit.json edits.json --output edited.json
+
+# Stream truthful completed pipeline stages for a website/worker adapter.
+Easyeda/dist/progen-easyeda run circuit.json --output-root runs --events ndjson
 ```
 
 ## Release Contract
@@ -88,3 +91,8 @@ Easyeda/dist/progen-easyeda edit circuit.json edits.json --output edited.json
 See [INPUT_JSON.md](INPUT_JSON.md), [SUPPORTED_COMPONENTS.md](SUPPORTED_COMPONENTS.md),
 [ARCHITECTURE.md](ARCHITECTURE.md), and the
 [300-case qualification record](qualification/README.md).
+
+The shipping website handoff is
+[`release/newwebsite-easyeda-handoff-2026_07_17.zip`](release/newwebsite-easyeda-handoff-2026_07_17.zip).
+It contains the portable, all 300 named circuit inputs, the complete website
+overlay, guarded installer, registry/UI payloads, tests, and release evidence.
