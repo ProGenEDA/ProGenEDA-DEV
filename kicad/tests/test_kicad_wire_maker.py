@@ -18,9 +18,12 @@ from kicad.pipeline.final_circuit_builder import (
 from kicad.pipeline.kicad_symbol_library import KiCadSymbolLibrary
 from kicad.pipeline.kicad_wire_maker import (
     TERMINAL_LABEL_PIN_OFFSET_MM,
+    _catalog_plan_from_placement_dict,
     _label_justify,
+    _pin_body_clearance_report,
     _pin_geometries,
     _resolve_pin_geometry,
+    _settle_actual_symbol_body_placement,
     _terminal_label_point,
     generate_wired_projects_from_final_json,
     make_kicad_wires,
@@ -45,6 +48,33 @@ class KiCadWireMakerTests(unittest.TestCase):
         self.assertEqual(_terminal_label_point(pin, "left"), (round(pin[0] - TERMINAL_LABEL_PIN_OFFSET_MM, 3), pin[1]))
         self.assertEqual(_terminal_label_point(pin, "top"), (pin[0], round(pin[1] - TERMINAL_LABEL_PIN_OFFSET_MM, 3)))
         self.assertEqual(_terminal_label_point(pin, "bottom"), (pin[0], round(pin[1] + TERMINAL_LABEL_PIN_OFFSET_MM, 3)))
+
+    def test_settlement_clears_source_pin_from_foreign_symbol_body(self) -> None:
+        circuit = {
+            "components": [
+                {"id": "J1", "kind": "PIN_HEADER", "value": "Header"},
+                {"id": "U1", "kind": "74HC86", "value": "74HC86"},
+            ]
+        }
+        placement = {
+            "components": {
+                "J1": {"kind": "PIN_HEADER", "at": [35.56, 594.36], "rotation": 0},
+                "U1": {"kind": "74HC86", "at": [35.56, 472.44], "rotation": 0},
+            }
+        }
+        library = KiCadSymbolLibrary()
+        before = _catalog_plan_from_placement_dict(circuit, placement)
+        before_report = _pin_body_clearance_report(before, library)
+        self.assertFalse(before_report["ok"])
+        self.assertEqual(before_report["conflicts"][0]["pin_ref"], "U1")
+        self.assertEqual(before_report["conflicts"][0]["body_ref"], "J1")
+
+        settled, settled_plan, _routing, report = _settle_actual_symbol_body_placement(circuit, placement)
+        self.assertTrue(report["ok"])
+        self.assertTrue(report["pin_foreign_body_clearance_ok"])
+        self.assertEqual(report["pin_foreign_body_clearance_count"], 0)
+        self.assertGreater(settled["components"]["J1"]["at"][1], placement["components"]["J1"]["at"][1])
+        self.assertTrue(_pin_body_clearance_report(settled_plan, library)["ok"])
 
     def test_exact_pin_aliases_preserve_case_and_active_low_identity(self) -> None:
         library = KiCadSymbolLibrary()

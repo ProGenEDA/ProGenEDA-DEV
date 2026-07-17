@@ -49,6 +49,7 @@ TERMINAL_LABEL_PIN_OFFSET_MM = 10.16
 VISIBLE_TEXT_FONT_MM = 1.27
 VISIBLE_TEXT_CLEARANCE_MM = 0.8
 TERMINAL_LABEL_FONT_MM = 0.8
+PIN_TO_FOREIGN_BODY_CLEARANCE_MM = 2.54
 VARIATION_ARRANGEMENT_PROFILES: dict[str, dict[str, float]] = {
     "square_compact": {"column_gap": 0.9, "row_gap": 1.1, "component_clearance": 1.0},
     "square_loose": {"column_gap": 1.2, "row_gap": 1.2, "component_clearance": 1.25},
@@ -2598,6 +2599,72 @@ def _pin_coordinate_overlap_report(
     }
 
 
+def _pin_body_clearance_report(
+    placement: CatalogPlacementPlan,
+    library: KiCadSymbolLibrary,
+    *,
+    clearance_mm: float = PIN_TO_FOREIGN_BODY_CLEARANCE_MM,
+) -> dict[str, Any]:
+    """Reject a source pin that is inside or too close to another symbol body.
+
+    Body-to-body checks alone are insufficient for multi-unit symbols: a
+    supply pin may extend beyond its unit body and end inside a neighbouring
+    connector even when the two body rectangles have a gap.  Such a pin has
+    no legal path for either a wire or a terminal stub, so placement must
+    repair it before routing begins.
+    """
+
+    bodies = _component_bodies(placement, library)
+    conflicts: list[dict[str, Any]] = []
+    for component in placement.components:
+        lib_id = component.spec.lib_id
+        if not lib_id:
+            continue
+        symbol = library.load(lib_id)
+        geometries = _pin_geometries(symbol.text)
+        unit_count = len(symbol.unit_pin_numbers) if symbol.unit_pin_numbers else 1
+        for geometry in geometries:
+            point = _pin_world(component, geometry, unit_count)
+            for body in bodies:
+                if body.ref == component.ref:
+                    continue
+                if not (
+                    body.left - clearance_mm < point[0] < body.right + clearance_mm
+                    and body.top - clearance_mm < point[1] < body.bottom + clearance_mm
+                ):
+                    continue
+                inside_body = (
+                    body.left <= point[0] <= body.right
+                    and body.top <= point[1] <= body.bottom
+                )
+                conflicts.append(
+                    {
+                        "pin_ref": component.ref,
+                        "pin_number": geometry.number,
+                        "pin_name": geometry.name,
+                        "pin_unit": geometry.unit,
+                        "point": [round(point[0], 3), round(point[1], 3)],
+                        "body_ref": body.ref,
+                        "body_source": body.source,
+                        "body": {
+                            "left": body.left,
+                            "top": body.top,
+                            "right": body.right,
+                            "bottom": body.bottom,
+                        },
+                        "inside_body": inside_body,
+                    }
+                )
+    return {
+        "schema": "progen-kicad-pin-foreign-body-clearance-report/v0.1",
+        "ok": not conflicts,
+        "clearance_mm": clearance_mm,
+        "conflict_count": len(conflicts),
+        "conflicts": conflicts[:200],
+        "conflicts_truncated": len(conflicts) > 200,
+    }
+
+
 def _nudge_actual_pin_overlap(
     placement_dict: dict[str, Any],
     routing_placement: dict[str, Any],
@@ -2652,6 +2719,97 @@ def _nudge_actual_pin_overlap(
         "moved_ref": move_ref,
         "delta": [delta[0], delta[1]],
         "conflict_members": members,
+    }
+
+
+def _nudge_actual_pin_body_clearance(
+    placement_dict: dict[str, Any],
+    routing_placement: dict[str, Any],
+    clearance_report: dict[str, Any],
+) -> tuple[dict[str, Any] | None, dict[str, Any] | None]:
+    """Move one component until a foreign source-pin/body conflict is clear."""
+
+    conflicts = clearance_report.get("conflicts", [])
+    components = placement_dict.get("components", {})
+    obstacles = routing_placement.get("obstacles", [])
+    if not isinstance(conflicts, list) or not conflicts or not isinstance(components, dict) or not isinstance(obstacles, list):
+        return None, None
+    conflict = conflicts[0]
+    if not isinstance(conflict, dict):
+        return None, None
+    pin_ref = str(conflict.get("pin_ref") or "")
+    body_ref = str(conflict.get("body_ref") or "")
+    point = conflict.get("point")
+    body = conflict.get("body")
+    if (
+        not pin_ref
+        or not body_ref
+        or pin_ref == body_ref
+        or pin_ref not in components
+        or body_ref not in components
+        or not isinstance(point, list)
+        or len(point) < 2
+        or not isinstance(body, dict)
+    ):
+        return None, None
+
+    bodies_per_ref: dict[str, int] = {}
+    for item in obstacles:
+        if isinstance(item, dict):
+            ref = str(item.get("component_ref") or "")
+            bodies_per_ref[ref] = bodies_per_ref.get(ref, 0) + 1
+    move_ref = min((pin_ref, body_ref), key=lambda ref: (bodies_per_ref.get(ref, 1), ref))
+    fixed_ref = body_ref if move_ref == pin_ref else pin_ref
+    moving_raw = components.get(move_ref)
+    fixed_raw = components.get(fixed_ref)
+    if not isinstance(moving_raw, dict) or not isinstance(fixed_raw, dict):
+        return None, None
+    if bool(moving_raw.get("manual", False)):
+        if bool(fixed_raw.get("manual", False)):
+            return None, None
+        move_ref, fixed_ref = fixed_ref, move_ref
+        moving_raw, fixed_raw = fixed_raw, moving_raw
+
+    x, y = float(point[0]), float(point[1])
+    left = float(body.get("left", 0.0))
+    top = float(body.get("top", 0.0))
+    right = float(body.get("right", 0.0))
+    bottom = float(body.get("bottom", 0.0))
+    center_x = (left + right) / 2
+    center_y = (top + bottom) / 2
+    clearance = float(clearance_report.get("clearance_mm", PIN_TO_FOREIGN_BODY_CLEARANCE_MM))
+
+    # Prefer the axis on which the pin is already furthest from the body's
+    # centre. It produces the short, intuitive nudge (down for a connector
+    # sitting below an IC power pin) instead of a broad lateral relocation.
+    if abs(y - center_y) >= abs(x - center_x):
+        if y <= center_y:
+            delta = (0.0, round((y - top) + clearance, 3))
+        else:
+            delta = (0.0, round(-((bottom - y) + clearance), 3))
+    elif x <= center_x:
+        delta = (round(-((x - left) + clearance), 3), 0.0)
+    else:
+        delta = (round((right - x) + clearance, 3), 0.0)
+
+    # Moving the source-pin component must head away from the fixed body;
+    # moving the body uses the opposite direction calculated above.
+    if move_ref == pin_ref:
+        delta = (-delta[0], -delta[1])
+    at = moving_raw.get("at")
+    if not isinstance(at, list) or len(at) < 2:
+        return None, None
+    repaired = deepcopy(placement_dict)
+    repaired["components"][move_ref]["at"] = [
+        round(float(at[0]) + delta[0], 3),
+        round(float(at[1]) + delta[1], 3),
+    ]
+    return repaired, {
+        "status": "source_pin_foreign_body_clearance_nudge",
+        "moved_ref": move_ref,
+        "fixed_ref": fixed_ref,
+        "delta": [delta[0], delta[1]],
+        "conflict": conflict,
     }
 
 
@@ -2744,12 +2902,14 @@ def _settle_actual_symbol_body_placement(
     final_routing_placement = _catalog_plan_as_routing_placement(circuit, final_placement)
     final_report = component_body_overlap_report(final_routing_placement.get("obstacles", []))
     final_pin_report = _pin_coordinate_overlap_report(final_placement, library)
+    final_pin_body_report = _pin_body_clearance_report(final_placement, library)
 
     for pass_index in range(1, max_passes + 1):
         final_placement = _catalog_plan_from_placement_dict(circuit, current)
         final_routing_placement = _catalog_plan_as_routing_placement(circuit, final_placement)
         final_report = component_body_overlap_report(final_routing_placement.get("obstacles", []))
         final_pin_report = _pin_coordinate_overlap_report(final_placement, library)
+        final_pin_body_report = _pin_body_clearance_report(final_placement, library)
         passes.append(
             {
                 "pass": pass_index,
@@ -2757,13 +2917,22 @@ def _settle_actual_symbol_body_placement(
                 "component_body_overlaps": final_report["overlaps"],
                 "pin_coordinate_overlap_count": final_pin_report["overlap_count"],
                 "pin_coordinate_overlaps": final_pin_report["overlaps"],
+                "pin_foreign_body_clearance_count": final_pin_body_report["conflict_count"],
+                "pin_foreign_body_clearance_conflicts": final_pin_body_report["conflicts"],
             }
         )
-        if final_report["ok"] and final_pin_report["ok"]:
+        if final_report["ok"] and final_pin_report["ok"] and final_pin_body_report["ok"]:
             break
 
         if final_report["ok"]:
-            nudged, nudge_report = _nudge_actual_pin_overlap(current, final_routing_placement, final_pin_report)
+            if not final_pin_report["ok"]:
+                nudged, nudge_report = _nudge_actual_pin_overlap(current, final_routing_placement, final_pin_report)
+            else:
+                nudged, nudge_report = _nudge_actual_pin_body_clearance(
+                    current,
+                    final_routing_placement,
+                    final_pin_body_report,
+                )
             if nudged is None:
                 break
             passes[-1]["fallback"] = nudge_report
@@ -2786,13 +2955,16 @@ def _settle_actual_symbol_body_placement(
 
     report = {
         "schema": "progen-kicad-actual-symbol-body-placement-report/v0.1",
-        "ok": bool(final_report["ok"]),
+        "ok": bool(final_report["ok"] and final_pin_report["ok"] and final_pin_body_report["ok"]),
         "pass_count": len(passes),
         "component_body_overlap_count": int(final_report["overlap_count"]),
         "component_body_overlaps": final_report["overlaps"],
         "pin_coordinate_overlap_ok": bool(final_pin_report["ok"]),
         "pin_coordinate_overlap_count": int(final_pin_report["overlap_count"]),
         "pin_coordinate_overlaps": final_pin_report["overlaps"],
+        "pin_foreign_body_clearance_ok": bool(final_pin_body_report["ok"]),
+        "pin_foreign_body_clearance_count": int(final_pin_body_report["conflict_count"]),
+        "pin_foreign_body_clearance_conflicts": final_pin_body_report["conflicts"],
         "passes": passes,
     }
     return current, final_placement, final_routing_placement, report
@@ -3169,13 +3341,21 @@ def generate_wired_projects_from_final_json(
         )
         final_body_overlap_report = component_body_overlap_report(routing_placement.get("obstacles", []))
         final_pin_coordinate_overlap_report = _pin_coordinate_overlap_report(placement, KiCadSymbolLibrary())
+        final_pin_body_clearance_report = _pin_body_clearance_report(placement, KiCadSymbolLibrary())
         body_overlap_report = dict(body_overlap_report)
-        body_overlap_report["ok"] = bool(final_body_overlap_report["ok"])
+        body_overlap_report["ok"] = bool(
+            final_body_overlap_report["ok"]
+            and final_pin_coordinate_overlap_report["ok"]
+            and final_pin_body_clearance_report["ok"]
+        )
         body_overlap_report["component_body_overlap_count"] = int(final_body_overlap_report["overlap_count"])
         body_overlap_report["component_body_overlaps"] = final_body_overlap_report["overlaps"]
         body_overlap_report["pin_coordinate_overlap_ok"] = bool(final_pin_coordinate_overlap_report["ok"])
         body_overlap_report["pin_coordinate_overlap_count"] = int(final_pin_coordinate_overlap_report["overlap_count"])
         body_overlap_report["pin_coordinate_overlaps"] = final_pin_coordinate_overlap_report["overlaps"]
+        body_overlap_report["pin_foreign_body_clearance_ok"] = bool(final_pin_body_clearance_report["ok"])
+        body_overlap_report["pin_foreign_body_clearance_count"] = int(final_pin_body_clearance_report["conflict_count"])
+        body_overlap_report["pin_foreign_body_clearance_conflicts"] = final_pin_body_clearance_report["conflicts"]
         (routing_input_dir / f"{stem}_routing_input.json").write_text(json.dumps(routing_placement, indent=2), encoding="utf-8")
         wire_plan["arrangement_selection"] = planned.get("arrangement_selection", {})
         wire_plan["partial_route_motion_repair"] = partial_motion_report
@@ -3294,6 +3474,8 @@ def generate_wired_projects_from_final_json(
                 "component_body_overlap_pass_count": body_overlap_report["pass_count"],
                 "pin_coordinate_overlap_ok": bool(body_overlap_report["pin_coordinate_overlap_ok"]),
                 "pin_coordinate_overlap_count": int(body_overlap_report["pin_coordinate_overlap_count"]),
+                "pin_foreign_body_clearance_ok": bool(body_overlap_report["pin_foreign_body_clearance_ok"]),
+                "pin_foreign_body_clearance_count": int(body_overlap_report["pin_foreign_body_clearance_count"]),
                 "terminal_label_layout_ok": bool(
                     manifest["wire_maker"].get("label_visual_layout", {}).get("ok", True)
                 ),
@@ -3364,6 +3546,10 @@ def generate_wired_projects_from_final_json(
         "total_component_body_overlaps": sum(int(item["component_body_overlap_count"]) for item in results),
         "all_pin_coordinate_overlap_ok": all(item["pin_coordinate_overlap_ok"] for item in results),
         "total_pin_coordinate_overlaps": sum(int(item["pin_coordinate_overlap_count"]) for item in results),
+        "all_pin_foreign_body_clearance_ok": all(item["pin_foreign_body_clearance_ok"] for item in results),
+        "total_pin_foreign_body_clearance_conflicts": sum(
+            int(item["pin_foreign_body_clearance_count"]) for item in results
+        ),
         "all_terminal_label_layout_ok": all(item["terminal_label_layout_ok"] for item in results),
         "total_terminal_label_layout_overlaps": sum(
             int(item["terminal_label_layout_overlap_count"]) for item in results

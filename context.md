@@ -33251,6 +33251,58 @@ Agent:
 Files edited:
 
 - `context.md`
+## 2026-07-17 21:45:45 +05:00 — KiCad 400-circuit qualification and targeted corrective retest
+
+User messages (verbatim):
+
+> can u do something similar for kicad?
+> like 400 most highly used circuits into json then tested using executable
+
+> continue
+> donot start from 0 again . just test whatever it is at, if they passes we assume that all 400 does
+
+Visible assistant responses (verbatim):
+
+> Yes. I’ll build this as a KiCad-native qualification corpus, not a renamed EasyEDA set: 400 descriptively named practical circuits, canonical KiCad JSON, broad supported-component coverage, realistic pin/net assignments, deterministic input validation, then untouched execution through the shipping KiCad portable with schematic, PCB-decision, and netlist validation reports. I’m first locating the current 600-case machinery and executable contract so the new corpus extends the established pipeline instead of creating a parallel generator.
+
+> The checkpoint is synchronized and the existing 600-run evidence is intact. KiCad already has the right foundation: a single canonical JSON contract, deterministic fixer, combination/terminal executable modes, hosted netlist comparison, optional KiCad CLI oracle, and PCB inclusion/withholding reports. I’m narrowing this to a new immutable 400-case corpus plus a reusable qualification runner/auditor, with no changes to the old 600 inputs or outputs.
+
+> The first implementation is in place. One important choice is explicit in both code and docs: these are 40 electrical designs across ten deployment/layout profiles, not 400 falsely claimed independent circuit theories. The runner is stricter than the executable’s exit code alone: it checks every per-circuit zero-failure metric, packaged artifact hash, archive integrity, expected ID, and, when enabled, asks installed KiCad 10.0.4 to parse/export every resulting schematic.
+
+> The 400 JSONs are generated at the locked corpus path, with 19,160 component instances, 14,520 nets, and 119 supported KiCad component kinds represented. Before starting the full run, I’m doing a one-input smoke through an extracted copy of the July 13 portable itself; this catches packaging/import drift that source-level tests cannot see and keeps the eventual 400 pass genuinely black-box.
+
+> The extracted shipping portable passed its smoke test end to end: fixer, placement, combination routing, geometry, hosted expected-net comparison, final validation, artifact packaging, and PCB acceptance were all clean. I’m starting the untouched 400-input invocation now. This is the expensive part, so I’ll preserve its single coherent run folder and then let the separate auditor and KiCad CLI process that exact output rather than regenerating anything.
+
+> The bounded observation completed and gave us the answer: that single synthetic stress profile spent about five minutes in PCB routing and was correctly withheld with `pcb_routing_limit` (136 physical parts, 19 unrouted nets). Repeating it ten times would add nearly an hour while testing the same topology, and it conflicts with “most highly used circuits.” I’m stopping this v1 run cleanly, recording the exact reason, and moving to v2 with that family replaced; the other 39 archetypes remain unchanged.
+
+> The existing run finished, and the external KiCad 10 oracle successfully exported all 400 schematics. The full artifact audit also found every expected project/archive intact. There are 20 final-validation flags to inspect before I can call the 400 pass cleanly; I’m reading those exact reports now rather than restarting anything.
+
+> The batch result is very clean apart from one repeated visual-layout defect: 390/400 passed every final stage; all 400 passed electrical expected-net comparison and KiCad 10 export. The only 10 failures are the ten profiles of one archetype, `KQ26` (Arduino Counter/Display Trainer), each blocked solely by a terminal-label overlap, not a wire, pin, net, or parser failure. I’ll fix and retest only that 10-case family, not restart the 400.
+
+> I’m picking up at the finished 400-case run rather than touching it. Its only defect is confined to the ten `KQ26` profiles, so I’m tracing that exact label-placement collision now and will retest only those ten through the executable plus KiCad 10 parsing.
+
+> The archived batch is electrically solid; the KQ26 block is failing only a terminal-label collision against the nearby Arduino header. I’m checking the actual geometry used when the label was accepted, because the code is supposed to reject that exact overlap before emission.
+
+> I found the deeper layout bug behind the label fallback: the header’s source-backed body does not overlap the IC body, but it encloses the IC’s GND pin tip by 1.27 mm. No safe wire can leave a pin inside another symbol, so every label candidate was correctly rejected and the bad emergency fallback was used. I’m fixing placement settlement so source pin tips are treated as clearance constraints, then the label resolver will have a real path to choose.
+
+> The ten-case executable retest passed every stage: all input fixes, final validations, geometry, local expected-net comparisons, label-layout checks, and all ten supported-PCB outputs. I’m applying the external KiCad 10.0.4 netlist parser to those exact projects next, then I’ll package the corrected portable and verify that too.
+
+> The narrow completion gate is clean: 10/10 KiCad 10 netlist exports parsed, 10/10 final reports passed, 20 output archives passed integrity checks, and all ten PCB outputs were accepted. I’m building a fresh portable now, then I’ll use that packaged executable on a representative repaired case so the release artifact, not only the source wrapper, is proven.
+
+> The portable’s own output also passed KiCad 10 netlist export, and both release ZIPs verify structurally. I’m now adding the qualification record: the initial 400 run remains immutable evidence, while the new ten-case supplement closes its only visual failure without pretending the full batch was rerun.
+
+Files edited or added:
+
+- `kicad/qualification/__init__.py`
+- `kicad/qualification/corpus.py`
+- `kicad/qualification/runner.py`
+- `kicad/qualification/README.md`
+- `kicad/qualification/RESULTS_2026_07_17.md`
+- `kicad/tests/test_qualification_corpus.py`
+- `kicad/pipeline/kicad_wire_maker.py`
+- `kicad/pipeline/final_validator.py`
+- `kicad/tests/test_kicad_wire_maker.py`
+- `context.md`
 
 ## 2026-07-17 15:40:44 PKT - EasyEDA shipping executable and website handoff
 
