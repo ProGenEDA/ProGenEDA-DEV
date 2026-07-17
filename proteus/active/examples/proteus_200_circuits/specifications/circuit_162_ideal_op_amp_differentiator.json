@@ -1,0 +1,227 @@
+{
+  "circuit": {
+    "complexity_score": 170706,
+    "id": 162,
+    "name": "Ideal Op-Amp Differentiator",
+    "source_pdf_page": 165,
+    "source_summary": "Resistor: 2 | Capacitor: 1 | OPAMP: 1 | Voltage source: 3 | Total: 7"
+  },
+  "components": [
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "V+",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VCC",
+      "value": "+15 V"
+    },
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "GND",
+          "pin": "+"
+        },
+        {
+          "net": "V-",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VEE",
+      "value": "-15 V"
+    },
+    {
+      "pdf_part": "VPULSE",
+      "pins": [
+        {
+          "net": "VIN",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VPULSE",
+      "projection_fidelity": "exact",
+      "ref": "VIN1",
+      "value": "-1 to +1 V, 1 kHz"
+    },
+    {
+      "pdf_part": "CAP",
+      "pins": [
+        {
+          "net": "VIN",
+          "pin": "1"
+        },
+        {
+          "net": "NINV",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "CAP",
+      "projection_fidelity": "exact",
+      "ref": "CIN",
+      "value": "10 nF"
+    },
+    {
+      "pdf_part": "OPAMP",
+      "pins": [
+        {
+          "net": "GND",
+          "pin": "IN+"
+        },
+        {
+          "net": "NINV",
+          "pin": "IN-"
+        },
+        {
+          "net": "VOUT",
+          "pin": "OUT"
+        },
+        {
+          "net": "V+",
+          "pin": "V+"
+        },
+        {
+          "net": "V-",
+          "pin": "V-"
+        }
+      ],
+      "placement_family": "OPAMP",
+      "projection_fidelity": "exact",
+      "ref": "U1",
+      "value": "Generic ideal OPAMP"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VOUT",
+          "pin": "1"
+        },
+        {
+          "net": "NINV",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RF",
+      "value": "100 kOhm"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VOUT",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RL",
+      "value": "10 kOhm"
+    }
+  ],
+  "executable_projection": {
+    "components": {
+      "CAP": 1,
+      "OPAMP": 1,
+      "RESISTOR": 2,
+      "VPULSE": 1,
+      "VSOURCE": 2
+    },
+    "mode": "placement_only_no_terminals",
+    "reason": "The canonical source JSON preserves all requested nets, but the current Proteus executable does not synthesize arbitrary physical wires. The sibling executable input validates donor-backed component placement only.",
+    "schema_version": "progen-proteus-placement-control/v1"
+  },
+  "nets": [
+    {
+      "endpoints": [
+        "VCC.-",
+        "VEE.+",
+        "VIN1.-",
+        "U1.IN+",
+        "RL.2"
+      ],
+      "name": "GND"
+    },
+    {
+      "endpoints": [
+        "VCC.+",
+        "U1.V+"
+      ],
+      "name": "V+"
+    },
+    {
+      "endpoints": [
+        "VEE.-",
+        "U1.V-"
+      ],
+      "name": "V-"
+    },
+    {
+      "endpoints": [
+        "VIN1.+",
+        "CIN.1"
+      ],
+      "name": "VIN"
+    },
+    {
+      "endpoints": [
+        "CIN.2",
+        "U1.IN-",
+        "RF.2"
+      ],
+      "name": "NINV"
+    },
+    {
+      "endpoints": [
+        "U1.OUT",
+        "RF.1",
+        "RL.1"
+      ],
+      "name": "VOUT"
+    }
+  ],
+  "pin_audit": {
+    "recomputed_net_count": 6,
+    "recomputed_pin_count": 17,
+    "source_assigned": 17,
+    "source_expected": 17,
+    "source_status": "PASS",
+    "source_unassigned": 0,
+    "valid": true
+  },
+  "placement_family_counts": {
+    "CAP": 1,
+    "OPAMP": 1,
+    "RESISTOR": 2,
+    "VPULSE": 1,
+    "VSOURCE": 2
+  },
+  "schema_version": "progen-proteus-complete-pin-wiring/v1",
+  "source_part_counts": {
+    "CAP": 1,
+    "OPAMP": 1,
+    "RES": 2,
+    "VDC": 2,
+    "VPULSE": 1
+  }
+}

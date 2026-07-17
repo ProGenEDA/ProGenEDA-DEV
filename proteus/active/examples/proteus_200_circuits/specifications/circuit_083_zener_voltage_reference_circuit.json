@@ -1,0 +1,116 @@
+{
+  "circuit": {
+    "complexity_score": 60303,
+    "id": 83,
+    "name": "Zener Voltage-Reference Circuit",
+    "source_pdf_page": 86,
+    "source_summary": "Resistor: 1 | Zener: 1 | Voltage source: 1 | Total: 3"
+  },
+  "components": [
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "VIN",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "V1",
+      "value": "12 V"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VIN",
+          "pin": "1"
+        },
+        {
+          "net": "VREF",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R1",
+      "value": "680 Ohm"
+    },
+    {
+      "pdf_part": "ZENER",
+      "pins": [
+        {
+          "net": "GND",
+          "pin": "A"
+        },
+        {
+          "net": "VREF",
+          "pin": "K"
+        }
+      ],
+      "placement_family": "BZY88C",
+      "projection_fidelity": "family_substitution",
+      "projection_note": "The source zener voltage/model remains in the canonical specification; the placement-only control uses the proven generic zener family.",
+      "ref": "DZ1",
+      "value": "5.1 V"
+    }
+  ],
+  "executable_projection": {
+    "components": {
+      "BZY88C": 1,
+      "RESISTOR": 1,
+      "VSOURCE": 1
+    },
+    "mode": "placement_only_no_terminals",
+    "reason": "The canonical source JSON preserves all requested nets, but the current Proteus executable does not synthesize arbitrary physical wires. The sibling executable input validates donor-backed component placement only.",
+    "schema_version": "progen-proteus-placement-control/v1"
+  },
+  "nets": [
+    {
+      "endpoints": [
+        "V1.-",
+        "DZ1.A"
+      ],
+      "name": "GND"
+    },
+    {
+      "endpoints": [
+        "V1.+",
+        "R1.1"
+      ],
+      "name": "VIN"
+    },
+    {
+      "endpoints": [
+        "R1.2",
+        "DZ1.K"
+      ],
+      "name": "VREF"
+    }
+  ],
+  "pin_audit": {
+    "recomputed_net_count": 3,
+    "recomputed_pin_count": 6,
+    "source_assigned": 6,
+    "source_expected": 6,
+    "source_status": "PASS",
+    "source_unassigned": 0,
+    "valid": true
+  },
+  "placement_family_counts": {
+    "BZY88C": 1,
+    "RESISTOR": 1,
+    "VSOURCE": 1
+  },
+  "schema_version": "progen-proteus-complete-pin-wiring/v1",
+  "source_part_counts": {
+    "RES": 1,
+    "VDC": 1,
+    "ZENER": 1
+  }
+}

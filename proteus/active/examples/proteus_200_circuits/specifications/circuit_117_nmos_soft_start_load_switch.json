@@ -1,0 +1,190 @@
+{
+  "circuit": {
+    "complexity_score": 130605,
+    "id": 117,
+    "name": "NMOS Soft-Start Load Switch",
+    "source_pdf_page": 120,
+    "source_summary": "Resistor: 2 | Capacitor: 1 | NMOSFET: 1 | Voltage source: 2 | Total: 6"
+  },
+  "components": [
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "VDD",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VDD1",
+      "value": "12 V"
+    },
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "CTRL",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VCTRL",
+      "value": "5 V"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "CTRL",
+          "pin": "1"
+        },
+        {
+          "net": "GATE",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R1",
+      "value": "100 kOhm"
+    },
+    {
+      "pdf_part": "CAP",
+      "pins": [
+        {
+          "net": "GATE",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "CAP",
+      "projection_fidelity": "exact",
+      "ref": "C1",
+      "value": "10 uF"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VDD",
+          "pin": "1"
+        },
+        {
+          "net": "DRAIN",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RL",
+      "value": "1 kOhm"
+    },
+    {
+      "pdf_part": "NMOSFET",
+      "pins": [
+        {
+          "net": "GATE",
+          "pin": "G"
+        },
+        {
+          "net": "DRAIN",
+          "pin": "D"
+        },
+        {
+          "net": "GND",
+          "pin": "S"
+        }
+      ],
+      "placement_family": "NMOSFET",
+      "projection_fidelity": "exact",
+      "ref": "Q1",
+      "value": "Generic NMOS"
+    }
+  ],
+  "executable_projection": {
+    "components": {
+      "CAP": 1,
+      "NMOSFET": 1,
+      "RESISTOR": 2,
+      "VSOURCE": 2
+    },
+    "mode": "placement_only_no_terminals",
+    "reason": "The canonical source JSON preserves all requested nets, but the current Proteus executable does not synthesize arbitrary physical wires. The sibling executable input validates donor-backed component placement only.",
+    "schema_version": "progen-proteus-placement-control/v1"
+  },
+  "nets": [
+    {
+      "endpoints": [
+        "VDD1.-",
+        "VCTRL.-",
+        "C1.2",
+        "Q1.S"
+      ],
+      "name": "GND"
+    },
+    {
+      "endpoints": [
+        "VDD1.+",
+        "RL.1"
+      ],
+      "name": "VDD"
+    },
+    {
+      "endpoints": [
+        "VCTRL.+",
+        "R1.1"
+      ],
+      "name": "CTRL"
+    },
+    {
+      "endpoints": [
+        "RL.2",
+        "Q1.D"
+      ],
+      "name": "DRAIN"
+    },
+    {
+      "endpoints": [
+        "R1.2",
+        "C1.1",
+        "Q1.G"
+      ],
+      "name": "GATE"
+    }
+  ],
+  "pin_audit": {
+    "recomputed_net_count": 5,
+    "recomputed_pin_count": 13,
+    "source_assigned": 13,
+    "source_expected": 13,
+    "source_status": "PASS",
+    "source_unassigned": 0,
+    "valid": true
+  },
+  "placement_family_counts": {
+    "CAP": 1,
+    "NMOSFET": 1,
+    "RESISTOR": 2,
+    "VSOURCE": 2
+  },
+  "schema_version": "progen-proteus-complete-pin-wiring/v1",
+  "source_part_counts": {
+    "CAP": 1,
+    "NMOSFET": 1,
+    "RES": 2,
+    "VDC": 2
+  }
+}

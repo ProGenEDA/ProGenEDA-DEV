@@ -22500,3 +22500,73 @@ Verification result:
 - `ProgenProteus.exe` rebuilt on 2026-07-17 with SHA-256 `BE444F1827440A01BCEEDB7A05794C794926CC4FCC3D76605B40743BEF7BE947`.
 - Executable and direct Python calls generated valid terminalized R/C projects.
 - A 20-second disposable-copy Proteus cold-open/cold-reopen gate passed twice, showed the expected schematic title, showed no loader-error dialog, and left the copy hash unchanged.
+
+---
+
+## 2026-07-17 12:15:20 +05:00 — PDF 200-circuit corpus
+
+User request (verbatim):
+
+> here are the 200 test circuits i want.
+> make jsons for each of the circuit recheck them again and again to make sure they are proper.
+> then pass them through the executable then do cold open test the most 10 complex ones
+
+Visible assistant responses (verbatim):
+
+> I’ll first verify the pushed checkpoint, then inspect the supplied PDF directly to extract and validate all 200 circuit definitions. I’m using the PDF workflow because the circuit list and pin wiring must be read from the document itself, not guessed from screenshots or memory.
+
+> The supplied PDF is present. Poppler is not installed here, so I’m using the PDF parser/rendering libraries available in the environment instead, then I’ll visually inspect rendered sample pages as required before creating any circuit JSON.
+
+> PyMuPDF is installed. I’m extracting the document’s page-by-page text and rendering representative pages now so I can determine whether it contains machine-readable netlists, circuit drawings, or both before defining the JSON schema.
+
+> The PDF is a complete, machine-readable specification: 200 circuits across pages 4–203, each with component references, every pin-to-net assignment, a netlist, and a pin audit. I’m now comparing that structure with the executable’s accepted JSON schema so the generated inputs retain the full wiring specification without pretending the current executable can synthesize unsupported arbitrary nets.
+
+> I’ve confirmed the document uses only 15 PDF part labels and has no malformed component table. I’m adding it as a pinned fixture and building a reusable corpus parser/validator that preserves every original pin/net assignment while deriving safe placement-only executable inputs separately.
+
+> The reusable corpus tool is in place. It validates every PDF row against the net table and reported pin audit, then emits two JSON layers: the full pin-wiring specification and a clean placement-only executable projection. I’m generating and independently re-parsing all 200 now.
+
+> The first full run found a parser boundary bug rather than a document problem: the page filter was applying a start-of-text heading regex to whole multiline pages. I’ve isolated it; I’m fixing that check to use the already-normalized page lines, then I’ll rerun the full 200-circuit audit.
+
+> All 200 source specs now pass the independent table-to-netlist audit. The ten most complex circuits are identified from real pin/component/net counts, not title guesses. I’m running the corpus check a second time plus focused tests before projecting them through the executable.
+
+> The second independent check and focused tests passed: 200 canonical wiring JSONs and 200 clean executable projections are present. I’m validating the executable control path on representative source-part mappings next, then I’ll launch the full 200-circuit placement-only corpus run and capture a result for every circuit.
+
+> The execution runner is ready. It keeps the full wiring JSON untouched and sends only the derived placement controls to the executable with `--no-terminals`, so no output can falsely claim that physical nets were made. I’m compiling the new tools and starting the complete 200-project run next.
+
+> Compilation and corpus tests pass. I’m launching all 200 derived controls through the freshly rebuilt portable executable with three isolated workers; each result will record its output hash or exact failure rather than stopping at the first problem.
+
+> The full batch is running cleanly so far; the runner is intentionally continuing through every circuit so any unsupported donor-capacity or component-mapping issue is captured in one complete report rather than hidden by an early stop.
+
+> All 200 executable projections passed: each produced a valid native placement project. I’m adding the cold-open mode to the same corpus runner so the selected ten are gated sequentially through real Proteus, with a separate disposable copy and persistent result for each.
+
+> The ten cold-open candidates are confirmed and all have valid executable output hashes. I’m starting their sequential real-Proteus gates now; each opens a disposable copy twice and checks for loader dialogs, project persistence, and the expected schematic title.
+
+> The sequential gates are underway. They are deliberately not parallelized: each gate must fully close its own Proteus process before the next candidate can be trusted.
+
+> The gate runner is still active and has not reported a failure. It is working through the high-complexity list one project at a time, using 20-second stability windows for both cold opens.
+
+> The cold-open sequence remains healthy. I’m preserving the individual gate records, so if any candidate has an application-specific loader issue the final report will identify that exact circuit and phase rather than flattening it into a batch result.
+
+> All ten complex projects passed the real Proteus cold-open/cold-reopen gate—no Bad Object Record, LXLCORE, library, or fatal dialog, and every disposable copy kept its hash. I’m running one final independent artifact audit over all 200 generated projects and the ten gate records before documenting and committing the corpus.
+
+> The independent artifact audit passed: all 200 native project containers have the required Proteus members and unchanged execution hashes, and all ten saved cold-open records pass both title and dialog checks. I’m documenting the run and auditing exactly what will be committed next.
+
+> I’m at the final handoff stage: the 200 canonical pin-wiring JSONs, all executable projections, and the ten real cold-open records are complete. I’m adding the run documentation, regenerating the repository map, then I’ll commit and verify the pushed checkpoint.
+
+User direction (verbatim):
+
+> donot start doind the hahing etc each time bro just generate them properly n save them properly
+
+Visible assistant response (verbatim):
+
+> Understood. I’m stopping the full repository-wide hash rebuild; the 200 JSONs and generated projects are already saved with their execution and cold-open reports. I’ll only do the normal lightweight completion checks needed to commit this task.
+
+> The saved artifacts are intact: the corpus manifest, all 200 generated projects, and the 10 cold-open records are present. I’m staging exactly this corpus work now—no repository-wide rehashing—and will run the normal diff check before committing it.
+
+> One small safety correction before commit: Git currently sees the source PDF as text, which can invite line-ending conversion. I’m marking that exact fixture as binary and restaging it so its original bytes are preserved; this is a file-storage safeguard, not another audit pass.
+
+> The final staged diff is clean. It contains 816 saved corpus artifacts and support files; the PDF’s SHA-256 remains exactly the source value, and no repository-wide hashing was rerun. I’m committing this single scoped checkpoint now.
+
+Visible assistant response (verbatim):
+
+> The corpus is now committed locally as `a00eeda0d0134e612b2c0cedde53fb22841bef53`. I’m updating this continuation log into that same checkpoint and will then push it normally, without force.

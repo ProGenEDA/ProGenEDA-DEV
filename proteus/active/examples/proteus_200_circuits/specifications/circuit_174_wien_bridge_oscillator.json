@@ -1,0 +1,308 @@
+{
+  "circuit": {
+    "complexity_score": 251107,
+    "id": 174,
+    "name": "Wien-Bridge Oscillator",
+    "source_pdf_page": 177,
+    "source_summary": "Resistor: 4 | Capacitor: 2 | Diode: 2 | OPAMP: 1 | Voltage source: 2 | Total: 11"
+  },
+  "components": [
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "V+",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VCC",
+      "value": "+15 V"
+    },
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "GND",
+          "pin": "+"
+        },
+        {
+          "net": "V-",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VEE",
+      "value": "-15 V"
+    },
+    {
+      "pdf_part": "OPAMP",
+      "pins": [
+        {
+          "net": "NPLUS",
+          "pin": "IN+"
+        },
+        {
+          "net": "NINV",
+          "pin": "IN-"
+        },
+        {
+          "net": "VOUT",
+          "pin": "OUT"
+        },
+        {
+          "net": "V+",
+          "pin": "V+"
+        },
+        {
+          "net": "V-",
+          "pin": "V-"
+        }
+      ],
+      "placement_family": "OPAMP",
+      "projection_fidelity": "exact",
+      "ref": "U1",
+      "value": "Generic ideal OPAMP"
+    },
+    {
+      "pdf_part": "CAP",
+      "pins": [
+        {
+          "net": "VOUT",
+          "pin": "1"
+        },
+        {
+          "net": "NSER",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "CAP",
+      "projection_fidelity": "exact",
+      "ref": "C1",
+      "value": "10 nF"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "NSER",
+          "pin": "1"
+        },
+        {
+          "net": "NPLUS",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R1",
+      "value": "10 kOhm"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "NPLUS",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R2",
+      "value": "10 kOhm"
+    },
+    {
+      "pdf_part": "CAP",
+      "pins": [
+        {
+          "net": "NPLUS",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "CAP",
+      "projection_fidelity": "exact",
+      "ref": "C2",
+      "value": "10 nF"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VOUT",
+          "pin": "1"
+        },
+        {
+          "net": "NINV",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R3",
+      "value": "20 kOhm"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "NINV",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R4",
+      "value": "10 kOhm"
+    },
+    {
+      "pdf_part": "DIODE",
+      "pins": [
+        {
+          "net": "VOUT",
+          "pin": "A"
+        },
+        {
+          "net": "NINV",
+          "pin": "K"
+        }
+      ],
+      "placement_family": "DIODE",
+      "projection_fidelity": "generic_family",
+      "ref": "D1",
+      "value": "1N4148"
+    },
+    {
+      "pdf_part": "DIODE",
+      "pins": [
+        {
+          "net": "NINV",
+          "pin": "A"
+        },
+        {
+          "net": "VOUT",
+          "pin": "K"
+        }
+      ],
+      "placement_family": "DIODE",
+      "projection_fidelity": "generic_family",
+      "ref": "D2",
+      "value": "1N4148"
+    }
+  ],
+  "executable_projection": {
+    "components": {
+      "CAP": 2,
+      "DIODE": 2,
+      "OPAMP": 1,
+      "RESISTOR": 4,
+      "VSOURCE": 2
+    },
+    "mode": "placement_only_no_terminals",
+    "reason": "The canonical source JSON preserves all requested nets, but the current Proteus executable does not synthesize arbitrary physical wires. The sibling executable input validates donor-backed component placement only.",
+    "schema_version": "progen-proteus-placement-control/v1"
+  },
+  "nets": [
+    {
+      "endpoints": [
+        "VCC.-",
+        "VEE.+",
+        "R2.2",
+        "C2.2",
+        "R4.2"
+      ],
+      "name": "GND"
+    },
+    {
+      "endpoints": [
+        "VCC.+",
+        "U1.V+"
+      ],
+      "name": "V+"
+    },
+    {
+      "endpoints": [
+        "VEE.-",
+        "U1.V-"
+      ],
+      "name": "V-"
+    },
+    {
+      "endpoints": [
+        "U1.IN-",
+        "R3.2",
+        "R4.1",
+        "D1.K",
+        "D2.A"
+      ],
+      "name": "NINV"
+    },
+    {
+      "endpoints": [
+        "U1.IN+",
+        "R1.2",
+        "R2.1",
+        "C2.1"
+      ],
+      "name": "NPLUS"
+    },
+    {
+      "endpoints": [
+        "C1.2",
+        "R1.1"
+      ],
+      "name": "NSER"
+    },
+    {
+      "endpoints": [
+        "U1.OUT",
+        "C1.1",
+        "R3.1",
+        "D1.A",
+        "D2.K"
+      ],
+      "name": "VOUT"
+    }
+  ],
+  "pin_audit": {
+    "recomputed_net_count": 7,
+    "recomputed_pin_count": 25,
+    "source_assigned": 25,
+    "source_expected": 25,
+    "source_status": "PASS",
+    "source_unassigned": 0,
+    "valid": true
+  },
+  "placement_family_counts": {
+    "CAP": 2,
+    "DIODE": 2,
+    "OPAMP": 1,
+    "RESISTOR": 4,
+    "VSOURCE": 2
+  },
+  "schema_version": "progen-proteus-complete-pin-wiring/v1",
+  "source_part_counts": {
+    "CAP": 2,
+    "DIODE": 2,
+    "OPAMP": 1,
+    "RES": 4,
+    "VDC": 2
+  }
+}

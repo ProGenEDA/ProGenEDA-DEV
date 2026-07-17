@@ -1,0 +1,261 @@
+{
+  "circuit": {
+    "complexity_score": 190906,
+    "id": 197,
+    "name": "Open-Loop NMOS Buck Converter",
+    "source_pdf_page": 200,
+    "source_summary": "Resistor: 3 | Electrolytic capacitor: 1 | Inductor: 1 | Diode: 1 | NMOSFET: 1 | Voltage source: 2 | Total: 9"
+  },
+  "components": [
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "VIN",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VIN1",
+      "value": "12 V"
+    },
+    {
+      "pdf_part": "VPULSE",
+      "pins": [
+        {
+          "net": "DRV",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VPULSE",
+      "projection_fidelity": "exact",
+      "ref": "VPWM",
+      "value": "0-15 V PWM"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "DRV",
+          "pin": "1"
+        },
+        {
+          "net": "GATE",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RG",
+      "value": "10 Ohm"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "GATE",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RPD",
+      "value": "100 kOhm"
+    },
+    {
+      "pdf_part": "NMOSFET",
+      "pins": [
+        {
+          "net": "GATE",
+          "pin": "G"
+        },
+        {
+          "net": "VIN",
+          "pin": "D"
+        },
+        {
+          "net": "SW",
+          "pin": "S"
+        }
+      ],
+      "placement_family": "NMOSFET",
+      "projection_fidelity": "exact",
+      "ref": "Q1",
+      "value": "Generic NMOS"
+    },
+    {
+      "pdf_part": "DIODE",
+      "pins": [
+        {
+          "net": "GND",
+          "pin": "A"
+        },
+        {
+          "net": "SW",
+          "pin": "K"
+        }
+      ],
+      "placement_family": "DIODE",
+      "projection_fidelity": "generic_family",
+      "ref": "D1",
+      "value": "1N5819"
+    },
+    {
+      "pdf_part": "INDUCTOR",
+      "pins": [
+        {
+          "net": "SW",
+          "pin": "1"
+        },
+        {
+          "net": "VOUT",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "REALIND",
+      "projection_fidelity": "direct_alias",
+      "ref": "L1",
+      "value": "100 uH"
+    },
+    {
+      "pdf_part": "CAP-ELEC",
+      "pins": [
+        {
+          "net": "VOUT",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "CAP-ELEC",
+      "projection_fidelity": "exact",
+      "ref": "COUT",
+      "value": "220 uF"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VOUT",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RL",
+      "value": "10 Ohm"
+    }
+  ],
+  "executable_projection": {
+    "components": {
+      "CAP-ELEC": 1,
+      "DIODE": 1,
+      "NMOSFET": 1,
+      "REALIND": 1,
+      "RESISTOR": 3,
+      "VPULSE": 1,
+      "VSOURCE": 1
+    },
+    "mode": "placement_only_no_terminals",
+    "reason": "The canonical source JSON preserves all requested nets, but the current Proteus executable does not synthesize arbitrary physical wires. The sibling executable input validates donor-backed component placement only.",
+    "schema_version": "progen-proteus-placement-control/v1"
+  },
+  "nets": [
+    {
+      "endpoints": [
+        "VIN1.-",
+        "VPWM.-",
+        "RPD.2",
+        "D1.A",
+        "COUT.-",
+        "RL.2"
+      ],
+      "name": "GND"
+    },
+    {
+      "endpoints": [
+        "VIN1.+",
+        "Q1.D"
+      ],
+      "name": "VIN"
+    },
+    {
+      "endpoints": [
+        "VPWM.+",
+        "RG.1"
+      ],
+      "name": "DRV"
+    },
+    {
+      "endpoints": [
+        "RG.2",
+        "RPD.1",
+        "Q1.G"
+      ],
+      "name": "GATE"
+    },
+    {
+      "endpoints": [
+        "Q1.S",
+        "D1.K",
+        "L1.1"
+      ],
+      "name": "SW"
+    },
+    {
+      "endpoints": [
+        "L1.2",
+        "COUT.+",
+        "RL.1"
+      ],
+      "name": "VOUT"
+    }
+  ],
+  "pin_audit": {
+    "recomputed_net_count": 6,
+    "recomputed_pin_count": 19,
+    "source_assigned": 19,
+    "source_expected": 19,
+    "source_status": "PASS",
+    "source_unassigned": 0,
+    "valid": true
+  },
+  "placement_family_counts": {
+    "CAP-ELEC": 1,
+    "DIODE": 1,
+    "NMOSFET": 1,
+    "REALIND": 1,
+    "RESISTOR": 3,
+    "VPULSE": 1,
+    "VSOURCE": 1
+  },
+  "schema_version": "progen-proteus-complete-pin-wiring/v1",
+  "source_part_counts": {
+    "CAP-ELEC": 1,
+    "DIODE": 1,
+    "INDUCTOR": 1,
+    "NMOSFET": 1,
+    "RES": 3,
+    "VDC": 1,
+    "VPULSE": 1
+  }
+}

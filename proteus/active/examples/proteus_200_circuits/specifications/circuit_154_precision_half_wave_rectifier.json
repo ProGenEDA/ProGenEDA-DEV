@@ -1,0 +1,270 @@
+{
+  "circuit": {
+    "complexity_score": 210907,
+    "id": 154,
+    "name": "Precision Half-Wave Rectifier",
+    "source_pdf_page": 157,
+    "source_summary": "Resistor: 3 | Diode: 2 | OPAMP: 1 | Voltage source: 3 | Total: 9"
+  },
+  "components": [
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "V+",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VCC",
+      "value": "+15 V"
+    },
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "GND",
+          "pin": "+"
+        },
+        {
+          "net": "V-",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VEE",
+      "value": "-15 V"
+    },
+    {
+      "pdf_part": "VSINE",
+      "pins": [
+        {
+          "net": "VIN",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSINE",
+      "projection_fidelity": "exact",
+      "ref": "VIN1",
+      "value": "2 Vpk, 1 kHz"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VIN",
+          "pin": "1"
+        },
+        {
+          "net": "NINV",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RIN",
+      "value": "10 kOhm"
+    },
+    {
+      "pdf_part": "OPAMP",
+      "pins": [
+        {
+          "net": "GND",
+          "pin": "IN+"
+        },
+        {
+          "net": "NINV",
+          "pin": "IN-"
+        },
+        {
+          "net": "OA",
+          "pin": "OUT"
+        },
+        {
+          "net": "V+",
+          "pin": "V+"
+        },
+        {
+          "net": "V-",
+          "pin": "V-"
+        }
+      ],
+      "placement_family": "OPAMP",
+      "projection_fidelity": "exact",
+      "ref": "U1",
+      "value": "Generic ideal OPAMP"
+    },
+    {
+      "pdf_part": "DIODE",
+      "pins": [
+        {
+          "net": "OA",
+          "pin": "A"
+        },
+        {
+          "net": "VOUT",
+          "pin": "K"
+        }
+      ],
+      "placement_family": "DIODE",
+      "projection_fidelity": "generic_family",
+      "ref": "D1",
+      "value": "1N4148"
+    },
+    {
+      "pdf_part": "DIODE",
+      "pins": [
+        {
+          "net": "NINV",
+          "pin": "A"
+        },
+        {
+          "net": "OA",
+          "pin": "K"
+        }
+      ],
+      "placement_family": "DIODE",
+      "projection_fidelity": "generic_family",
+      "ref": "D2",
+      "value": "1N4148"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VOUT",
+          "pin": "1"
+        },
+        {
+          "net": "NINV",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RF",
+      "value": "10 kOhm"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VOUT",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RL",
+      "value": "10 kOhm"
+    }
+  ],
+  "executable_projection": {
+    "components": {
+      "DIODE": 2,
+      "OPAMP": 1,
+      "RESISTOR": 3,
+      "VSINE": 1,
+      "VSOURCE": 2
+    },
+    "mode": "placement_only_no_terminals",
+    "reason": "The canonical source JSON preserves all requested nets, but the current Proteus executable does not synthesize arbitrary physical wires. The sibling executable input validates donor-backed component placement only.",
+    "schema_version": "progen-proteus-placement-control/v1"
+  },
+  "nets": [
+    {
+      "endpoints": [
+        "VCC.-",
+        "VEE.+",
+        "VIN1.-",
+        "U1.IN+",
+        "RL.2"
+      ],
+      "name": "GND"
+    },
+    {
+      "endpoints": [
+        "VCC.+",
+        "U1.V+"
+      ],
+      "name": "V+"
+    },
+    {
+      "endpoints": [
+        "VEE.-",
+        "U1.V-"
+      ],
+      "name": "V-"
+    },
+    {
+      "endpoints": [
+        "VIN1.+",
+        "RIN.1"
+      ],
+      "name": "VIN"
+    },
+    {
+      "endpoints": [
+        "RIN.2",
+        "U1.IN-",
+        "D2.A",
+        "RF.2"
+      ],
+      "name": "NINV"
+    },
+    {
+      "endpoints": [
+        "U1.OUT",
+        "D1.A",
+        "D2.K"
+      ],
+      "name": "OA"
+    },
+    {
+      "endpoints": [
+        "D1.K",
+        "RF.1",
+        "RL.1"
+      ],
+      "name": "VOUT"
+    }
+  ],
+  "pin_audit": {
+    "recomputed_net_count": 7,
+    "recomputed_pin_count": 21,
+    "source_assigned": 21,
+    "source_expected": 21,
+    "source_status": "PASS",
+    "source_unassigned": 0,
+    "valid": true
+  },
+  "placement_family_counts": {
+    "DIODE": 2,
+    "OPAMP": 1,
+    "RESISTOR": 3,
+    "VSINE": 1,
+    "VSOURCE": 2
+  },
+  "schema_version": "progen-proteus-complete-pin-wiring/v1",
+  "source_part_counts": {
+    "DIODE": 2,
+    "OPAMP": 1,
+    "RES": 3,
+    "VDC": 2,
+    "VSINE": 1
+  }
+}

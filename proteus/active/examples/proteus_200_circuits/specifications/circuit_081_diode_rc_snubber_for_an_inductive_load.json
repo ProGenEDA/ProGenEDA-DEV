@@ -1,0 +1,247 @@
+{
+  "circuit": {
+    "complexity_score": 170807,
+    "id": 81,
+    "name": "Diode-RC Snubber for an Inductive Load",
+    "source_pdf_page": 84,
+    "source_summary": "Resistor: 2 | Capacitor: 1 | Inductor: 1 | Diode: 1 | NMOSFET: 1 | Voltage source: 2 | Total: 8"
+  },
+  "components": [
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "VDD",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "V1",
+      "value": "12 V"
+    },
+    {
+      "pdf_part": "VPULSE",
+      "pins": [
+        {
+          "net": "GDRV",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VPULSE",
+      "projection_fidelity": "exact",
+      "ref": "VG",
+      "value": "0-5 V"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "GDRV",
+          "pin": "1"
+        },
+        {
+          "net": "GATE",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RG",
+      "value": "100 Ohm"
+    },
+    {
+      "pdf_part": "INDUCTOR",
+      "pins": [
+        {
+          "net": "VDD",
+          "pin": "1"
+        },
+        {
+          "net": "DRAIN",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "REALIND",
+      "projection_fidelity": "direct_alias",
+      "ref": "L1",
+      "value": "100 mH"
+    },
+    {
+      "pdf_part": "DIODE",
+      "pins": [
+        {
+          "net": "DRAIN",
+          "pin": "A"
+        },
+        {
+          "net": "SNUB",
+          "pin": "K"
+        }
+      ],
+      "placement_family": "DIODE",
+      "projection_fidelity": "generic_family",
+      "ref": "D1",
+      "value": "1N4148"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "SNUB",
+          "pin": "1"
+        },
+        {
+          "net": "CSN",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RS",
+      "value": "100 Ohm"
+    },
+    {
+      "pdf_part": "CAP",
+      "pins": [
+        {
+          "net": "CSN",
+          "pin": "1"
+        },
+        {
+          "net": "VDD",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "CAP",
+      "projection_fidelity": "exact",
+      "ref": "CS",
+      "value": "100 nF"
+    },
+    {
+      "pdf_part": "NMOSFET",
+      "pins": [
+        {
+          "net": "GATE",
+          "pin": "G"
+        },
+        {
+          "net": "DRAIN",
+          "pin": "D"
+        },
+        {
+          "net": "GND",
+          "pin": "S"
+        }
+      ],
+      "placement_family": "NMOSFET",
+      "projection_fidelity": "exact",
+      "ref": "Q1",
+      "value": "Generic NMOS"
+    }
+  ],
+  "executable_projection": {
+    "components": {
+      "CAP": 1,
+      "DIODE": 1,
+      "NMOSFET": 1,
+      "REALIND": 1,
+      "RESISTOR": 2,
+      "VPULSE": 1,
+      "VSOURCE": 1
+    },
+    "mode": "placement_only_no_terminals",
+    "reason": "The canonical source JSON preserves all requested nets, but the current Proteus executable does not synthesize arbitrary physical wires. The sibling executable input validates donor-backed component placement only.",
+    "schema_version": "progen-proteus-placement-control/v1"
+  },
+  "nets": [
+    {
+      "endpoints": [
+        "V1.-",
+        "VG.-",
+        "Q1.S"
+      ],
+      "name": "GND"
+    },
+    {
+      "endpoints": [
+        "V1.+",
+        "L1.1",
+        "CS.2"
+      ],
+      "name": "VDD"
+    },
+    {
+      "endpoints": [
+        "RS.2",
+        "CS.1"
+      ],
+      "name": "CSN"
+    },
+    {
+      "endpoints": [
+        "L1.2",
+        "D1.A",
+        "Q1.D"
+      ],
+      "name": "DRAIN"
+    },
+    {
+      "endpoints": [
+        "RG.2",
+        "Q1.G"
+      ],
+      "name": "GATE"
+    },
+    {
+      "endpoints": [
+        "VG.+",
+        "RG.1"
+      ],
+      "name": "GDRV"
+    },
+    {
+      "endpoints": [
+        "D1.K",
+        "RS.1"
+      ],
+      "name": "SNUB"
+    }
+  ],
+  "pin_audit": {
+    "recomputed_net_count": 7,
+    "recomputed_pin_count": 17,
+    "source_assigned": 17,
+    "source_expected": 17,
+    "source_status": "PASS",
+    "source_unassigned": 0,
+    "valid": true
+  },
+  "placement_family_counts": {
+    "CAP": 1,
+    "DIODE": 1,
+    "NMOSFET": 1,
+    "REALIND": 1,
+    "RESISTOR": 2,
+    "VPULSE": 1,
+    "VSOURCE": 1
+  },
+  "schema_version": "progen-proteus-complete-pin-wiring/v1",
+  "source_part_counts": {
+    "CAP": 1,
+    "DIODE": 1,
+    "INDUCTOR": 1,
+    "NMOSFET": 1,
+    "RES": 2,
+    "VDC": 1,
+    "VPULSE": 1
+  }
+}

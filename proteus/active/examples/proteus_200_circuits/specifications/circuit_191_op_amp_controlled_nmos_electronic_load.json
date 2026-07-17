@@ -1,0 +1,266 @@
+{
+  "circuit": {
+    "complexity_score": 210808,
+    "id": 191,
+    "name": "Op-Amp-Controlled NMOS Electronic Load",
+    "source_pdf_page": 194,
+    "source_summary": "Resistor: 2 | POT-HG: 1 | NMOSFET: 1 | OPAMP: 1 | Voltage source: 3 | Total: 8"
+  },
+  "components": [
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "V+",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VCC",
+      "value": "+15 V"
+    },
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "GND",
+          "pin": "+"
+        },
+        {
+          "net": "V-",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VEE",
+      "value": "-15 V"
+    },
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "LOADP",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VLOAD",
+      "value": "12 V"
+    },
+    {
+      "pdf_part": "POT-HG",
+      "pins": [
+        {
+          "net": "V+",
+          "pin": "1"
+        },
+        {
+          "net": "SET",
+          "pin": "W"
+        },
+        {
+          "net": "GND",
+          "pin": "3"
+        }
+      ],
+      "placement_family": "POT-HG",
+      "projection_fidelity": "exact",
+      "ref": "RV1",
+      "value": "10 kOhm"
+    },
+    {
+      "pdf_part": "OPAMP",
+      "pins": [
+        {
+          "net": "SET",
+          "pin": "IN+"
+        },
+        {
+          "net": "SENSE",
+          "pin": "IN-"
+        },
+        {
+          "net": "OG",
+          "pin": "OUT"
+        },
+        {
+          "net": "V+",
+          "pin": "V+"
+        },
+        {
+          "net": "V-",
+          "pin": "V-"
+        }
+      ],
+      "placement_family": "OPAMP",
+      "projection_fidelity": "exact",
+      "ref": "U1",
+      "value": "Generic ideal OPAMP"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "OG",
+          "pin": "1"
+        },
+        {
+          "net": "GATE",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RG",
+      "value": "100 Ohm"
+    },
+    {
+      "pdf_part": "NMOSFET",
+      "pins": [
+        {
+          "net": "GATE",
+          "pin": "G"
+        },
+        {
+          "net": "LOADP",
+          "pin": "D"
+        },
+        {
+          "net": "SENSE",
+          "pin": "S"
+        }
+      ],
+      "placement_family": "NMOSFET",
+      "projection_fidelity": "exact",
+      "ref": "Q1",
+      "value": "Generic NMOS"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "SENSE",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RS",
+      "value": "1 Ohm"
+    }
+  ],
+  "executable_projection": {
+    "components": {
+      "NMOSFET": 1,
+      "OPAMP": 1,
+      "POT-HG": 1,
+      "RESISTOR": 2,
+      "VSOURCE": 3
+    },
+    "mode": "placement_only_no_terminals",
+    "reason": "The canonical source JSON preserves all requested nets, but the current Proteus executable does not synthesize arbitrary physical wires. The sibling executable input validates donor-backed component placement only.",
+    "schema_version": "progen-proteus-placement-control/v1"
+  },
+  "nets": [
+    {
+      "endpoints": [
+        "VCC.-",
+        "VEE.+",
+        "VLOAD.-",
+        "RV1.3",
+        "RS.2"
+      ],
+      "name": "GND"
+    },
+    {
+      "endpoints": [
+        "VCC.+",
+        "RV1.1",
+        "U1.V+"
+      ],
+      "name": "V+"
+    },
+    {
+      "endpoints": [
+        "VEE.-",
+        "U1.V-"
+      ],
+      "name": "V-"
+    },
+    {
+      "endpoints": [
+        "RG.2",
+        "Q1.G"
+      ],
+      "name": "GATE"
+    },
+    {
+      "endpoints": [
+        "VLOAD.+",
+        "Q1.D"
+      ],
+      "name": "LOADP"
+    },
+    {
+      "endpoints": [
+        "U1.OUT",
+        "RG.1"
+      ],
+      "name": "OG"
+    },
+    {
+      "endpoints": [
+        "U1.IN-",
+        "Q1.S",
+        "RS.1"
+      ],
+      "name": "SENSE"
+    },
+    {
+      "endpoints": [
+        "RV1.W",
+        "U1.IN+"
+      ],
+      "name": "SET"
+    }
+  ],
+  "pin_audit": {
+    "recomputed_net_count": 8,
+    "recomputed_pin_count": 21,
+    "source_assigned": 21,
+    "source_expected": 21,
+    "source_status": "PASS",
+    "source_unassigned": 0,
+    "valid": true
+  },
+  "placement_family_counts": {
+    "NMOSFET": 1,
+    "OPAMP": 1,
+    "POT-HG": 1,
+    "RESISTOR": 2,
+    "VSOURCE": 3
+  },
+  "schema_version": "progen-proteus-complete-pin-wiring/v1",
+  "source_part_counts": {
+    "NMOSFET": 1,
+    "OPAMP": 1,
+    "POT-HG": 1,
+    "RES": 2,
+    "VDC": 3
+  }
+}

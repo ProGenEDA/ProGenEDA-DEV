@@ -109,5 +109,7 @@ requests that would silently claim a routed circuit. See
 - [Generated inventory CSV](inventory/repository_map.csv)
 - [Active manifest](inventory/active_manifest.json)
 - [Ignored local-only items](inventory/ignored_local_items.csv)
+- [Verified 200-circuit PDF corpus](examples/proteus_200_circuits/README.md)
+- [200-circuit executable and cold-open run](../experiments/runs/2026-07-17_pdf_200_circuit_placement_controls/README.md)
 - [Experiments](../experiments)
 - [Archive index](../archive/README.md)

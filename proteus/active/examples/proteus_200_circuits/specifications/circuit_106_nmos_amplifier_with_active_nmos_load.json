@@ -1,0 +1,214 @@
+{
+  "circuit": {
+    "complexity_score": 160705,
+    "id": 106,
+    "name": "NMOS Amplifier with Active NMOS Load",
+    "source_pdf_page": 109,
+    "source_summary": "Resistor: 3 | NMOSFET: 2 | Voltage source: 2 | Total: 7"
+  },
+  "components": [
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "VDD",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VDD1",
+      "value": "12 V"
+    },
+    {
+      "pdf_part": "VSINE",
+      "pins": [
+        {
+          "net": "GATE",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSINE",
+      "projection_fidelity": "exact",
+      "ref": "VIN1",
+      "value": "50 mVpk, 1 kHz"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VDD",
+          "pin": "1"
+        },
+        {
+          "net": "GATE",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R1",
+      "value": "1 MOhm"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "GATE",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R2",
+      "value": "220 kOhm"
+    },
+    {
+      "pdf_part": "NMOSFET",
+      "pins": [
+        {
+          "net": "VDD",
+          "pin": "G"
+        },
+        {
+          "net": "VDD",
+          "pin": "D"
+        },
+        {
+          "net": "VOUT",
+          "pin": "S"
+        }
+      ],
+      "placement_family": "NMOSFET",
+      "projection_fidelity": "exact",
+      "ref": "QLOAD",
+      "value": "Generic NMOS"
+    },
+    {
+      "pdf_part": "NMOSFET",
+      "pins": [
+        {
+          "net": "GATE",
+          "pin": "G"
+        },
+        {
+          "net": "VOUT",
+          "pin": "D"
+        },
+        {
+          "net": "SOURCE",
+          "pin": "S"
+        }
+      ],
+      "placement_family": "NMOSFET",
+      "projection_fidelity": "exact",
+      "ref": "Q1",
+      "value": "Generic NMOS"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "SOURCE",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RS",
+      "value": "1 kOhm"
+    }
+  ],
+  "executable_projection": {
+    "components": {
+      "NMOSFET": 2,
+      "RESISTOR": 3,
+      "VSINE": 1,
+      "VSOURCE": 1
+    },
+    "mode": "placement_only_no_terminals",
+    "reason": "The canonical source JSON preserves all requested nets, but the current Proteus executable does not synthesize arbitrary physical wires. The sibling executable input validates donor-backed component placement only.",
+    "schema_version": "progen-proteus-placement-control/v1"
+  },
+  "nets": [
+    {
+      "endpoints": [
+        "VDD1.-",
+        "VIN1.-",
+        "R2.2",
+        "RS.2"
+      ],
+      "name": "GND"
+    },
+    {
+      "endpoints": [
+        "VDD1.+",
+        "R1.1",
+        "QLOAD.G",
+        "QLOAD.D"
+      ],
+      "name": "VDD"
+    },
+    {
+      "endpoints": [
+        "VIN1.+",
+        "R1.2",
+        "R2.1",
+        "Q1.G"
+      ],
+      "name": "GATE"
+    },
+    {
+      "endpoints": [
+        "Q1.S",
+        "RS.1"
+      ],
+      "name": "SOURCE"
+    },
+    {
+      "endpoints": [
+        "QLOAD.S",
+        "Q1.D"
+      ],
+      "name": "VOUT"
+    }
+  ],
+  "pin_audit": {
+    "recomputed_net_count": 5,
+    "recomputed_pin_count": 16,
+    "source_assigned": 16,
+    "source_expected": 16,
+    "source_status": "PASS",
+    "source_unassigned": 0,
+    "valid": true
+  },
+  "placement_family_counts": {
+    "NMOSFET": 2,
+    "RESISTOR": 3,
+    "VSINE": 1,
+    "VSOURCE": 1
+  },
+  "schema_version": "progen-proteus-complete-pin-wiring/v1",
+  "source_part_counts": {
+    "NMOSFET": 2,
+    "RES": 3,
+    "VDC": 1,
+    "VSINE": 1
+  }
+}

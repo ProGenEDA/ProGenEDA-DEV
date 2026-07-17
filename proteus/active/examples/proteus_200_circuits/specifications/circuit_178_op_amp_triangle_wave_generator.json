@@ -1,0 +1,301 @@
+{
+  "circuit": {
+    "complexity_score": 261007,
+    "id": 178,
+    "name": "Op-Amp Triangle-Wave Generator",
+    "source_pdf_page": 181,
+    "source_summary": "Resistor: 5 | Capacitor: 1 | OPAMP: 2 | Voltage source: 2 | Total: 10"
+  },
+  "components": [
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "V+",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VCC",
+      "value": "+15 V"
+    },
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "GND",
+          "pin": "+"
+        },
+        {
+          "net": "V-",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VEE",
+      "value": "-15 V"
+    },
+    {
+      "pdf_part": "OPAMP",
+      "pins": [
+        {
+          "net": "NPLUS1",
+          "pin": "IN+"
+        },
+        {
+          "net": "TRI",
+          "pin": "IN-"
+        },
+        {
+          "net": "SQUARE",
+          "pin": "OUT"
+        },
+        {
+          "net": "V+",
+          "pin": "V+"
+        },
+        {
+          "net": "V-",
+          "pin": "V-"
+        }
+      ],
+      "placement_family": "OPAMP",
+      "projection_fidelity": "exact",
+      "ref": "U1",
+      "value": "Generic ideal OPAMP"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "SQUARE",
+          "pin": "1"
+        },
+        {
+          "net": "NPLUS1",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R1",
+      "value": "100 kOhm"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "NPLUS1",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R2",
+      "value": "10 kOhm"
+    },
+    {
+      "pdf_part": "OPAMP",
+      "pins": [
+        {
+          "net": "GND",
+          "pin": "IN+"
+        },
+        {
+          "net": "NINV2",
+          "pin": "IN-"
+        },
+        {
+          "net": "TRI",
+          "pin": "OUT"
+        },
+        {
+          "net": "V+",
+          "pin": "V+"
+        },
+        {
+          "net": "V-",
+          "pin": "V-"
+        }
+      ],
+      "placement_family": "OPAMP",
+      "projection_fidelity": "exact",
+      "ref": "U2",
+      "value": "Generic ideal OPAMP"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "SQUARE",
+          "pin": "1"
+        },
+        {
+          "net": "NINV2",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R3",
+      "value": "100 kOhm"
+    },
+    {
+      "pdf_part": "CAP",
+      "pins": [
+        {
+          "net": "TRI",
+          "pin": "1"
+        },
+        {
+          "net": "NINV2",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "CAP",
+      "projection_fidelity": "exact",
+      "ref": "C1",
+      "value": "10 nF"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "SQUARE",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R4",
+      "value": "10 kOhm"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "TRI",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R5",
+      "value": "10 kOhm"
+    }
+  ],
+  "executable_projection": {
+    "components": {
+      "CAP": 1,
+      "OPAMP": 2,
+      "RESISTOR": 5,
+      "VSOURCE": 2
+    },
+    "mode": "placement_only_no_terminals",
+    "reason": "The canonical source JSON preserves all requested nets, but the current Proteus executable does not synthesize arbitrary physical wires. The sibling executable input validates donor-backed component placement only.",
+    "schema_version": "progen-proteus-placement-control/v1"
+  },
+  "nets": [
+    {
+      "endpoints": [
+        "VCC.-",
+        "VEE.+",
+        "R2.2",
+        "U2.IN+",
+        "R4.2",
+        "R5.2"
+      ],
+      "name": "GND"
+    },
+    {
+      "endpoints": [
+        "VCC.+",
+        "U1.V+",
+        "U2.V+"
+      ],
+      "name": "V+"
+    },
+    {
+      "endpoints": [
+        "VEE.-",
+        "U1.V-",
+        "U2.V-"
+      ],
+      "name": "V-"
+    },
+    {
+      "endpoints": [
+        "U2.IN-",
+        "R3.2",
+        "C1.2"
+      ],
+      "name": "NINV2"
+    },
+    {
+      "endpoints": [
+        "U1.IN+",
+        "R1.2",
+        "R2.1"
+      ],
+      "name": "NPLUS1"
+    },
+    {
+      "endpoints": [
+        "U1.OUT",
+        "R1.1",
+        "R3.1",
+        "R4.1"
+      ],
+      "name": "SQUARE"
+    },
+    {
+      "endpoints": [
+        "U1.IN-",
+        "U2.OUT",
+        "C1.1",
+        "R5.1"
+      ],
+      "name": "TRI"
+    }
+  ],
+  "pin_audit": {
+    "recomputed_net_count": 7,
+    "recomputed_pin_count": 26,
+    "source_assigned": 26,
+    "source_expected": 26,
+    "source_status": "PASS",
+    "source_unassigned": 0,
+    "valid": true
+  },
+  "placement_family_counts": {
+    "CAP": 1,
+    "OPAMP": 2,
+    "RESISTOR": 5,
+    "VSOURCE": 2
+  },
+  "schema_version": "progen-proteus-complete-pin-wiring/v1",
+  "source_part_counts": {
+    "CAP": 1,
+    "OPAMP": 2,
+    "RES": 5,
+    "VDC": 2
+  }
+}

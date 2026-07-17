@@ -1,0 +1,239 @@
+{
+  "circuit": {
+    "complexity_score": 170806,
+    "id": 121,
+    "name": "NMOS Inductor Pulse Driver",
+    "source_pdf_page": 124,
+    "source_summary": "Resistor: 3 | Inductor: 1 | Diode: 1 | NMOSFET: 1 | Voltage source: 2 | Total: 8"
+  },
+  "components": [
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "VDD",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VDD1",
+      "value": "12 V"
+    },
+    {
+      "pdf_part": "VPULSE",
+      "pins": [
+        {
+          "net": "DRV",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VPULSE",
+      "projection_fidelity": "exact",
+      "ref": "VIN1",
+      "value": "0-5 V pulse"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "DRV",
+          "pin": "1"
+        },
+        {
+          "net": "GATE",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RG",
+      "value": "100 Ohm"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "GATE",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RPD",
+      "value": "100 kOhm"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VDD",
+          "pin": "1"
+        },
+        {
+          "net": "N1",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RCOIL",
+      "value": "100 Ohm"
+    },
+    {
+      "pdf_part": "INDUCTOR",
+      "pins": [
+        {
+          "net": "N1",
+          "pin": "1"
+        },
+        {
+          "net": "DRAIN",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "REALIND",
+      "projection_fidelity": "direct_alias",
+      "ref": "L1",
+      "value": "100 mH"
+    },
+    {
+      "pdf_part": "DIODE",
+      "pins": [
+        {
+          "net": "DRAIN",
+          "pin": "A"
+        },
+        {
+          "net": "VDD",
+          "pin": "K"
+        }
+      ],
+      "placement_family": "DIODE",
+      "projection_fidelity": "generic_family",
+      "ref": "D1",
+      "value": "1N4007"
+    },
+    {
+      "pdf_part": "NMOSFET",
+      "pins": [
+        {
+          "net": "GATE",
+          "pin": "G"
+        },
+        {
+          "net": "DRAIN",
+          "pin": "D"
+        },
+        {
+          "net": "GND",
+          "pin": "S"
+        }
+      ],
+      "placement_family": "NMOSFET",
+      "projection_fidelity": "exact",
+      "ref": "Q1",
+      "value": "Generic NMOS"
+    }
+  ],
+  "executable_projection": {
+    "components": {
+      "DIODE": 1,
+      "NMOSFET": 1,
+      "REALIND": 1,
+      "RESISTOR": 3,
+      "VPULSE": 1,
+      "VSOURCE": 1
+    },
+    "mode": "placement_only_no_terminals",
+    "reason": "The canonical source JSON preserves all requested nets, but the current Proteus executable does not synthesize arbitrary physical wires. The sibling executable input validates donor-backed component placement only.",
+    "schema_version": "progen-proteus-placement-control/v1"
+  },
+  "nets": [
+    {
+      "endpoints": [
+        "VDD1.-",
+        "VIN1.-",
+        "RPD.2",
+        "Q1.S"
+      ],
+      "name": "GND"
+    },
+    {
+      "endpoints": [
+        "VDD1.+",
+        "RCOIL.1",
+        "D1.K"
+      ],
+      "name": "VDD"
+    },
+    {
+      "endpoints": [
+        "L1.2",
+        "D1.A",
+        "Q1.D"
+      ],
+      "name": "DRAIN"
+    },
+    {
+      "endpoints": [
+        "VIN1.+",
+        "RG.1"
+      ],
+      "name": "DRV"
+    },
+    {
+      "endpoints": [
+        "RG.2",
+        "RPD.1",
+        "Q1.G"
+      ],
+      "name": "GATE"
+    },
+    {
+      "endpoints": [
+        "RCOIL.2",
+        "L1.1"
+      ],
+      "name": "N1"
+    }
+  ],
+  "pin_audit": {
+    "recomputed_net_count": 6,
+    "recomputed_pin_count": 17,
+    "source_assigned": 17,
+    "source_expected": 17,
+    "source_status": "PASS",
+    "source_unassigned": 0,
+    "valid": true
+  },
+  "placement_family_counts": {
+    "DIODE": 1,
+    "NMOSFET": 1,
+    "REALIND": 1,
+    "RESISTOR": 3,
+    "VPULSE": 1,
+    "VSOURCE": 1
+  },
+  "schema_version": "progen-proteus-complete-pin-wiring/v1",
+  "source_part_counts": {
+    "DIODE": 1,
+    "INDUCTOR": 1,
+    "NMOSFET": 1,
+    "RES": 3,
+    "VDC": 1,
+    "VPULSE": 1
+  }
+}

@@ -1,0 +1,234 @@
+{
+  "circuit": {
+    "complexity_score": 180707,
+    "id": 147,
+    "name": "Op-Amp Precision Current Sink",
+    "source_pdf_page": 150,
+    "source_summary": "Resistor: 2 | NMOSFET: 1 | OPAMP: 1 | Voltage source: 3 | Total: 7"
+  },
+  "components": [
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "V+",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VCC",
+      "value": "+15 V"
+    },
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "GND",
+          "pin": "+"
+        },
+        {
+          "net": "V-",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VEE",
+      "value": "-15 V"
+    },
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "REF",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VREF",
+      "value": "1 V"
+    },
+    {
+      "pdf_part": "OPAMP",
+      "pins": [
+        {
+          "net": "REF",
+          "pin": "IN+"
+        },
+        {
+          "net": "SENSE",
+          "pin": "IN-"
+        },
+        {
+          "net": "GATE",
+          "pin": "OUT"
+        },
+        {
+          "net": "V+",
+          "pin": "V+"
+        },
+        {
+          "net": "V-",
+          "pin": "V-"
+        }
+      ],
+      "placement_family": "OPAMP",
+      "projection_fidelity": "exact",
+      "ref": "U1",
+      "value": "Generic ideal OPAMP"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "V+",
+          "pin": "1"
+        },
+        {
+          "net": "DRAIN",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RL",
+      "value": "100 Ohm"
+    },
+    {
+      "pdf_part": "NMOSFET",
+      "pins": [
+        {
+          "net": "GATE",
+          "pin": "G"
+        },
+        {
+          "net": "DRAIN",
+          "pin": "D"
+        },
+        {
+          "net": "SENSE",
+          "pin": "S"
+        }
+      ],
+      "placement_family": "NMOSFET",
+      "projection_fidelity": "exact",
+      "ref": "Q1",
+      "value": "Generic NMOS"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "SENSE",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RS",
+      "value": "10 Ohm"
+    }
+  ],
+  "executable_projection": {
+    "components": {
+      "NMOSFET": 1,
+      "OPAMP": 1,
+      "RESISTOR": 2,
+      "VSOURCE": 3
+    },
+    "mode": "placement_only_no_terminals",
+    "reason": "The canonical source JSON preserves all requested nets, but the current Proteus executable does not synthesize arbitrary physical wires. The sibling executable input validates donor-backed component placement only.",
+    "schema_version": "progen-proteus-placement-control/v1"
+  },
+  "nets": [
+    {
+      "endpoints": [
+        "VCC.-",
+        "VEE.+",
+        "VREF.-",
+        "RS.2"
+      ],
+      "name": "GND"
+    },
+    {
+      "endpoints": [
+        "VCC.+",
+        "U1.V+",
+        "RL.1"
+      ],
+      "name": "V+"
+    },
+    {
+      "endpoints": [
+        "VEE.-",
+        "U1.V-"
+      ],
+      "name": "V-"
+    },
+    {
+      "endpoints": [
+        "RL.2",
+        "Q1.D"
+      ],
+      "name": "DRAIN"
+    },
+    {
+      "endpoints": [
+        "U1.OUT",
+        "Q1.G"
+      ],
+      "name": "GATE"
+    },
+    {
+      "endpoints": [
+        "VREF.+",
+        "U1.IN+"
+      ],
+      "name": "REF"
+    },
+    {
+      "endpoints": [
+        "U1.IN-",
+        "Q1.S",
+        "RS.1"
+      ],
+      "name": "SENSE"
+    }
+  ],
+  "pin_audit": {
+    "recomputed_net_count": 7,
+    "recomputed_pin_count": 18,
+    "source_assigned": 18,
+    "source_expected": 18,
+    "source_status": "PASS",
+    "source_unassigned": 0,
+    "valid": true
+  },
+  "placement_family_counts": {
+    "NMOSFET": 1,
+    "OPAMP": 1,
+    "RESISTOR": 2,
+    "VSOURCE": 3
+  },
+  "schema_version": "progen-proteus-complete-pin-wiring/v1",
+  "source_part_counts": {
+    "NMOSFET": 1,
+    "OPAMP": 1,
+    "RES": 2,
+    "VDC": 3
+  }
+}

@@ -1,0 +1,182 @@
+{
+  "circuit": {
+    "complexity_score": 120605,
+    "id": 75,
+    "name": "Diode AND Gate",
+    "source_pdf_page": 78,
+    "source_summary": "Resistor: 1 | Diode: 2 | Voltage source: 3 | Total: 6"
+  },
+  "components": [
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "A",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VA",
+      "value": "5 V"
+    },
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "B",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VB",
+      "value": "5 V"
+    },
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "VDD",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VCC",
+      "value": "5 V"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VDD",
+          "pin": "1"
+        },
+        {
+          "net": "Y",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R1",
+      "value": "10 kOhm"
+    },
+    {
+      "pdf_part": "DIODE",
+      "pins": [
+        {
+          "net": "Y",
+          "pin": "A"
+        },
+        {
+          "net": "A",
+          "pin": "K"
+        }
+      ],
+      "placement_family": "DIODE",
+      "projection_fidelity": "generic_family",
+      "ref": "D1",
+      "value": "1N4148"
+    },
+    {
+      "pdf_part": "DIODE",
+      "pins": [
+        {
+          "net": "Y",
+          "pin": "A"
+        },
+        {
+          "net": "B",
+          "pin": "K"
+        }
+      ],
+      "placement_family": "DIODE",
+      "projection_fidelity": "generic_family",
+      "ref": "D2",
+      "value": "1N4148"
+    }
+  ],
+  "executable_projection": {
+    "components": {
+      "DIODE": 2,
+      "RESISTOR": 1,
+      "VSOURCE": 3
+    },
+    "mode": "placement_only_no_terminals",
+    "reason": "The canonical source JSON preserves all requested nets, but the current Proteus executable does not synthesize arbitrary physical wires. The sibling executable input validates donor-backed component placement only.",
+    "schema_version": "progen-proteus-placement-control/v1"
+  },
+  "nets": [
+    {
+      "endpoints": [
+        "VA.-",
+        "VB.-",
+        "VCC.-"
+      ],
+      "name": "GND"
+    },
+    {
+      "endpoints": [
+        "VCC.+",
+        "R1.1"
+      ],
+      "name": "VDD"
+    },
+    {
+      "endpoints": [
+        "VA.+",
+        "D1.K"
+      ],
+      "name": "A"
+    },
+    {
+      "endpoints": [
+        "VB.+",
+        "D2.K"
+      ],
+      "name": "B"
+    },
+    {
+      "endpoints": [
+        "R1.2",
+        "D1.A",
+        "D2.A"
+      ],
+      "name": "Y"
+    }
+  ],
+  "pin_audit": {
+    "recomputed_net_count": 5,
+    "recomputed_pin_count": 12,
+    "source_assigned": 12,
+    "source_expected": 12,
+    "source_status": "PASS",
+    "source_unassigned": 0,
+    "valid": true
+  },
+  "placement_family_counts": {
+    "DIODE": 2,
+    "RESISTOR": 1,
+    "VSOURCE": 3
+  },
+  "schema_version": "progen-proteus-complete-pin-wiring/v1",
+  "source_part_counts": {
+    "DIODE": 2,
+    "RES": 1,
+    "VDC": 3
+  }
+}

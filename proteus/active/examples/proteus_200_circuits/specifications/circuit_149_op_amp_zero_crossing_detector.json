@@ -1,0 +1,209 @@
+{
+  "circuit": {
+    "complexity_score": 150606,
+    "id": 149,
+    "name": "Op-Amp Zero-Crossing Detector",
+    "source_pdf_page": 152,
+    "source_summary": "Resistor: 1 | LED: 1 | OPAMP: 1 | Voltage source: 3 | Total: 6"
+  },
+  "components": [
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "V+",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VCC",
+      "value": "+15 V"
+    },
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "GND",
+          "pin": "+"
+        },
+        {
+          "net": "V-",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VEE",
+      "value": "-15 V"
+    },
+    {
+      "pdf_part": "VSINE",
+      "pins": [
+        {
+          "net": "VIN",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSINE",
+      "projection_fidelity": "exact",
+      "ref": "VIN1",
+      "value": "5 Vpk, 100 Hz"
+    },
+    {
+      "pdf_part": "OPAMP",
+      "pins": [
+        {
+          "net": "VIN",
+          "pin": "IN+"
+        },
+        {
+          "net": "GND",
+          "pin": "IN-"
+        },
+        {
+          "net": "VOUT",
+          "pin": "OUT"
+        },
+        {
+          "net": "V+",
+          "pin": "V+"
+        },
+        {
+          "net": "V-",
+          "pin": "V-"
+        }
+      ],
+      "placement_family": "OPAMP",
+      "projection_fidelity": "exact",
+      "ref": "U1",
+      "value": "Generic ideal OPAMP"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VOUT",
+          "pin": "1"
+        },
+        {
+          "net": "LED_A",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RLED",
+      "value": "1 kOhm"
+    },
+    {
+      "pdf_part": "LED",
+      "pins": [
+        {
+          "net": "LED_A",
+          "pin": "A"
+        },
+        {
+          "net": "GND",
+          "pin": "K"
+        }
+      ],
+      "placement_family": "LED-RED",
+      "projection_fidelity": "family_substitution",
+      "projection_note": "The source LED colour remains in the canonical specification; the placement-only control uses the currently supported LED family.",
+      "ref": "LED1",
+      "value": "RED"
+    }
+  ],
+  "executable_projection": {
+    "components": {
+      "LED-RED": 1,
+      "OPAMP": 1,
+      "RESISTOR": 1,
+      "VSINE": 1,
+      "VSOURCE": 2
+    },
+    "mode": "placement_only_no_terminals",
+    "reason": "The canonical source JSON preserves all requested nets, but the current Proteus executable does not synthesize arbitrary physical wires. The sibling executable input validates donor-backed component placement only.",
+    "schema_version": "progen-proteus-placement-control/v1"
+  },
+  "nets": [
+    {
+      "endpoints": [
+        "VCC.-",
+        "VEE.+",
+        "VIN1.-",
+        "U1.IN-",
+        "LED1.K"
+      ],
+      "name": "GND"
+    },
+    {
+      "endpoints": [
+        "VCC.+",
+        "U1.V+"
+      ],
+      "name": "V+"
+    },
+    {
+      "endpoints": [
+        "VEE.-",
+        "U1.V-"
+      ],
+      "name": "V-"
+    },
+    {
+      "endpoints": [
+        "VIN1.+",
+        "U1.IN+"
+      ],
+      "name": "VIN"
+    },
+    {
+      "endpoints": [
+        "RLED.2",
+        "LED1.A"
+      ],
+      "name": "LED_A"
+    },
+    {
+      "endpoints": [
+        "U1.OUT",
+        "RLED.1"
+      ],
+      "name": "VOUT"
+    }
+  ],
+  "pin_audit": {
+    "recomputed_net_count": 6,
+    "recomputed_pin_count": 15,
+    "source_assigned": 15,
+    "source_expected": 15,
+    "source_status": "PASS",
+    "source_unassigned": 0,
+    "valid": true
+  },
+  "placement_family_counts": {
+    "LED-RED": 1,
+    "OPAMP": 1,
+    "RESISTOR": 1,
+    "VSINE": 1,
+    "VSOURCE": 2
+  },
+  "schema_version": "progen-proteus-complete-pin-wiring/v1",
+  "source_part_counts": {
+    "LED": 1,
+    "OPAMP": 1,
+    "RES": 1,
+    "VDC": 2,
+    "VSINE": 1
+  }
+}

@@ -1,0 +1,424 @@
+{
+  "circuit": {
+    "complexity_score": 361512,
+    "id": 155,
+    "name": "Precision Full-Wave Rectifier",
+    "source_pdf_page": 158,
+    "source_summary": "Resistor: 6 | Diode: 4 | OPAMP: 2 | Voltage source: 3 | Total: 15"
+  },
+  "components": [
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "V+",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VCC",
+      "value": "+15 V"
+    },
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "GND",
+          "pin": "+"
+        },
+        {
+          "net": "V-",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VEE",
+      "value": "-15 V"
+    },
+    {
+      "pdf_part": "VSINE",
+      "pins": [
+        {
+          "net": "VIN",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSINE",
+      "projection_fidelity": "exact",
+      "ref": "VIN1",
+      "value": "2 Vpk, 1 kHz"
+    },
+    {
+      "pdf_part": "OPAMP",
+      "pins": [
+        {
+          "net": "GND",
+          "pin": "IN+"
+        },
+        {
+          "net": "N1",
+          "pin": "IN-"
+        },
+        {
+          "net": "OA",
+          "pin": "OUT"
+        },
+        {
+          "net": "V+",
+          "pin": "V+"
+        },
+        {
+          "net": "V-",
+          "pin": "V-"
+        }
+      ],
+      "placement_family": "OPAMP",
+      "projection_fidelity": "exact",
+      "ref": "U1",
+      "value": "Generic ideal OPAMP"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VIN",
+          "pin": "1"
+        },
+        {
+          "net": "N1",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R1",
+      "value": "10 kOhm"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "X",
+          "pin": "1"
+        },
+        {
+          "net": "N1",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R2",
+      "value": "10 kOhm"
+    },
+    {
+      "pdf_part": "DIODE",
+      "pins": [
+        {
+          "net": "OA",
+          "pin": "A"
+        },
+        {
+          "net": "P",
+          "pin": "K"
+        }
+      ],
+      "placement_family": "DIODE",
+      "projection_fidelity": "generic_family",
+      "ref": "D1",
+      "value": "1N4148"
+    },
+    {
+      "pdf_part": "DIODE",
+      "pins": [
+        {
+          "net": "N",
+          "pin": "A"
+        },
+        {
+          "net": "OA",
+          "pin": "K"
+        }
+      ],
+      "placement_family": "DIODE",
+      "projection_fidelity": "generic_family",
+      "ref": "D2",
+      "value": "1N4148"
+    },
+    {
+      "pdf_part": "DIODE",
+      "pins": [
+        {
+          "net": "P",
+          "pin": "A"
+        },
+        {
+          "net": "X",
+          "pin": "K"
+        }
+      ],
+      "placement_family": "DIODE",
+      "projection_fidelity": "generic_family",
+      "ref": "D3",
+      "value": "1N4148"
+    },
+    {
+      "pdf_part": "DIODE",
+      "pins": [
+        {
+          "net": "X",
+          "pin": "A"
+        },
+        {
+          "net": "N",
+          "pin": "K"
+        }
+      ],
+      "placement_family": "DIODE",
+      "projection_fidelity": "generic_family",
+      "ref": "D4",
+      "value": "1N4148"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "P",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R3",
+      "value": "10 kOhm"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "N",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R4",
+      "value": "10 kOhm"
+    },
+    {
+      "pdf_part": "OPAMP",
+      "pins": [
+        {
+          "net": "NPLUS2",
+          "pin": "IN+"
+        },
+        {
+          "net": "NMINUS2",
+          "pin": "IN-"
+        },
+        {
+          "net": "VOUT",
+          "pin": "OUT"
+        },
+        {
+          "net": "V+",
+          "pin": "V+"
+        },
+        {
+          "net": "V-",
+          "pin": "V-"
+        }
+      ],
+      "placement_family": "OPAMP",
+      "projection_fidelity": "exact",
+      "ref": "U2",
+      "value": "Generic ideal OPAMP"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "X",
+          "pin": "1"
+        },
+        {
+          "net": "NPLUS2",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R5",
+      "value": "10 kOhm"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VOUT",
+          "pin": "1"
+        },
+        {
+          "net": "NMINUS2",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R6",
+      "value": "10 kOhm"
+    }
+  ],
+  "executable_projection": {
+    "components": {
+      "DIODE": 4,
+      "OPAMP": 2,
+      "RESISTOR": 6,
+      "VSINE": 1,
+      "VSOURCE": 2
+    },
+    "mode": "placement_only_no_terminals",
+    "reason": "The canonical source JSON preserves all requested nets, but the current Proteus executable does not synthesize arbitrary physical wires. The sibling executable input validates donor-backed component placement only.",
+    "schema_version": "progen-proteus-placement-control/v1"
+  },
+  "nets": [
+    {
+      "endpoints": [
+        "VCC.-",
+        "VEE.+",
+        "VIN1.-",
+        "U1.IN+",
+        "R3.2",
+        "R4.2"
+      ],
+      "name": "GND"
+    },
+    {
+      "endpoints": [
+        "VCC.+",
+        "U1.V+",
+        "U2.V+"
+      ],
+      "name": "V+"
+    },
+    {
+      "endpoints": [
+        "VEE.-",
+        "U1.V-",
+        "U2.V-"
+      ],
+      "name": "V-"
+    },
+    {
+      "endpoints": [
+        "VIN1.+",
+        "R1.1"
+      ],
+      "name": "VIN"
+    },
+    {
+      "endpoints": [
+        "D2.A",
+        "D4.K",
+        "R4.1"
+      ],
+      "name": "N"
+    },
+    {
+      "endpoints": [
+        "U1.IN-",
+        "R1.2",
+        "R2.2"
+      ],
+      "name": "N1"
+    },
+    {
+      "endpoints": [
+        "U2.IN-",
+        "R6.2"
+      ],
+      "name": "NMINUS2"
+    },
+    {
+      "endpoints": [
+        "U2.IN+",
+        "R5.2"
+      ],
+      "name": "NPLUS2"
+    },
+    {
+      "endpoints": [
+        "U1.OUT",
+        "D1.A",
+        "D2.K"
+      ],
+      "name": "OA"
+    },
+    {
+      "endpoints": [
+        "D1.K",
+        "D3.A",
+        "R3.1"
+      ],
+      "name": "P"
+    },
+    {
+      "endpoints": [
+        "R2.1",
+        "D3.K",
+        "D4.A",
+        "R5.1"
+      ],
+      "name": "X"
+    },
+    {
+      "endpoints": [
+        "U2.OUT",
+        "R6.1"
+      ],
+      "name": "VOUT"
+    }
+  ],
+  "pin_audit": {
+    "recomputed_net_count": 12,
+    "recomputed_pin_count": 36,
+    "source_assigned": 36,
+    "source_expected": 36,
+    "source_status": "PASS",
+    "source_unassigned": 0,
+    "valid": true
+  },
+  "placement_family_counts": {
+    "DIODE": 4,
+    "OPAMP": 2,
+    "RESISTOR": 6,
+    "VSINE": 1,
+    "VSOURCE": 2
+  },
+  "schema_version": "progen-proteus-complete-pin-wiring/v1",
+  "source_part_counts": {
+    "DIODE": 4,
+    "OPAMP": 2,
+    "RES": 6,
+    "VDC": 2,
+    "VSINE": 1
+  }
+}

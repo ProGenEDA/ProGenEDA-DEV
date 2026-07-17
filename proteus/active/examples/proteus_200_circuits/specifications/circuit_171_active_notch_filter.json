@@ -1,0 +1,356 @@
+{
+  "circuit": {
+    "complexity_score": 291309,
+    "id": 171,
+    "name": "Active Notch Filter",
+    "source_pdf_page": 174,
+    "source_summary": "Resistor: 6 | Capacitor: 3 | OPAMP: 1 | Voltage source: 3 | Total: 13"
+  },
+  "components": [
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "V+",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VCC",
+      "value": "+15 V"
+    },
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "GND",
+          "pin": "+"
+        },
+        {
+          "net": "V-",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VEE",
+      "value": "-15 V"
+    },
+    {
+      "pdf_part": "VSINE",
+      "pins": [
+        {
+          "net": "VIN",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSINE",
+      "projection_fidelity": "exact",
+      "ref": "VIN1",
+      "value": "1 Vpk, sweep"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VIN",
+          "pin": "1"
+        },
+        {
+          "net": "NRA",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R1",
+      "value": "10 kOhm"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "NRA",
+          "pin": "1"
+        },
+        {
+          "net": "NT",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R2",
+      "value": "10 kOhm"
+    },
+    {
+      "pdf_part": "CAP",
+      "pins": [
+        {
+          "net": "NRA",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "CAP",
+      "projection_fidelity": "exact",
+      "ref": "C3",
+      "value": "20 nF"
+    },
+    {
+      "pdf_part": "CAP",
+      "pins": [
+        {
+          "net": "VIN",
+          "pin": "1"
+        },
+        {
+          "net": "NCA",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "CAP",
+      "projection_fidelity": "exact",
+      "ref": "C1",
+      "value": "10 nF"
+    },
+    {
+      "pdf_part": "CAP",
+      "pins": [
+        {
+          "net": "NCA",
+          "pin": "1"
+        },
+        {
+          "net": "NT",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "CAP",
+      "projection_fidelity": "exact",
+      "ref": "C2",
+      "value": "10 nF"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "NCA",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R3",
+      "value": "5 kOhm"
+    },
+    {
+      "pdf_part": "OPAMP",
+      "pins": [
+        {
+          "net": "NT",
+          "pin": "IN+"
+        },
+        {
+          "net": "NINV",
+          "pin": "IN-"
+        },
+        {
+          "net": "VOUT",
+          "pin": "OUT"
+        },
+        {
+          "net": "V+",
+          "pin": "V+"
+        },
+        {
+          "net": "V-",
+          "pin": "V-"
+        }
+      ],
+      "placement_family": "OPAMP",
+      "projection_fidelity": "exact",
+      "ref": "U1",
+      "value": "Generic ideal OPAMP"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VOUT",
+          "pin": "1"
+        },
+        {
+          "net": "NINV",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R4",
+      "value": "10 kOhm"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "NINV",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R5",
+      "value": "10 kOhm"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VOUT",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RL",
+      "value": "10 kOhm"
+    }
+  ],
+  "executable_projection": {
+    "components": {
+      "CAP": 3,
+      "OPAMP": 1,
+      "RESISTOR": 6,
+      "VSINE": 1,
+      "VSOURCE": 2
+    },
+    "mode": "placement_only_no_terminals",
+    "reason": "The canonical source JSON preserves all requested nets, but the current Proteus executable does not synthesize arbitrary physical wires. The sibling executable input validates donor-backed component placement only.",
+    "schema_version": "progen-proteus-placement-control/v1"
+  },
+  "nets": [
+    {
+      "endpoints": [
+        "VCC.-",
+        "VEE.+",
+        "VIN1.-",
+        "C3.2",
+        "R3.2",
+        "R5.2",
+        "RL.2"
+      ],
+      "name": "GND"
+    },
+    {
+      "endpoints": [
+        "VCC.+",
+        "U1.V+"
+      ],
+      "name": "V+"
+    },
+    {
+      "endpoints": [
+        "VEE.-",
+        "U1.V-"
+      ],
+      "name": "V-"
+    },
+    {
+      "endpoints": [
+        "VIN1.+",
+        "R1.1",
+        "C1.1"
+      ],
+      "name": "VIN"
+    },
+    {
+      "endpoints": [
+        "C1.2",
+        "C2.1",
+        "R3.1"
+      ],
+      "name": "NCA"
+    },
+    {
+      "endpoints": [
+        "U1.IN-",
+        "R4.2",
+        "R5.1"
+      ],
+      "name": "NINV"
+    },
+    {
+      "endpoints": [
+        "R1.2",
+        "R2.1",
+        "C3.1"
+      ],
+      "name": "NRA"
+    },
+    {
+      "endpoints": [
+        "R2.2",
+        "C2.2",
+        "U1.IN+"
+      ],
+      "name": "NT"
+    },
+    {
+      "endpoints": [
+        "U1.OUT",
+        "R4.1",
+        "RL.1"
+      ],
+      "name": "VOUT"
+    }
+  ],
+  "pin_audit": {
+    "recomputed_net_count": 9,
+    "recomputed_pin_count": 29,
+    "source_assigned": 29,
+    "source_expected": 29,
+    "source_status": "PASS",
+    "source_unassigned": 0,
+    "valid": true
+  },
+  "placement_family_counts": {
+    "CAP": 3,
+    "OPAMP": 1,
+    "RESISTOR": 6,
+    "VSINE": 1,
+    "VSOURCE": 2
+  },
+  "schema_version": "progen-proteus-complete-pin-wiring/v1",
+  "source_part_counts": {
+    "CAP": 3,
+    "OPAMP": 1,
+    "RES": 6,
+    "VDC": 2,
+    "VSINE": 1
+  }
+}

@@ -1,0 +1,112 @@
+{
+  "circuit": {
+    "complexity_score": 60303,
+    "id": 4,
+    "name": "Resistor Voltage Divider",
+    "source_pdf_page": 7,
+    "source_summary": "Resistor: 2 | Voltage source: 1 | Total: 3"
+  },
+  "components": [
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "VIN",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "V1",
+      "value": "12 V"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VIN",
+          "pin": "1"
+        },
+        {
+          "net": "VOUT",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R1",
+      "value": "10 kOhm"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VOUT",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R2",
+      "value": "10 kOhm"
+    }
+  ],
+  "executable_projection": {
+    "components": {
+      "RESISTOR": 2,
+      "VSOURCE": 1
+    },
+    "mode": "placement_only_no_terminals",
+    "reason": "The canonical source JSON preserves all requested nets, but the current Proteus executable does not synthesize arbitrary physical wires. The sibling executable input validates donor-backed component placement only.",
+    "schema_version": "progen-proteus-placement-control/v1"
+  },
+  "nets": [
+    {
+      "endpoints": [
+        "V1.-",
+        "R2.2"
+      ],
+      "name": "GND"
+    },
+    {
+      "endpoints": [
+        "V1.+",
+        "R1.1"
+      ],
+      "name": "VIN"
+    },
+    {
+      "endpoints": [
+        "R1.2",
+        "R2.1"
+      ],
+      "name": "VOUT"
+    }
+  ],
+  "pin_audit": {
+    "recomputed_net_count": 3,
+    "recomputed_pin_count": 6,
+    "source_assigned": 6,
+    "source_expected": 6,
+    "source_status": "PASS",
+    "source_unassigned": 0,
+    "valid": true
+  },
+  "placement_family_counts": {
+    "RESISTOR": 2,
+    "VSOURCE": 1
+  },
+  "schema_version": "progen-proteus-complete-pin-wiring/v1",
+  "source_part_counts": {
+    "RES": 2,
+    "VDC": 1
+  }
+}

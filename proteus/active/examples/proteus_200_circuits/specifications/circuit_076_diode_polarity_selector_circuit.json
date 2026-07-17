@@ -1,0 +1,158 @@
+{
+  "circuit": {
+    "complexity_score": 100504,
+    "id": 76,
+    "name": "Diode Polarity-Selector Circuit",
+    "source_pdf_page": 79,
+    "source_summary": "Resistor: 1 | Diode: 2 | Voltage source: 2 | Total: 5"
+  },
+  "components": [
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "IN1",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "V1",
+      "value": "12 V"
+    },
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "IN2",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "V2",
+      "value": "9 V"
+    },
+    {
+      "pdf_part": "DIODE",
+      "pins": [
+        {
+          "net": "IN1",
+          "pin": "A"
+        },
+        {
+          "net": "VOUT",
+          "pin": "K"
+        }
+      ],
+      "placement_family": "DIODE",
+      "projection_fidelity": "generic_family",
+      "ref": "D1",
+      "value": "1N4007"
+    },
+    {
+      "pdf_part": "DIODE",
+      "pins": [
+        {
+          "net": "IN2",
+          "pin": "A"
+        },
+        {
+          "net": "VOUT",
+          "pin": "K"
+        }
+      ],
+      "placement_family": "DIODE",
+      "projection_fidelity": "generic_family",
+      "ref": "D2",
+      "value": "1N4007"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VOUT",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RL",
+      "value": "1 kOhm"
+    }
+  ],
+  "executable_projection": {
+    "components": {
+      "DIODE": 2,
+      "RESISTOR": 1,
+      "VSOURCE": 2
+    },
+    "mode": "placement_only_no_terminals",
+    "reason": "The canonical source JSON preserves all requested nets, but the current Proteus executable does not synthesize arbitrary physical wires. The sibling executable input validates donor-backed component placement only.",
+    "schema_version": "progen-proteus-placement-control/v1"
+  },
+  "nets": [
+    {
+      "endpoints": [
+        "V1.-",
+        "V2.-",
+        "RL.2"
+      ],
+      "name": "GND"
+    },
+    {
+      "endpoints": [
+        "V1.+",
+        "D1.A"
+      ],
+      "name": "IN1"
+    },
+    {
+      "endpoints": [
+        "V2.+",
+        "D2.A"
+      ],
+      "name": "IN2"
+    },
+    {
+      "endpoints": [
+        "D1.K",
+        "D2.K",
+        "RL.1"
+      ],
+      "name": "VOUT"
+    }
+  ],
+  "pin_audit": {
+    "recomputed_net_count": 4,
+    "recomputed_pin_count": 10,
+    "source_assigned": 10,
+    "source_expected": 10,
+    "source_status": "PASS",
+    "source_unassigned": 0,
+    "valid": true
+  },
+  "placement_family_counts": {
+    "DIODE": 2,
+    "RESISTOR": 1,
+    "VSOURCE": 2
+  },
+  "schema_version": "progen-proteus-complete-pin-wiring/v1",
+  "source_part_counts": {
+    "DIODE": 2,
+    "RES": 1,
+    "VDC": 2
+  }
+}

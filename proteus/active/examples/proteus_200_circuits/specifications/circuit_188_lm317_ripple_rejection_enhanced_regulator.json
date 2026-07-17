@@ -1,0 +1,267 @@
+{
+  "circuit": {
+    "complexity_score": 211004,
+    "id": 188,
+    "name": "LM317 Ripple-Rejection-Enhanced Regulator",
+    "source_pdf_page": 191,
+    "source_summary": "Resistor: 3 | Capacitor: 1 | Electrolytic capacitor: 2 | Diode: 2 | LM317T: 1 | Voltage source: 1 | Total: 10"
+  },
+  "components": [
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "VIN",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "V1",
+      "value": "15 V"
+    },
+    {
+      "pdf_part": "LM317T",
+      "pins": [
+        {
+          "net": "ADJ",
+          "pin": "ADJ(1)"
+        },
+        {
+          "net": "VOUT",
+          "pin": "OUT(2)"
+        },
+        {
+          "net": "VIN",
+          "pin": "IN(3)"
+        }
+      ],
+      "placement_family": "LM317T",
+      "projection_fidelity": "exact",
+      "ref": "U1",
+      "value": "LM317T"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VOUT",
+          "pin": "1"
+        },
+        {
+          "net": "ADJ",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R1",
+      "value": "240 Ohm"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "ADJ",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R2",
+      "value": "2 kOhm"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VOUT",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RL",
+      "value": "1 kOhm"
+    },
+    {
+      "pdf_part": "CAP",
+      "pins": [
+        {
+          "net": "VIN",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "CAP",
+      "projection_fidelity": "exact",
+      "ref": "CIN",
+      "value": "100 nF"
+    },
+    {
+      "pdf_part": "CAP-ELEC",
+      "pins": [
+        {
+          "net": "VOUT",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "CAP-ELEC",
+      "projection_fidelity": "exact",
+      "ref": "COUT",
+      "value": "10 uF"
+    },
+    {
+      "pdf_part": "CAP-ELEC",
+      "pins": [
+        {
+          "net": "ADJ",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "CAP-ELEC",
+      "projection_fidelity": "exact",
+      "ref": "CADJ",
+      "value": "10 uF"
+    },
+    {
+      "pdf_part": "DIODE",
+      "pins": [
+        {
+          "net": "VOUT",
+          "pin": "A"
+        },
+        {
+          "net": "VIN",
+          "pin": "K"
+        }
+      ],
+      "placement_family": "DIODE",
+      "projection_fidelity": "generic_family",
+      "ref": "D1",
+      "value": "1N4007"
+    },
+    {
+      "pdf_part": "DIODE",
+      "pins": [
+        {
+          "net": "ADJ",
+          "pin": "A"
+        },
+        {
+          "net": "VOUT",
+          "pin": "K"
+        }
+      ],
+      "placement_family": "DIODE",
+      "projection_fidelity": "generic_family",
+      "ref": "D2",
+      "value": "1N4007"
+    }
+  ],
+  "executable_projection": {
+    "components": {
+      "CAP": 1,
+      "CAP-ELEC": 2,
+      "DIODE": 2,
+      "LM317T": 1,
+      "RESISTOR": 3,
+      "VSOURCE": 1
+    },
+    "mode": "placement_only_no_terminals",
+    "reason": "The canonical source JSON preserves all requested nets, but the current Proteus executable does not synthesize arbitrary physical wires. The sibling executable input validates donor-backed component placement only.",
+    "schema_version": "progen-proteus-placement-control/v1"
+  },
+  "nets": [
+    {
+      "endpoints": [
+        "V1.-",
+        "R2.2",
+        "RL.2",
+        "CIN.2",
+        "COUT.-",
+        "CADJ.-"
+      ],
+      "name": "GND"
+    },
+    {
+      "endpoints": [
+        "V1.+",
+        "U1.IN(3)",
+        "CIN.1",
+        "D1.K"
+      ],
+      "name": "VIN"
+    },
+    {
+      "endpoints": [
+        "U1.ADJ(1)",
+        "R1.2",
+        "R2.1",
+        "CADJ.+",
+        "D2.A"
+      ],
+      "name": "ADJ"
+    },
+    {
+      "endpoints": [
+        "U1.OUT(2)",
+        "R1.1",
+        "RL.1",
+        "COUT.+",
+        "D1.A",
+        "D2.K"
+      ],
+      "name": "VOUT"
+    }
+  ],
+  "pin_audit": {
+    "recomputed_net_count": 4,
+    "recomputed_pin_count": 21,
+    "source_assigned": 21,
+    "source_expected": 21,
+    "source_status": "PASS",
+    "source_unassigned": 0,
+    "valid": true
+  },
+  "placement_family_counts": {
+    "CAP": 1,
+    "CAP-ELEC": 2,
+    "DIODE": 2,
+    "LM317T": 1,
+    "RESISTOR": 3,
+    "VSOURCE": 1
+  },
+  "schema_version": "progen-proteus-complete-pin-wiring/v1",
+  "source_part_counts": {
+    "CAP": 1,
+    "CAP-ELEC": 2,
+    "DIODE": 2,
+    "LM317T": 1,
+    "RES": 3,
+    "VDC": 1
+  }
+}

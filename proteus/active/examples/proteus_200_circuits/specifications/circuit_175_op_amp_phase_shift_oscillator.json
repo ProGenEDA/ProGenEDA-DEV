@@ -1,0 +1,310 @@
+{
+  "circuit": {
+    "complexity_score": 251108,
+    "id": 175,
+    "name": "Op-Amp Phase-Shift Oscillator",
+    "source_pdf_page": 178,
+    "source_summary": "Resistor: 5 | Capacitor: 3 | OPAMP: 1 | Voltage source: 2 | Total: 11"
+  },
+  "components": [
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "V+",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VCC",
+      "value": "+15 V"
+    },
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "GND",
+          "pin": "+"
+        },
+        {
+          "net": "V-",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VEE",
+      "value": "-15 V"
+    },
+    {
+      "pdf_part": "OPAMP",
+      "pins": [
+        {
+          "net": "GND",
+          "pin": "IN+"
+        },
+        {
+          "net": "NINV",
+          "pin": "IN-"
+        },
+        {
+          "net": "VOUT",
+          "pin": "OUT"
+        },
+        {
+          "net": "V+",
+          "pin": "V+"
+        },
+        {
+          "net": "V-",
+          "pin": "V-"
+        }
+      ],
+      "placement_family": "OPAMP",
+      "projection_fidelity": "exact",
+      "ref": "U1",
+      "value": "Generic ideal OPAMP"
+    },
+    {
+      "pdf_part": "CAP",
+      "pins": [
+        {
+          "net": "VOUT",
+          "pin": "1"
+        },
+        {
+          "net": "N1",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "CAP",
+      "projection_fidelity": "exact",
+      "ref": "C1",
+      "value": "10 nF"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "N1",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R1",
+      "value": "10 kOhm"
+    },
+    {
+      "pdf_part": "CAP",
+      "pins": [
+        {
+          "net": "N1",
+          "pin": "1"
+        },
+        {
+          "net": "N2",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "CAP",
+      "projection_fidelity": "exact",
+      "ref": "C2",
+      "value": "10 nF"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "N2",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R2",
+      "value": "10 kOhm"
+    },
+    {
+      "pdf_part": "CAP",
+      "pins": [
+        {
+          "net": "N2",
+          "pin": "1"
+        },
+        {
+          "net": "N3",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "CAP",
+      "projection_fidelity": "exact",
+      "ref": "C3",
+      "value": "10 nF"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "N3",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R3",
+      "value": "10 kOhm"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "N3",
+          "pin": "1"
+        },
+        {
+          "net": "NINV",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R4",
+      "value": "10 kOhm"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VOUT",
+          "pin": "1"
+        },
+        {
+          "net": "NINV",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R5",
+      "value": "300 kOhm"
+    }
+  ],
+  "executable_projection": {
+    "components": {
+      "CAP": 3,
+      "OPAMP": 1,
+      "RESISTOR": 5,
+      "VSOURCE": 2
+    },
+    "mode": "placement_only_no_terminals",
+    "reason": "The canonical source JSON preserves all requested nets, but the current Proteus executable does not synthesize arbitrary physical wires. The sibling executable input validates donor-backed component placement only.",
+    "schema_version": "progen-proteus-placement-control/v1"
+  },
+  "nets": [
+    {
+      "endpoints": [
+        "VCC.-",
+        "VEE.+",
+        "U1.IN+",
+        "R1.2",
+        "R2.2",
+        "R3.2"
+      ],
+      "name": "GND"
+    },
+    {
+      "endpoints": [
+        "VCC.+",
+        "U1.V+"
+      ],
+      "name": "V+"
+    },
+    {
+      "endpoints": [
+        "VEE.-",
+        "U1.V-"
+      ],
+      "name": "V-"
+    },
+    {
+      "endpoints": [
+        "C1.2",
+        "R1.1",
+        "C2.1"
+      ],
+      "name": "N1"
+    },
+    {
+      "endpoints": [
+        "C2.2",
+        "R2.1",
+        "C3.1"
+      ],
+      "name": "N2"
+    },
+    {
+      "endpoints": [
+        "C3.2",
+        "R3.1",
+        "R4.1"
+      ],
+      "name": "N3"
+    },
+    {
+      "endpoints": [
+        "U1.IN-",
+        "R4.2",
+        "R5.2"
+      ],
+      "name": "NINV"
+    },
+    {
+      "endpoints": [
+        "U1.OUT",
+        "C1.1",
+        "R5.1"
+      ],
+      "name": "VOUT"
+    }
+  ],
+  "pin_audit": {
+    "recomputed_net_count": 8,
+    "recomputed_pin_count": 25,
+    "source_assigned": 25,
+    "source_expected": 25,
+    "source_status": "PASS",
+    "source_unassigned": 0,
+    "valid": true
+  },
+  "placement_family_counts": {
+    "CAP": 3,
+    "OPAMP": 1,
+    "RESISTOR": 5,
+    "VSOURCE": 2
+  },
+  "schema_version": "progen-proteus-complete-pin-wiring/v1",
+  "source_part_counts": {
+    "CAP": 3,
+    "OPAMP": 1,
+    "RES": 5,
+    "VDC": 2
+  }
+}

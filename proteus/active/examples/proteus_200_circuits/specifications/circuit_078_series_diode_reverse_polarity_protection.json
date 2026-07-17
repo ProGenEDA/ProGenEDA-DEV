@@ -1,0 +1,115 @@
+{
+  "circuit": {
+    "complexity_score": 60303,
+    "id": 78,
+    "name": "Series-Diode Reverse-Polarity Protection",
+    "source_pdf_page": 81,
+    "source_summary": "Resistor: 1 | Diode: 1 | Voltage source: 1 | Total: 3"
+  },
+  "components": [
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "VIN",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "V1",
+      "value": "12 V"
+    },
+    {
+      "pdf_part": "DIODE",
+      "pins": [
+        {
+          "net": "VIN",
+          "pin": "A"
+        },
+        {
+          "net": "VOUT",
+          "pin": "K"
+        }
+      ],
+      "placement_family": "DIODE",
+      "projection_fidelity": "generic_family",
+      "ref": "D1",
+      "value": "1N4007"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VOUT",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RL",
+      "value": "1 kOhm"
+    }
+  ],
+  "executable_projection": {
+    "components": {
+      "DIODE": 1,
+      "RESISTOR": 1,
+      "VSOURCE": 1
+    },
+    "mode": "placement_only_no_terminals",
+    "reason": "The canonical source JSON preserves all requested nets, but the current Proteus executable does not synthesize arbitrary physical wires. The sibling executable input validates donor-backed component placement only.",
+    "schema_version": "progen-proteus-placement-control/v1"
+  },
+  "nets": [
+    {
+      "endpoints": [
+        "V1.-",
+        "RL.2"
+      ],
+      "name": "GND"
+    },
+    {
+      "endpoints": [
+        "V1.+",
+        "D1.A"
+      ],
+      "name": "VIN"
+    },
+    {
+      "endpoints": [
+        "D1.K",
+        "RL.1"
+      ],
+      "name": "VOUT"
+    }
+  ],
+  "pin_audit": {
+    "recomputed_net_count": 3,
+    "recomputed_pin_count": 6,
+    "source_assigned": 6,
+    "source_expected": 6,
+    "source_status": "PASS",
+    "source_unassigned": 0,
+    "valid": true
+  },
+  "placement_family_counts": {
+    "DIODE": 1,
+    "RESISTOR": 1,
+    "VSOURCE": 1
+  },
+  "schema_version": "progen-proteus-complete-pin-wiring/v1",
+  "source_part_counts": {
+    "DIODE": 1,
+    "RES": 1,
+    "VDC": 1
+  }
+}

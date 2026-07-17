@@ -1,0 +1,177 @@
+{
+  "circuit": {
+    "complexity_score": 120604,
+    "id": 52,
+    "name": "Full-Wave Bridge Rectifier",
+    "source_pdf_page": 55,
+    "source_summary": "Resistor: 1 | Diode: 4 | Voltage source: 1 | Total: 6"
+  },
+  "components": [
+    {
+      "pdf_part": "VSINE",
+      "pins": [
+        {
+          "net": "AC1",
+          "pin": "+"
+        },
+        {
+          "net": "AC2",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSINE",
+      "projection_fidelity": "exact",
+      "ref": "V1",
+      "value": "12 Vrms, 50 Hz"
+    },
+    {
+      "pdf_part": "DIODE",
+      "pins": [
+        {
+          "net": "AC1",
+          "pin": "A"
+        },
+        {
+          "net": "VOUT",
+          "pin": "K"
+        }
+      ],
+      "placement_family": "DIODE",
+      "projection_fidelity": "generic_family",
+      "ref": "D1",
+      "value": "1N4007"
+    },
+    {
+      "pdf_part": "DIODE",
+      "pins": [
+        {
+          "net": "AC2",
+          "pin": "A"
+        },
+        {
+          "net": "VOUT",
+          "pin": "K"
+        }
+      ],
+      "placement_family": "DIODE",
+      "projection_fidelity": "generic_family",
+      "ref": "D2",
+      "value": "1N4007"
+    },
+    {
+      "pdf_part": "DIODE",
+      "pins": [
+        {
+          "net": "GND",
+          "pin": "A"
+        },
+        {
+          "net": "AC1",
+          "pin": "K"
+        }
+      ],
+      "placement_family": "DIODE",
+      "projection_fidelity": "generic_family",
+      "ref": "D3",
+      "value": "1N4007"
+    },
+    {
+      "pdf_part": "DIODE",
+      "pins": [
+        {
+          "net": "GND",
+          "pin": "A"
+        },
+        {
+          "net": "AC2",
+          "pin": "K"
+        }
+      ],
+      "placement_family": "DIODE",
+      "projection_fidelity": "generic_family",
+      "ref": "D4",
+      "value": "1N4007"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VOUT",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RL",
+      "value": "1 kOhm"
+    }
+  ],
+  "executable_projection": {
+    "components": {
+      "DIODE": 4,
+      "RESISTOR": 1,
+      "VSINE": 1
+    },
+    "mode": "placement_only_no_terminals",
+    "reason": "The canonical source JSON preserves all requested nets, but the current Proteus executable does not synthesize arbitrary physical wires. The sibling executable input validates donor-backed component placement only.",
+    "schema_version": "progen-proteus-placement-control/v1"
+  },
+  "nets": [
+    {
+      "endpoints": [
+        "D3.A",
+        "D4.A",
+        "RL.2"
+      ],
+      "name": "GND"
+    },
+    {
+      "endpoints": [
+        "V1.+",
+        "D1.A",
+        "D3.K"
+      ],
+      "name": "AC1"
+    },
+    {
+      "endpoints": [
+        "V1.-",
+        "D2.A",
+        "D4.K"
+      ],
+      "name": "AC2"
+    },
+    {
+      "endpoints": [
+        "D1.K",
+        "D2.K",
+        "RL.1"
+      ],
+      "name": "VOUT"
+    }
+  ],
+  "pin_audit": {
+    "recomputed_net_count": 4,
+    "recomputed_pin_count": 12,
+    "source_assigned": 12,
+    "source_expected": 12,
+    "source_status": "PASS",
+    "source_unassigned": 0,
+    "valid": true
+  },
+  "placement_family_counts": {
+    "DIODE": 4,
+    "RESISTOR": 1,
+    "VSINE": 1
+  },
+  "schema_version": "progen-proteus-complete-pin-wiring/v1",
+  "source_part_counts": {
+    "DIODE": 4,
+    "RES": 1,
+    "VSINE": 1
+  }
+}

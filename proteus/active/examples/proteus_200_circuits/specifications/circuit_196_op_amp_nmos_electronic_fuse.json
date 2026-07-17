@@ -1,0 +1,348 @@
+{
+  "circuit": {
+    "complexity_score": 281210,
+    "id": 196,
+    "name": "Op-Amp NMOS Electronic Fuse",
+    "source_pdf_page": 199,
+    "source_summary": "Resistor: 6 | Zener: 1 | NMOSFET: 1 | OPAMP: 1 | Voltage source: 3 | Total: 12"
+  },
+  "components": [
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "V+",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VCC",
+      "value": "+15 V"
+    },
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "GND",
+          "pin": "+"
+        },
+        {
+          "net": "V-",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VEE",
+      "value": "-15 V"
+    },
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "VIN",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VIN1",
+      "value": "12 V"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VIN",
+          "pin": "1"
+        },
+        {
+          "net": "VREF",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RZ",
+      "value": "1 kOhm"
+    },
+    {
+      "pdf_part": "ZENER",
+      "pins": [
+        {
+          "net": "GND",
+          "pin": "A"
+        },
+        {
+          "net": "VREF",
+          "pin": "K"
+        }
+      ],
+      "placement_family": "BZY88C",
+      "projection_fidelity": "family_substitution",
+      "projection_note": "The source zener voltage/model remains in the canonical specification; the placement-only control uses the proven generic zener family.",
+      "ref": "DZ1",
+      "value": "2.7 V"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VIN",
+          "pin": "1"
+        },
+        {
+          "net": "DRAIN",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RL",
+      "value": "10 Ohm"
+    },
+    {
+      "pdf_part": "NMOSFET",
+      "pins": [
+        {
+          "net": "GATE",
+          "pin": "G"
+        },
+        {
+          "net": "DRAIN",
+          "pin": "D"
+        },
+        {
+          "net": "SENSE",
+          "pin": "S"
+        }
+      ],
+      "placement_family": "NMOSFET",
+      "projection_fidelity": "exact",
+      "ref": "Q1",
+      "value": "Generic NMOS"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "SENSE",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RS",
+      "value": "0.1 Ohm"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VREF",
+          "pin": "1"
+        },
+        {
+          "net": "TH",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R1",
+      "value": "100 kOhm"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "TH",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R2",
+      "value": "10 kOhm"
+    },
+    {
+      "pdf_part": "OPAMP",
+      "pins": [
+        {
+          "net": "TH",
+          "pin": "IN+"
+        },
+        {
+          "net": "SENSE",
+          "pin": "IN-"
+        },
+        {
+          "net": "OG",
+          "pin": "OUT"
+        },
+        {
+          "net": "V+",
+          "pin": "V+"
+        },
+        {
+          "net": "V-",
+          "pin": "V-"
+        }
+      ],
+      "placement_family": "OPAMP",
+      "projection_fidelity": "exact",
+      "ref": "U1",
+      "value": "Generic ideal OPAMP"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "OG",
+          "pin": "1"
+        },
+        {
+          "net": "GATE",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RG",
+      "value": "100 Ohm"
+    }
+  ],
+  "executable_projection": {
+    "components": {
+      "BZY88C": 1,
+      "NMOSFET": 1,
+      "OPAMP": 1,
+      "RESISTOR": 6,
+      "VSOURCE": 3
+    },
+    "mode": "placement_only_no_terminals",
+    "reason": "The canonical source JSON preserves all requested nets, but the current Proteus executable does not synthesize arbitrary physical wires. The sibling executable input validates donor-backed component placement only.",
+    "schema_version": "progen-proteus-placement-control/v1"
+  },
+  "nets": [
+    {
+      "endpoints": [
+        "VCC.-",
+        "VEE.+",
+        "VIN1.-",
+        "DZ1.A",
+        "RS.2",
+        "R2.2"
+      ],
+      "name": "GND"
+    },
+    {
+      "endpoints": [
+        "VCC.+",
+        "U1.V+"
+      ],
+      "name": "V+"
+    },
+    {
+      "endpoints": [
+        "VEE.-",
+        "U1.V-"
+      ],
+      "name": "V-"
+    },
+    {
+      "endpoints": [
+        "VIN1.+",
+        "RZ.1",
+        "RL.1"
+      ],
+      "name": "VIN"
+    },
+    {
+      "endpoints": [
+        "RL.2",
+        "Q1.D"
+      ],
+      "name": "DRAIN"
+    },
+    {
+      "endpoints": [
+        "Q1.G",
+        "RG.2"
+      ],
+      "name": "GATE"
+    },
+    {
+      "endpoints": [
+        "U1.OUT",
+        "RG.1"
+      ],
+      "name": "OG"
+    },
+    {
+      "endpoints": [
+        "Q1.S",
+        "RS.1",
+        "U1.IN-"
+      ],
+      "name": "SENSE"
+    },
+    {
+      "endpoints": [
+        "R1.2",
+        "R2.1",
+        "U1.IN+"
+      ],
+      "name": "TH"
+    },
+    {
+      "endpoints": [
+        "RZ.2",
+        "DZ1.K",
+        "R1.1"
+      ],
+      "name": "VREF"
+    }
+  ],
+  "pin_audit": {
+    "recomputed_net_count": 10,
+    "recomputed_pin_count": 28,
+    "source_assigned": 28,
+    "source_expected": 28,
+    "source_status": "PASS",
+    "source_unassigned": 0,
+    "valid": true
+  },
+  "placement_family_counts": {
+    "BZY88C": 1,
+    "NMOSFET": 1,
+    "OPAMP": 1,
+    "RESISTOR": 6,
+    "VSOURCE": 3
+  },
+  "schema_version": "progen-proteus-complete-pin-wiring/v1",
+  "source_part_counts": {
+    "NMOSFET": 1,
+    "OPAMP": 1,
+    "RES": 6,
+    "VDC": 3,
+    "ZENER": 1
+  }
+}

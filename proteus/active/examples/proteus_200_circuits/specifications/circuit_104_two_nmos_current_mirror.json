@@ -1,0 +1,168 @@
+{
+  "circuit": {
+    "complexity_score": 120504,
+    "id": 104,
+    "name": "Two-NMOS Current Mirror",
+    "source_pdf_page": 107,
+    "source_summary": "Resistor: 2 | NMOSFET: 2 | Voltage source: 1 | Total: 5"
+  },
+  "components": [
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "VDD",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VDD1",
+      "value": "12 V"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VDD",
+          "pin": "1"
+        },
+        {
+          "net": "REF",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RREF",
+      "value": "1 kOhm"
+    },
+    {
+      "pdf_part": "NMOSFET",
+      "pins": [
+        {
+          "net": "REF",
+          "pin": "G"
+        },
+        {
+          "net": "REF",
+          "pin": "D"
+        },
+        {
+          "net": "GND",
+          "pin": "S"
+        }
+      ],
+      "placement_family": "NMOSFET",
+      "projection_fidelity": "exact",
+      "ref": "Q1",
+      "value": "Generic NMOS"
+    },
+    {
+      "pdf_part": "NMOSFET",
+      "pins": [
+        {
+          "net": "REF",
+          "pin": "G"
+        },
+        {
+          "net": "OUT",
+          "pin": "D"
+        },
+        {
+          "net": "GND",
+          "pin": "S"
+        }
+      ],
+      "placement_family": "NMOSFET",
+      "projection_fidelity": "exact",
+      "ref": "Q2",
+      "value": "Generic NMOS"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VDD",
+          "pin": "1"
+        },
+        {
+          "net": "OUT",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RL",
+      "value": "1 kOhm"
+    }
+  ],
+  "executable_projection": {
+    "components": {
+      "NMOSFET": 2,
+      "RESISTOR": 2,
+      "VSOURCE": 1
+    },
+    "mode": "placement_only_no_terminals",
+    "reason": "The canonical source JSON preserves all requested nets, but the current Proteus executable does not synthesize arbitrary physical wires. The sibling executable input validates donor-backed component placement only.",
+    "schema_version": "progen-proteus-placement-control/v1"
+  },
+  "nets": [
+    {
+      "endpoints": [
+        "VDD1.-",
+        "Q1.S",
+        "Q2.S"
+      ],
+      "name": "GND"
+    },
+    {
+      "endpoints": [
+        "VDD1.+",
+        "RREF.1",
+        "RL.1"
+      ],
+      "name": "VDD"
+    },
+    {
+      "endpoints": [
+        "Q2.D",
+        "RL.2"
+      ],
+      "name": "OUT"
+    },
+    {
+      "endpoints": [
+        "RREF.2",
+        "Q1.G",
+        "Q1.D",
+        "Q2.G"
+      ],
+      "name": "REF"
+    }
+  ],
+  "pin_audit": {
+    "recomputed_net_count": 4,
+    "recomputed_pin_count": 12,
+    "source_assigned": 12,
+    "source_expected": 12,
+    "source_status": "PASS",
+    "source_unassigned": 0,
+    "valid": true
+  },
+  "placement_family_counts": {
+    "NMOSFET": 2,
+    "RESISTOR": 2,
+    "VSOURCE": 1
+  },
+  "schema_version": "progen-proteus-complete-pin-wiring/v1",
+  "source_part_counts": {
+    "NMOSFET": 2,
+    "RES": 2,
+    "VDC": 1
+  }
+}

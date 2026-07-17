@@ -1,0 +1,546 @@
+{
+  "circuit": {
+    "complexity_score": 501915,
+    "id": 180,
+    "name": "Op-Amp LED Level Indicator",
+    "source_pdf_page": 183,
+    "source_summary": "Resistor: 8 | LED: 4 | OPAMP: 4 | Voltage source: 3 | Total: 19"
+  },
+  "components": [
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "V+",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VCC",
+      "value": "+15 V"
+    },
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "GND",
+          "pin": "+"
+        },
+        {
+          "net": "V-",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VEE",
+      "value": "-15 V"
+    },
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "VIN",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VIN1",
+      "value": "0-15 V sweep"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "V+",
+          "pin": "1"
+        },
+        {
+          "net": "T1",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R1",
+      "value": "10 kOhm"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "T1",
+          "pin": "1"
+        },
+        {
+          "net": "T2",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R2",
+      "value": "10 kOhm"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "T2",
+          "pin": "1"
+        },
+        {
+          "net": "T3",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R3",
+      "value": "10 kOhm"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "T3",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R4",
+      "value": "10 kOhm"
+    },
+    {
+      "pdf_part": "OPAMP",
+      "pins": [
+        {
+          "net": "VIN",
+          "pin": "IN+"
+        },
+        {
+          "net": "GND",
+          "pin": "IN-"
+        },
+        {
+          "net": "O1",
+          "pin": "OUT"
+        },
+        {
+          "net": "V+",
+          "pin": "V+"
+        },
+        {
+          "net": "V-",
+          "pin": "V-"
+        }
+      ],
+      "placement_family": "OPAMP",
+      "projection_fidelity": "exact",
+      "ref": "U1",
+      "value": "Generic ideal OPAMP"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "O1",
+          "pin": "1"
+        },
+        {
+          "net": "A1",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RLED1",
+      "value": "1 kOhm"
+    },
+    {
+      "pdf_part": "LED",
+      "pins": [
+        {
+          "net": "A1",
+          "pin": "A"
+        },
+        {
+          "net": "GND",
+          "pin": "K"
+        }
+      ],
+      "placement_family": "LED-RED",
+      "projection_fidelity": "family_substitution",
+      "projection_note": "The source LED colour remains in the canonical specification; the placement-only control uses the currently supported LED family.",
+      "ref": "LED1",
+      "value": "RED"
+    },
+    {
+      "pdf_part": "OPAMP",
+      "pins": [
+        {
+          "net": "VIN",
+          "pin": "IN+"
+        },
+        {
+          "net": "T3",
+          "pin": "IN-"
+        },
+        {
+          "net": "O2",
+          "pin": "OUT"
+        },
+        {
+          "net": "V+",
+          "pin": "V+"
+        },
+        {
+          "net": "V-",
+          "pin": "V-"
+        }
+      ],
+      "placement_family": "OPAMP",
+      "projection_fidelity": "exact",
+      "ref": "U2",
+      "value": "Generic ideal OPAMP"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "O2",
+          "pin": "1"
+        },
+        {
+          "net": "A2",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RLED2",
+      "value": "1 kOhm"
+    },
+    {
+      "pdf_part": "LED",
+      "pins": [
+        {
+          "net": "A2",
+          "pin": "A"
+        },
+        {
+          "net": "GND",
+          "pin": "K"
+        }
+      ],
+      "placement_family": "LED-RED",
+      "projection_fidelity": "family_substitution",
+      "projection_note": "The source LED colour remains in the canonical specification; the placement-only control uses the currently supported LED family.",
+      "ref": "LED2",
+      "value": "YELLOW"
+    },
+    {
+      "pdf_part": "OPAMP",
+      "pins": [
+        {
+          "net": "VIN",
+          "pin": "IN+"
+        },
+        {
+          "net": "T2",
+          "pin": "IN-"
+        },
+        {
+          "net": "O3",
+          "pin": "OUT"
+        },
+        {
+          "net": "V+",
+          "pin": "V+"
+        },
+        {
+          "net": "V-",
+          "pin": "V-"
+        }
+      ],
+      "placement_family": "OPAMP",
+      "projection_fidelity": "exact",
+      "ref": "U3",
+      "value": "Generic ideal OPAMP"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "O3",
+          "pin": "1"
+        },
+        {
+          "net": "A3",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RLED3",
+      "value": "1 kOhm"
+    },
+    {
+      "pdf_part": "LED",
+      "pins": [
+        {
+          "net": "A3",
+          "pin": "A"
+        },
+        {
+          "net": "GND",
+          "pin": "K"
+        }
+      ],
+      "placement_family": "LED-RED",
+      "projection_fidelity": "family_substitution",
+      "projection_note": "The source LED colour remains in the canonical specification; the placement-only control uses the currently supported LED family.",
+      "ref": "LED3",
+      "value": "GREEN"
+    },
+    {
+      "pdf_part": "OPAMP",
+      "pins": [
+        {
+          "net": "VIN",
+          "pin": "IN+"
+        },
+        {
+          "net": "T1",
+          "pin": "IN-"
+        },
+        {
+          "net": "O4",
+          "pin": "OUT"
+        },
+        {
+          "net": "V+",
+          "pin": "V+"
+        },
+        {
+          "net": "V-",
+          "pin": "V-"
+        }
+      ],
+      "placement_family": "OPAMP",
+      "projection_fidelity": "exact",
+      "ref": "U4",
+      "value": "Generic ideal OPAMP"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "O4",
+          "pin": "1"
+        },
+        {
+          "net": "A4",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RLED4",
+      "value": "1 kOhm"
+    },
+    {
+      "pdf_part": "LED",
+      "pins": [
+        {
+          "net": "A4",
+          "pin": "A"
+        },
+        {
+          "net": "GND",
+          "pin": "K"
+        }
+      ],
+      "placement_family": "LED-RED",
+      "projection_fidelity": "family_substitution",
+      "projection_note": "The source LED colour remains in the canonical specification; the placement-only control uses the currently supported LED family.",
+      "ref": "LED4",
+      "value": "BLUE"
+    }
+  ],
+  "executable_projection": {
+    "components": {
+      "LED-RED": 4,
+      "OPAMP": 4,
+      "RESISTOR": 8,
+      "VSOURCE": 3
+    },
+    "mode": "placement_only_no_terminals",
+    "reason": "The canonical source JSON preserves all requested nets, but the current Proteus executable does not synthesize arbitrary physical wires. The sibling executable input validates donor-backed component placement only.",
+    "schema_version": "progen-proteus-placement-control/v1"
+  },
+  "nets": [
+    {
+      "endpoints": [
+        "VCC.-",
+        "VEE.+",
+        "VIN1.-",
+        "R4.2",
+        "U1.IN-",
+        "LED1.K",
+        "LED2.K",
+        "LED3.K",
+        "LED4.K"
+      ],
+      "name": "GND"
+    },
+    {
+      "endpoints": [
+        "VCC.+",
+        "R1.1",
+        "U1.V+",
+        "U2.V+",
+        "U3.V+",
+        "U4.V+"
+      ],
+      "name": "V+"
+    },
+    {
+      "endpoints": [
+        "VEE.-",
+        "U1.V-",
+        "U2.V-",
+        "U3.V-",
+        "U4.V-"
+      ],
+      "name": "V-"
+    },
+    {
+      "endpoints": [
+        "VIN1.+",
+        "U1.IN+",
+        "U2.IN+",
+        "U3.IN+",
+        "U4.IN+"
+      ],
+      "name": "VIN"
+    },
+    {
+      "endpoints": [
+        "RLED1.2",
+        "LED1.A"
+      ],
+      "name": "A1"
+    },
+    {
+      "endpoints": [
+        "RLED2.2",
+        "LED2.A"
+      ],
+      "name": "A2"
+    },
+    {
+      "endpoints": [
+        "RLED3.2",
+        "LED3.A"
+      ],
+      "name": "A3"
+    },
+    {
+      "endpoints": [
+        "RLED4.2",
+        "LED4.A"
+      ],
+      "name": "A4"
+    },
+    {
+      "endpoints": [
+        "U1.OUT",
+        "RLED1.1"
+      ],
+      "name": "O1"
+    },
+    {
+      "endpoints": [
+        "U2.OUT",
+        "RLED2.1"
+      ],
+      "name": "O2"
+    },
+    {
+      "endpoints": [
+        "U3.OUT",
+        "RLED3.1"
+      ],
+      "name": "O3"
+    },
+    {
+      "endpoints": [
+        "U4.OUT",
+        "RLED4.1"
+      ],
+      "name": "O4"
+    },
+    {
+      "endpoints": [
+        "R1.2",
+        "R2.1",
+        "U4.IN-"
+      ],
+      "name": "T1"
+    },
+    {
+      "endpoints": [
+        "R2.2",
+        "R3.1",
+        "U3.IN-"
+      ],
+      "name": "T2"
+    },
+    {
+      "endpoints": [
+        "R3.2",
+        "R4.1",
+        "U2.IN-"
+      ],
+      "name": "T3"
+    }
+  ],
+  "pin_audit": {
+    "recomputed_net_count": 15,
+    "recomputed_pin_count": 50,
+    "source_assigned": 50,
+    "source_expected": 50,
+    "source_status": "PASS",
+    "source_unassigned": 0,
+    "valid": true
+  },
+  "placement_family_counts": {
+    "LED-RED": 4,
+    "OPAMP": 4,
+    "RESISTOR": 8,
+    "VSOURCE": 3
+  },
+  "schema_version": "progen-proteus-complete-pin-wiring/v1",
+  "source_part_counts": {
+    "LED": 4,
+    "OPAMP": 4,
+    "RES": 8,
+    "VDC": 3
+  }
+}

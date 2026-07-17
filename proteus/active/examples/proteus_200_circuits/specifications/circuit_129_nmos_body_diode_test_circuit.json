@@ -1,0 +1,120 @@
+{
+  "circuit": {
+    "complexity_score": 70303,
+    "id": 129,
+    "name": "NMOS Body-Diode Test Circuit",
+    "source_pdf_page": 132,
+    "source_summary": "Resistor: 1 | NMOSFET: 1 | Voltage source: 1 | Total: 3"
+  },
+  "components": [
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "SOURCE",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "V1",
+      "value": "5 V"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "DRAIN",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R1",
+      "value": "100 Ohm"
+    },
+    {
+      "pdf_part": "NMOSFET",
+      "pins": [
+        {
+          "net": "SOURCE",
+          "pin": "G"
+        },
+        {
+          "net": "DRAIN",
+          "pin": "D"
+        },
+        {
+          "net": "SOURCE",
+          "pin": "S"
+        }
+      ],
+      "placement_family": "NMOSFET",
+      "projection_fidelity": "exact",
+      "ref": "Q1",
+      "value": "Generic NMOS"
+    }
+  ],
+  "executable_projection": {
+    "components": {
+      "NMOSFET": 1,
+      "RESISTOR": 1,
+      "VSOURCE": 1
+    },
+    "mode": "placement_only_no_terminals",
+    "reason": "The canonical source JSON preserves all requested nets, but the current Proteus executable does not synthesize arbitrary physical wires. The sibling executable input validates donor-backed component placement only.",
+    "schema_version": "progen-proteus-placement-control/v1"
+  },
+  "nets": [
+    {
+      "endpoints": [
+        "V1.-",
+        "R1.2"
+      ],
+      "name": "GND"
+    },
+    {
+      "endpoints": [
+        "R1.1",
+        "Q1.D"
+      ],
+      "name": "DRAIN"
+    },
+    {
+      "endpoints": [
+        "V1.+",
+        "Q1.G",
+        "Q1.S"
+      ],
+      "name": "SOURCE"
+    }
+  ],
+  "pin_audit": {
+    "recomputed_net_count": 3,
+    "recomputed_pin_count": 7,
+    "source_assigned": 7,
+    "source_expected": 7,
+    "source_status": "PASS",
+    "source_unassigned": 0,
+    "valid": true
+  },
+  "placement_family_counts": {
+    "NMOSFET": 1,
+    "RESISTOR": 1,
+    "VSOURCE": 1
+  },
+  "schema_version": "progen-proteus-complete-pin-wiring/v1",
+  "source_part_counts": {
+    "NMOSFET": 1,
+    "RES": 1,
+    "VDC": 1
+  }
+}

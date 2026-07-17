@@ -1,0 +1,253 @@
+{
+  "circuit": {
+    "complexity_score": 190905,
+    "id": 186,
+    "name": "LM317 Trickle Battery Charger",
+    "source_pdf_page": 189,
+    "source_summary": "Resistor: 3 | Capacitor: 1 | Electrolytic capacitor: 1 | Diode: 1 | LM317T: 1 | Voltage source: 2 | Total: 9"
+  },
+  "components": [
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "VIN",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VSUP",
+      "value": "15 V"
+    },
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "BAT",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VBAT",
+      "value": "12 V battery model"
+    },
+    {
+      "pdf_part": "LM317T",
+      "pins": [
+        {
+          "net": "ADJ",
+          "pin": "ADJ(1)"
+        },
+        {
+          "net": "REGOUT",
+          "pin": "OUT(2)"
+        },
+        {
+          "net": "VIN",
+          "pin": "IN(3)"
+        }
+      ],
+      "placement_family": "LM317T",
+      "projection_fidelity": "exact",
+      "ref": "U1",
+      "value": "LM317T"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "REGOUT",
+          "pin": "1"
+        },
+        {
+          "net": "ADJ",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R1",
+      "value": "240 Ohm"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "ADJ",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R2",
+      "value": "2.06 kOhm"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "REGOUT",
+          "pin": "1"
+        },
+        {
+          "net": "BAT",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RCHG",
+      "value": "100 Ohm"
+    },
+    {
+      "pdf_part": "DIODE",
+      "pins": [
+        {
+          "net": "BAT",
+          "pin": "A"
+        },
+        {
+          "net": "REGOUT",
+          "pin": "K"
+        }
+      ],
+      "placement_family": "DIODE",
+      "projection_fidelity": "generic_family",
+      "ref": "D1",
+      "value": "1N4007"
+    },
+    {
+      "pdf_part": "CAP",
+      "pins": [
+        {
+          "net": "VIN",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "CAP",
+      "projection_fidelity": "exact",
+      "ref": "CIN",
+      "value": "100 nF"
+    },
+    {
+      "pdf_part": "CAP-ELEC",
+      "pins": [
+        {
+          "net": "REGOUT",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "CAP-ELEC",
+      "projection_fidelity": "exact",
+      "ref": "COUT",
+      "value": "10 uF"
+    }
+  ],
+  "executable_projection": {
+    "components": {
+      "CAP": 1,
+      "CAP-ELEC": 1,
+      "DIODE": 1,
+      "LM317T": 1,
+      "RESISTOR": 3,
+      "VSOURCE": 2
+    },
+    "mode": "placement_only_no_terminals",
+    "reason": "The canonical source JSON preserves all requested nets, but the current Proteus executable does not synthesize arbitrary physical wires. The sibling executable input validates donor-backed component placement only.",
+    "schema_version": "progen-proteus-placement-control/v1"
+  },
+  "nets": [
+    {
+      "endpoints": [
+        "VSUP.-",
+        "VBAT.-",
+        "R2.2",
+        "CIN.2",
+        "COUT.-"
+      ],
+      "name": "GND"
+    },
+    {
+      "endpoints": [
+        "VSUP.+",
+        "U1.IN(3)",
+        "CIN.1"
+      ],
+      "name": "VIN"
+    },
+    {
+      "endpoints": [
+        "U1.ADJ(1)",
+        "R1.2",
+        "R2.1"
+      ],
+      "name": "ADJ"
+    },
+    {
+      "endpoints": [
+        "VBAT.+",
+        "RCHG.2",
+        "D1.A"
+      ],
+      "name": "BAT"
+    },
+    {
+      "endpoints": [
+        "U1.OUT(2)",
+        "R1.1",
+        "RCHG.1",
+        "D1.K",
+        "COUT.+"
+      ],
+      "name": "REGOUT"
+    }
+  ],
+  "pin_audit": {
+    "recomputed_net_count": 5,
+    "recomputed_pin_count": 19,
+    "source_assigned": 19,
+    "source_expected": 19,
+    "source_status": "PASS",
+    "source_unassigned": 0,
+    "valid": true
+  },
+  "placement_family_counts": {
+    "CAP": 1,
+    "CAP-ELEC": 1,
+    "DIODE": 1,
+    "LM317T": 1,
+    "RESISTOR": 3,
+    "VSOURCE": 2
+  },
+  "schema_version": "progen-proteus-complete-pin-wiring/v1",
+  "source_part_counts": {
+    "CAP": 1,
+    "CAP-ELEC": 1,
+    "DIODE": 1,
+    "LM317T": 1,
+    "RES": 3,
+    "VDC": 2
+  }
+}

@@ -1,0 +1,156 @@
+{
+  "circuit": {
+    "complexity_score": 100503,
+    "id": 28,
+    "name": "Power-Supply Decoupling Network",
+    "source_pdf_page": 31,
+    "source_summary": "Resistor: 2 | Capacitor: 1 | Electrolytic capacitor: 1 | Voltage source: 1 | Total: 5"
+  },
+  "components": [
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "VIN",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "V1",
+      "value": "12 V"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VIN",
+          "pin": "1"
+        },
+        {
+          "net": "VDD",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RISO",
+      "value": "10 Ohm"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VDD",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RL",
+      "value": "1 kOhm"
+    },
+    {
+      "pdf_part": "CAP",
+      "pins": [
+        {
+          "net": "VDD",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "CAP",
+      "projection_fidelity": "exact",
+      "ref": "C1",
+      "value": "100 nF"
+    },
+    {
+      "pdf_part": "CAP-ELEC",
+      "pins": [
+        {
+          "net": "VDD",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "CAP-ELEC",
+      "projection_fidelity": "exact",
+      "ref": "C2",
+      "value": "100 uF"
+    }
+  ],
+  "executable_projection": {
+    "components": {
+      "CAP": 1,
+      "CAP-ELEC": 1,
+      "RESISTOR": 2,
+      "VSOURCE": 1
+    },
+    "mode": "placement_only_no_terminals",
+    "reason": "The canonical source JSON preserves all requested nets, but the current Proteus executable does not synthesize arbitrary physical wires. The sibling executable input validates donor-backed component placement only.",
+    "schema_version": "progen-proteus-placement-control/v1"
+  },
+  "nets": [
+    {
+      "endpoints": [
+        "V1.-",
+        "RL.2",
+        "C1.2",
+        "C2.-"
+      ],
+      "name": "GND"
+    },
+    {
+      "endpoints": [
+        "RISO.2",
+        "RL.1",
+        "C1.1",
+        "C2.+"
+      ],
+      "name": "VDD"
+    },
+    {
+      "endpoints": [
+        "V1.+",
+        "RISO.1"
+      ],
+      "name": "VIN"
+    }
+  ],
+  "pin_audit": {
+    "recomputed_net_count": 3,
+    "recomputed_pin_count": 10,
+    "source_assigned": 10,
+    "source_expected": 10,
+    "source_status": "PASS",
+    "source_unassigned": 0,
+    "valid": true
+  },
+  "placement_family_counts": {
+    "CAP": 1,
+    "CAP-ELEC": 1,
+    "RESISTOR": 2,
+    "VSOURCE": 1
+  },
+  "schema_version": "progen-proteus-complete-pin-wiring/v1",
+  "source_part_counts": {
+    "CAP": 1,
+    "CAP-ELEC": 1,
+    "RES": 2,
+    "VDC": 1
+  }
+}

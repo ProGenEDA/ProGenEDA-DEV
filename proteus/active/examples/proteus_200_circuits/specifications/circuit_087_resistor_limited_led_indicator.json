@@ -1,0 +1,116 @@
+{
+  "circuit": {
+    "complexity_score": 60303,
+    "id": 87,
+    "name": "Resistor-Limited LED Indicator",
+    "source_pdf_page": 90,
+    "source_summary": "Resistor: 1 | LED: 1 | Voltage source: 1 | Total: 3"
+  },
+  "components": [
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "VDD",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "V1",
+      "value": "5 V"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VDD",
+          "pin": "1"
+        },
+        {
+          "net": "LED_A",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R1",
+      "value": "330 Ohm"
+    },
+    {
+      "pdf_part": "LED",
+      "pins": [
+        {
+          "net": "LED_A",
+          "pin": "A"
+        },
+        {
+          "net": "GND",
+          "pin": "K"
+        }
+      ],
+      "placement_family": "LED-RED",
+      "projection_fidelity": "family_substitution",
+      "projection_note": "The source LED colour remains in the canonical specification; the placement-only control uses the currently supported LED family.",
+      "ref": "LED1",
+      "value": "RED"
+    }
+  ],
+  "executable_projection": {
+    "components": {
+      "LED-RED": 1,
+      "RESISTOR": 1,
+      "VSOURCE": 1
+    },
+    "mode": "placement_only_no_terminals",
+    "reason": "The canonical source JSON preserves all requested nets, but the current Proteus executable does not synthesize arbitrary physical wires. The sibling executable input validates donor-backed component placement only.",
+    "schema_version": "progen-proteus-placement-control/v1"
+  },
+  "nets": [
+    {
+      "endpoints": [
+        "V1.-",
+        "LED1.K"
+      ],
+      "name": "GND"
+    },
+    {
+      "endpoints": [
+        "V1.+",
+        "R1.1"
+      ],
+      "name": "VDD"
+    },
+    {
+      "endpoints": [
+        "R1.2",
+        "LED1.A"
+      ],
+      "name": "LED_A"
+    }
+  ],
+  "pin_audit": {
+    "recomputed_net_count": 3,
+    "recomputed_pin_count": 6,
+    "source_assigned": 6,
+    "source_expected": 6,
+    "source_status": "PASS",
+    "source_unassigned": 0,
+    "valid": true
+  },
+  "placement_family_counts": {
+    "LED-RED": 1,
+    "RESISTOR": 1,
+    "VSOURCE": 1
+  },
+  "schema_version": "progen-proteus-complete-pin-wiring/v1",
+  "source_part_counts": {
+    "LED": 1,
+    "RES": 1,
+    "VDC": 1
+  }
+}

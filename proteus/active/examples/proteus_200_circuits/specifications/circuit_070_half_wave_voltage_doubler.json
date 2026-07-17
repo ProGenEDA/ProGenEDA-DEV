@@ -1,0 +1,180 @@
+{
+  "circuit": {
+    "complexity_score": 120604,
+    "id": 70,
+    "name": "Half-Wave Voltage Doubler",
+    "source_pdf_page": 73,
+    "source_summary": "Resistor: 1 | Capacitor: 2 | Diode: 2 | Voltage source: 1 | Total: 6"
+  },
+  "components": [
+    {
+      "pdf_part": "VSINE",
+      "pins": [
+        {
+          "net": "AC",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSINE",
+      "projection_fidelity": "exact",
+      "ref": "V1",
+      "value": "10 Vpk, 1 kHz"
+    },
+    {
+      "pdf_part": "CAP",
+      "pins": [
+        {
+          "net": "AC",
+          "pin": "1"
+        },
+        {
+          "net": "N1",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "CAP",
+      "projection_fidelity": "exact",
+      "ref": "C1",
+      "value": "10 uF"
+    },
+    {
+      "pdf_part": "DIODE",
+      "pins": [
+        {
+          "net": "GND",
+          "pin": "A"
+        },
+        {
+          "net": "N1",
+          "pin": "K"
+        }
+      ],
+      "placement_family": "DIODE",
+      "projection_fidelity": "generic_family",
+      "ref": "D1",
+      "value": "1N4148"
+    },
+    {
+      "pdf_part": "DIODE",
+      "pins": [
+        {
+          "net": "N1",
+          "pin": "A"
+        },
+        {
+          "net": "VOUT",
+          "pin": "K"
+        }
+      ],
+      "placement_family": "DIODE",
+      "projection_fidelity": "generic_family",
+      "ref": "D2",
+      "value": "1N4148"
+    },
+    {
+      "pdf_part": "CAP",
+      "pins": [
+        {
+          "net": "VOUT",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "CAP",
+      "projection_fidelity": "exact",
+      "ref": "C2",
+      "value": "10 uF"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VOUT",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RL",
+      "value": "100 kOhm"
+    }
+  ],
+  "executable_projection": {
+    "components": {
+      "CAP": 2,
+      "DIODE": 2,
+      "RESISTOR": 1,
+      "VSINE": 1
+    },
+    "mode": "placement_only_no_terminals",
+    "reason": "The canonical source JSON preserves all requested nets, but the current Proteus executable does not synthesize arbitrary physical wires. The sibling executable input validates donor-backed component placement only.",
+    "schema_version": "progen-proteus-placement-control/v1"
+  },
+  "nets": [
+    {
+      "endpoints": [
+        "V1.-",
+        "D1.A",
+        "C2.2",
+        "RL.2"
+      ],
+      "name": "GND"
+    },
+    {
+      "endpoints": [
+        "V1.+",
+        "C1.1"
+      ],
+      "name": "AC"
+    },
+    {
+      "endpoints": [
+        "C1.2",
+        "D1.K",
+        "D2.A"
+      ],
+      "name": "N1"
+    },
+    {
+      "endpoints": [
+        "D2.K",
+        "C2.1",
+        "RL.1"
+      ],
+      "name": "VOUT"
+    }
+  ],
+  "pin_audit": {
+    "recomputed_net_count": 4,
+    "recomputed_pin_count": 12,
+    "source_assigned": 12,
+    "source_expected": 12,
+    "source_status": "PASS",
+    "source_unassigned": 0,
+    "valid": true
+  },
+  "placement_family_counts": {
+    "CAP": 2,
+    "DIODE": 2,
+    "RESISTOR": 1,
+    "VSINE": 1
+  },
+  "schema_version": "progen-proteus-complete-pin-wiring/v1",
+  "source_part_counts": {
+    "CAP": 2,
+    "DIODE": 2,
+    "RES": 1,
+    "VSINE": 1
+  }
+}

@@ -1,0 +1,194 @@
+{
+  "circuit": {
+    "complexity_score": 130605,
+    "id": 92,
+    "name": "Logic-Level NMOS LED Switch",
+    "source_pdf_page": 95,
+    "source_summary": "Resistor: 2 | LED: 1 | NMOSFET: 1 | Voltage source: 2 | Total: 6"
+  },
+  "components": [
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "VDD",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VDD1",
+      "value": "5 V"
+    },
+    {
+      "pdf_part": "VPULSE",
+      "pins": [
+        {
+          "net": "GATE",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VPULSE",
+      "projection_fidelity": "exact",
+      "ref": "VG",
+      "value": "0-5 V"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VDD",
+          "pin": "1"
+        },
+        {
+          "net": "LED_A",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RLED",
+      "value": "330 Ohm"
+    },
+    {
+      "pdf_part": "LED",
+      "pins": [
+        {
+          "net": "LED_A",
+          "pin": "A"
+        },
+        {
+          "net": "DRAIN",
+          "pin": "K"
+        }
+      ],
+      "placement_family": "LED-RED",
+      "projection_fidelity": "family_substitution",
+      "projection_note": "The source LED colour remains in the canonical specification; the placement-only control uses the currently supported LED family.",
+      "ref": "LED1",
+      "value": "RED"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "GATE",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RPD",
+      "value": "100 kOhm"
+    },
+    {
+      "pdf_part": "NMOSFET",
+      "pins": [
+        {
+          "net": "GATE",
+          "pin": "G"
+        },
+        {
+          "net": "DRAIN",
+          "pin": "D"
+        },
+        {
+          "net": "GND",
+          "pin": "S"
+        }
+      ],
+      "placement_family": "NMOSFET",
+      "projection_fidelity": "exact",
+      "ref": "Q1",
+      "value": "Generic NMOS"
+    }
+  ],
+  "executable_projection": {
+    "components": {
+      "LED-RED": 1,
+      "NMOSFET": 1,
+      "RESISTOR": 2,
+      "VPULSE": 1,
+      "VSOURCE": 1
+    },
+    "mode": "placement_only_no_terminals",
+    "reason": "The canonical source JSON preserves all requested nets, but the current Proteus executable does not synthesize arbitrary physical wires. The sibling executable input validates donor-backed component placement only.",
+    "schema_version": "progen-proteus-placement-control/v1"
+  },
+  "nets": [
+    {
+      "endpoints": [
+        "VDD1.-",
+        "VG.-",
+        "RPD.2",
+        "Q1.S"
+      ],
+      "name": "GND"
+    },
+    {
+      "endpoints": [
+        "VDD1.+",
+        "RLED.1"
+      ],
+      "name": "VDD"
+    },
+    {
+      "endpoints": [
+        "LED1.K",
+        "Q1.D"
+      ],
+      "name": "DRAIN"
+    },
+    {
+      "endpoints": [
+        "VG.+",
+        "RPD.1",
+        "Q1.G"
+      ],
+      "name": "GATE"
+    },
+    {
+      "endpoints": [
+        "RLED.2",
+        "LED1.A"
+      ],
+      "name": "LED_A"
+    }
+  ],
+  "pin_audit": {
+    "recomputed_net_count": 5,
+    "recomputed_pin_count": 13,
+    "source_assigned": 13,
+    "source_expected": 13,
+    "source_status": "PASS",
+    "source_unassigned": 0,
+    "valid": true
+  },
+  "placement_family_counts": {
+    "LED-RED": 1,
+    "NMOSFET": 1,
+    "RESISTOR": 2,
+    "VPULSE": 1,
+    "VSOURCE": 1
+  },
+  "schema_version": "progen-proteus-complete-pin-wiring/v1",
+  "source_part_counts": {
+    "LED": 1,
+    "NMOSFET": 1,
+    "RES": 2,
+    "VDC": 1,
+    "VPULSE": 1
+  }
+}

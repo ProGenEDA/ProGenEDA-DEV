@@ -1,0 +1,144 @@
+{
+  "circuit": {
+    "complexity_score": 90404,
+    "id": 184,
+    "name": "LM317 Constant-Current Source",
+    "source_pdf_page": 187,
+    "source_summary": "Resistor: 2 | LM317T: 1 | Voltage source: 1 | Total: 4"
+  },
+  "components": [
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "VIN",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "V1",
+      "value": "15 V"
+    },
+    {
+      "pdf_part": "LM317T",
+      "pins": [
+        {
+          "net": "LOAD",
+          "pin": "ADJ(1)"
+        },
+        {
+          "net": "NOUT",
+          "pin": "OUT(2)"
+        },
+        {
+          "net": "VIN",
+          "pin": "IN(3)"
+        }
+      ],
+      "placement_family": "LM317T",
+      "projection_fidelity": "exact",
+      "ref": "U1",
+      "value": "LM317T"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "NOUT",
+          "pin": "1"
+        },
+        {
+          "net": "LOAD",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RSET",
+      "value": "12.5 Ohm"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "LOAD",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RL",
+      "value": "100 Ohm"
+    }
+  ],
+  "executable_projection": {
+    "components": {
+      "LM317T": 1,
+      "RESISTOR": 2,
+      "VSOURCE": 1
+    },
+    "mode": "placement_only_no_terminals",
+    "reason": "The canonical source JSON preserves all requested nets, but the current Proteus executable does not synthesize arbitrary physical wires. The sibling executable input validates donor-backed component placement only.",
+    "schema_version": "progen-proteus-placement-control/v1"
+  },
+  "nets": [
+    {
+      "endpoints": [
+        "V1.-",
+        "RL.2"
+      ],
+      "name": "GND"
+    },
+    {
+      "endpoints": [
+        "V1.+",
+        "U1.IN(3)"
+      ],
+      "name": "VIN"
+    },
+    {
+      "endpoints": [
+        "U1.ADJ(1)",
+        "RSET.2",
+        "RL.1"
+      ],
+      "name": "LOAD"
+    },
+    {
+      "endpoints": [
+        "U1.OUT(2)",
+        "RSET.1"
+      ],
+      "name": "NOUT"
+    }
+  ],
+  "pin_audit": {
+    "recomputed_net_count": 4,
+    "recomputed_pin_count": 9,
+    "source_assigned": 9,
+    "source_expected": 9,
+    "source_status": "PASS",
+    "source_unassigned": 0,
+    "valid": true
+  },
+  "placement_family_counts": {
+    "LM317T": 1,
+    "RESISTOR": 2,
+    "VSOURCE": 1
+  },
+  "schema_version": "progen-proteus-complete-pin-wiring/v1",
+  "source_part_counts": {
+    "LM317T": 1,
+    "RES": 2,
+    "VDC": 1
+  }
+}

@@ -1,0 +1,216 @@
+{
+  "circuit": {
+    "complexity_score": 150705,
+    "id": 14,
+    "name": "RC Delay-Off Circuit",
+    "source_pdf_page": 17,
+    "source_summary": "Resistor: 2 | Capacitor: 1 | Diode: 1 | LED: 1 | NMOSFET: 1 | Voltage source: 1 | Total: 7"
+  },
+  "components": [
+    {
+      "pdf_part": "VPULSE",
+      "pins": [
+        {
+          "net": "VDD",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VPULSE",
+      "projection_fidelity": "exact",
+      "ref": "V1",
+      "value": "0-12 V, slow on/off"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VDD",
+          "pin": "1"
+        },
+        {
+          "net": "GATE",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R1",
+      "value": "100 kOhm"
+    },
+    {
+      "pdf_part": "CAP",
+      "pins": [
+        {
+          "net": "GATE",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "CAP",
+      "projection_fidelity": "exact",
+      "ref": "C1",
+      "value": "10 uF"
+    },
+    {
+      "pdf_part": "DIODE",
+      "pins": [
+        {
+          "net": "VDD",
+          "pin": "A"
+        },
+        {
+          "net": "GATE",
+          "pin": "K"
+        }
+      ],
+      "placement_family": "DIODE",
+      "projection_fidelity": "generic_family",
+      "ref": "D1",
+      "value": "1N4148"
+    },
+    {
+      "pdf_part": "NMOSFET",
+      "pins": [
+        {
+          "net": "GATE",
+          "pin": "G"
+        },
+        {
+          "net": "DRAIN",
+          "pin": "D"
+        },
+        {
+          "net": "GND",
+          "pin": "S"
+        }
+      ],
+      "placement_family": "NMOSFET",
+      "projection_fidelity": "exact",
+      "ref": "Q1",
+      "value": "Generic NMOS"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VDD",
+          "pin": "1"
+        },
+        {
+          "net": "LED_A",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R2",
+      "value": "1 kOhm"
+    },
+    {
+      "pdf_part": "LED",
+      "pins": [
+        {
+          "net": "LED_A",
+          "pin": "A"
+        },
+        {
+          "net": "DRAIN",
+          "pin": "K"
+        }
+      ],
+      "placement_family": "LED-RED",
+      "projection_fidelity": "family_substitution",
+      "projection_note": "The source LED colour remains in the canonical specification; the placement-only control uses the currently supported LED family.",
+      "ref": "LED1",
+      "value": "RED"
+    }
+  ],
+  "executable_projection": {
+    "components": {
+      "CAP": 1,
+      "DIODE": 1,
+      "LED-RED": 1,
+      "NMOSFET": 1,
+      "RESISTOR": 2,
+      "VPULSE": 1
+    },
+    "mode": "placement_only_no_terminals",
+    "reason": "The canonical source JSON preserves all requested nets, but the current Proteus executable does not synthesize arbitrary physical wires. The sibling executable input validates donor-backed component placement only.",
+    "schema_version": "progen-proteus-placement-control/v1"
+  },
+  "nets": [
+    {
+      "endpoints": [
+        "V1.-",
+        "C1.2",
+        "Q1.S"
+      ],
+      "name": "GND"
+    },
+    {
+      "endpoints": [
+        "V1.+",
+        "R1.1",
+        "D1.A",
+        "R2.1"
+      ],
+      "name": "VDD"
+    },
+    {
+      "endpoints": [
+        "Q1.D",
+        "LED1.K"
+      ],
+      "name": "DRAIN"
+    },
+    {
+      "endpoints": [
+        "R1.2",
+        "C1.1",
+        "D1.K",
+        "Q1.G"
+      ],
+      "name": "GATE"
+    },
+    {
+      "endpoints": [
+        "R2.2",
+        "LED1.A"
+      ],
+      "name": "LED_A"
+    }
+  ],
+  "pin_audit": {
+    "recomputed_net_count": 5,
+    "recomputed_pin_count": 15,
+    "source_assigned": 15,
+    "source_expected": 15,
+    "source_status": "PASS",
+    "source_unassigned": 0,
+    "valid": true
+  },
+  "placement_family_counts": {
+    "CAP": 1,
+    "DIODE": 1,
+    "LED-RED": 1,
+    "NMOSFET": 1,
+    "RESISTOR": 2,
+    "VPULSE": 1
+  },
+  "schema_version": "progen-proteus-complete-pin-wiring/v1",
+  "source_part_counts": {
+    "CAP": 1,
+    "DIODE": 1,
+    "LED": 1,
+    "NMOSFET": 1,
+    "RES": 2,
+    "VPULSE": 1
+  }
+}

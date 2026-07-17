@@ -1,0 +1,190 @@
+{
+  "circuit": {
+    "complexity_score": 130605,
+    "id": 115,
+    "name": "NMOS Level-Shifter Circuit",
+    "source_pdf_page": 118,
+    "source_summary": "Resistor: 2 | NMOSFET: 1 | Voltage source: 3 | Total: 6"
+  },
+  "components": [
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "VDDL",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VLOW",
+      "value": "3.3 V"
+    },
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "VDDH",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "VHIGH",
+      "value": "12 V"
+    },
+    {
+      "pdf_part": "VPULSE",
+      "pins": [
+        {
+          "net": "IN",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VPULSE",
+      "projection_fidelity": "exact",
+      "ref": "VIN1",
+      "value": "0-3.3 V"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VDDL",
+          "pin": "1"
+        },
+        {
+          "net": "IN",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R1",
+      "value": "10 kOhm"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VDDH",
+          "pin": "1"
+        },
+        {
+          "net": "OUT",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R2",
+      "value": "10 kOhm"
+    },
+    {
+      "pdf_part": "NMOSFET",
+      "pins": [
+        {
+          "net": "IN",
+          "pin": "G"
+        },
+        {
+          "net": "OUT",
+          "pin": "D"
+        },
+        {
+          "net": "GND",
+          "pin": "S"
+        }
+      ],
+      "placement_family": "NMOSFET",
+      "projection_fidelity": "exact",
+      "ref": "Q1",
+      "value": "Generic NMOS"
+    }
+  ],
+  "executable_projection": {
+    "components": {
+      "NMOSFET": 1,
+      "RESISTOR": 2,
+      "VPULSE": 1,
+      "VSOURCE": 2
+    },
+    "mode": "placement_only_no_terminals",
+    "reason": "The canonical source JSON preserves all requested nets, but the current Proteus executable does not synthesize arbitrary physical wires. The sibling executable input validates donor-backed component placement only.",
+    "schema_version": "progen-proteus-placement-control/v1"
+  },
+  "nets": [
+    {
+      "endpoints": [
+        "VLOW.-",
+        "VHIGH.-",
+        "VIN1.-",
+        "Q1.S"
+      ],
+      "name": "GND"
+    },
+    {
+      "endpoints": [
+        "VIN1.+",
+        "R1.2",
+        "Q1.G"
+      ],
+      "name": "IN"
+    },
+    {
+      "endpoints": [
+        "R2.2",
+        "Q1.D"
+      ],
+      "name": "OUT"
+    },
+    {
+      "endpoints": [
+        "VHIGH.+",
+        "R2.1"
+      ],
+      "name": "VDDH"
+    },
+    {
+      "endpoints": [
+        "VLOW.+",
+        "R1.1"
+      ],
+      "name": "VDDL"
+    }
+  ],
+  "pin_audit": {
+    "recomputed_net_count": 5,
+    "recomputed_pin_count": 13,
+    "source_assigned": 13,
+    "source_expected": 13,
+    "source_status": "PASS",
+    "source_unassigned": 0,
+    "valid": true
+  },
+  "placement_family_counts": {
+    "NMOSFET": 1,
+    "RESISTOR": 2,
+    "VPULSE": 1,
+    "VSOURCE": 2
+  },
+  "schema_version": "progen-proteus-complete-pin-wiring/v1",
+  "source_part_counts": {
+    "NMOSFET": 1,
+    "RES": 2,
+    "VDC": 2,
+    "VPULSE": 1
+  }
+}

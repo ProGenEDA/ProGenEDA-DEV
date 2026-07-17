@@ -1,0 +1,201 @@
+{
+  "circuit": {
+    "complexity_score": 140705,
+    "id": 22,
+    "name": "RC Phase-Shift Network",
+    "source_pdf_page": 25,
+    "source_summary": "Resistor: 3 | Capacitor: 3 | Voltage source: 1 | Total: 7"
+  },
+  "components": [
+    {
+      "pdf_part": "VSINE",
+      "pins": [
+        {
+          "net": "VIN",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSINE",
+      "projection_fidelity": "exact",
+      "ref": "V1",
+      "value": "1 Vpk, 1 kHz"
+    },
+    {
+      "pdf_part": "CAP",
+      "pins": [
+        {
+          "net": "VIN",
+          "pin": "1"
+        },
+        {
+          "net": "N1",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "CAP",
+      "projection_fidelity": "exact",
+      "ref": "C1",
+      "value": "10 nF"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "N1",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R1",
+      "value": "10 kOhm"
+    },
+    {
+      "pdf_part": "CAP",
+      "pins": [
+        {
+          "net": "N1",
+          "pin": "1"
+        },
+        {
+          "net": "N2",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "CAP",
+      "projection_fidelity": "exact",
+      "ref": "C2",
+      "value": "10 nF"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "N2",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R2",
+      "value": "10 kOhm"
+    },
+    {
+      "pdf_part": "CAP",
+      "pins": [
+        {
+          "net": "N2",
+          "pin": "1"
+        },
+        {
+          "net": "VOUT",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "CAP",
+      "projection_fidelity": "exact",
+      "ref": "C3",
+      "value": "10 nF"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VOUT",
+          "pin": "1"
+        },
+        {
+          "net": "GND",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "R3",
+      "value": "10 kOhm"
+    }
+  ],
+  "executable_projection": {
+    "components": {
+      "CAP": 3,
+      "RESISTOR": 3,
+      "VSINE": 1
+    },
+    "mode": "placement_only_no_terminals",
+    "reason": "The canonical source JSON preserves all requested nets, but the current Proteus executable does not synthesize arbitrary physical wires. The sibling executable input validates donor-backed component placement only.",
+    "schema_version": "progen-proteus-placement-control/v1"
+  },
+  "nets": [
+    {
+      "endpoints": [
+        "V1.-",
+        "R1.2",
+        "R2.2",
+        "R3.2"
+      ],
+      "name": "GND"
+    },
+    {
+      "endpoints": [
+        "V1.+",
+        "C1.1"
+      ],
+      "name": "VIN"
+    },
+    {
+      "endpoints": [
+        "C1.2",
+        "R1.1",
+        "C2.1"
+      ],
+      "name": "N1"
+    },
+    {
+      "endpoints": [
+        "C2.2",
+        "R2.1",
+        "C3.1"
+      ],
+      "name": "N2"
+    },
+    {
+      "endpoints": [
+        "C3.2",
+        "R3.1"
+      ],
+      "name": "VOUT"
+    }
+  ],
+  "pin_audit": {
+    "recomputed_net_count": 5,
+    "recomputed_pin_count": 14,
+    "source_assigned": 14,
+    "source_expected": 14,
+    "source_status": "PASS",
+    "source_unassigned": 0,
+    "valid": true
+  },
+  "placement_family_counts": {
+    "CAP": 3,
+    "RESISTOR": 3,
+    "VSINE": 1
+  },
+  "schema_version": "progen-proteus-complete-pin-wiring/v1",
+  "source_part_counts": {
+    "CAP": 3,
+    "RES": 3,
+    "VSINE": 1
+  }
+}

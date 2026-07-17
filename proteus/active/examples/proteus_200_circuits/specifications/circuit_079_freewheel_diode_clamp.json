@@ -1,0 +1,196 @@
+{
+  "circuit": {
+    "complexity_score": 130605,
+    "id": 79,
+    "name": "Freewheel Diode Clamp",
+    "source_pdf_page": 82,
+    "source_summary": "Resistor: 1 | Inductor: 1 | Diode: 1 | NMOSFET: 1 | Voltage source: 2 | Total: 6"
+  },
+  "components": [
+    {
+      "pdf_part": "VDC",
+      "pins": [
+        {
+          "net": "VDD",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VSOURCE",
+      "projection_fidelity": "direct_alias",
+      "ref": "V1",
+      "value": "12 V"
+    },
+    {
+      "pdf_part": "VPULSE",
+      "pins": [
+        {
+          "net": "GATE",
+          "pin": "+"
+        },
+        {
+          "net": "GND",
+          "pin": "-"
+        }
+      ],
+      "placement_family": "VPULSE",
+      "projection_fidelity": "exact",
+      "ref": "VG",
+      "value": "0-5 V"
+    },
+    {
+      "pdf_part": "RES",
+      "pins": [
+        {
+          "net": "VDD",
+          "pin": "1"
+        },
+        {
+          "net": "N1",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "RESISTOR",
+      "projection_fidelity": "direct_alias",
+      "ref": "RCOIL",
+      "value": "100 Ohm"
+    },
+    {
+      "pdf_part": "INDUCTOR",
+      "pins": [
+        {
+          "net": "N1",
+          "pin": "1"
+        },
+        {
+          "net": "DRAIN",
+          "pin": "2"
+        }
+      ],
+      "placement_family": "REALIND",
+      "projection_fidelity": "direct_alias",
+      "ref": "L1",
+      "value": "100 mH"
+    },
+    {
+      "pdf_part": "DIODE",
+      "pins": [
+        {
+          "net": "DRAIN",
+          "pin": "A"
+        },
+        {
+          "net": "VDD",
+          "pin": "K"
+        }
+      ],
+      "placement_family": "DIODE",
+      "projection_fidelity": "generic_family",
+      "ref": "D1",
+      "value": "1N4007"
+    },
+    {
+      "pdf_part": "NMOSFET",
+      "pins": [
+        {
+          "net": "GATE",
+          "pin": "G"
+        },
+        {
+          "net": "DRAIN",
+          "pin": "D"
+        },
+        {
+          "net": "GND",
+          "pin": "S"
+        }
+      ],
+      "placement_family": "NMOSFET",
+      "projection_fidelity": "exact",
+      "ref": "Q1",
+      "value": "Generic NMOS"
+    }
+  ],
+  "executable_projection": {
+    "components": {
+      "DIODE": 1,
+      "NMOSFET": 1,
+      "REALIND": 1,
+      "RESISTOR": 1,
+      "VPULSE": 1,
+      "VSOURCE": 1
+    },
+    "mode": "placement_only_no_terminals",
+    "reason": "The canonical source JSON preserves all requested nets, but the current Proteus executable does not synthesize arbitrary physical wires. The sibling executable input validates donor-backed component placement only.",
+    "schema_version": "progen-proteus-placement-control/v1"
+  },
+  "nets": [
+    {
+      "endpoints": [
+        "V1.-",
+        "VG.-",
+        "Q1.S"
+      ],
+      "name": "GND"
+    },
+    {
+      "endpoints": [
+        "V1.+",
+        "RCOIL.1",
+        "D1.K"
+      ],
+      "name": "VDD"
+    },
+    {
+      "endpoints": [
+        "L1.2",
+        "D1.A",
+        "Q1.D"
+      ],
+      "name": "DRAIN"
+    },
+    {
+      "endpoints": [
+        "VG.+",
+        "Q1.G"
+      ],
+      "name": "GATE"
+    },
+    {
+      "endpoints": [
+        "RCOIL.2",
+        "L1.1"
+      ],
+      "name": "N1"
+    }
+  ],
+  "pin_audit": {
+    "recomputed_net_count": 5,
+    "recomputed_pin_count": 13,
+    "source_assigned": 13,
+    "source_expected": 13,
+    "source_status": "PASS",
+    "source_unassigned": 0,
+    "valid": true
+  },
+  "placement_family_counts": {
+    "DIODE": 1,
+    "NMOSFET": 1,
+    "REALIND": 1,
+    "RESISTOR": 1,
+    "VPULSE": 1,
+    "VSOURCE": 1
+  },
+  "schema_version": "progen-proteus-complete-pin-wiring/v1",
+  "source_part_counts": {
+    "DIODE": 1,
+    "INDUCTOR": 1,
+    "NMOSFET": 1,
+    "RES": 1,
+    "VDC": 1,
+    "VPULSE": 1
+  }
+}
