@@ -34892,3 +34892,13 @@ Additional files edited or added:
 - `proteus/archive/backups/component_terminal_placer/component_terminal_placer_20260717_153100_before_catalogue_only_semantic_labels.py`
 - `proteus/experiments/runs/2026-07-17_opamp_exe/README.md`
 - `proteus/experiments/runs/2026-07-17_opamp_exe/catalogue_only_opamp_semantic_control.json`
+
+Final delivery (verbatim):
+
+> Fixed. The current executable emits canonical circuit node names instead of generic component/pin labels.
+>
+> - Fresh Circuit 180: `U107 OUT=O1`, `IN+=VIN`, `IN-=G0` — [open it](/C:/Users/Empty/Documents/Progentotal/protuesgen/proteus/experiments/runs/2026-07-17_opamp_exe/C180_current_exe_semantic_labels.pdsprj).
+> - 56 OPAMP-containing PDF circuits were generated and label-audited: zero generic labels.
+> - Latest [ProgenProteus.exe](/C:/Users/Empty/Documents/Progentotal/protuesgen/proteus/active/release/ProgenProteus.exe) rebuilt.
+>
+> This labels the terminal route; it does not yet physically wire PDF nets.
