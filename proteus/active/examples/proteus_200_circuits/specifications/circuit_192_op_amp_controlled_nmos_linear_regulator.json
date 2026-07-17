@@ -224,9 +224,136 @@
       "RESISTOR": 4,
       "VSOURCE": 3
     },
-    "mode": "placement_only_no_terminals",
-    "reason": "The canonical source JSON preserves all requested nets, but the current Proteus executable does not synthesize arbitrary physical wires. The sibling executable input validates donor-backed component placement only.",
-    "schema_version": "progen-proteus-placement-control/v1"
+    "mode": "terminalized_components_with_logical_node_labels_no_physical_wires",
+    "reason": "The canonical source JSON preserves all requested nets. The current Proteus executable uses those node names for donor-backed terminal labels, but does not synthesize arbitrary physical wires.",
+    "schema_version": "progen-proteus-placement-control/v1",
+    "terminal_label_projection": {
+      "exposed_terminal_label_count": 25,
+      "families": {
+        "CAP-ELEC": [
+          {
+            "pins": {
+              "1": "VOUT",
+              "2": "G0"
+            },
+            "source_ref": "COUT"
+          }
+        ],
+        "NMOSFET": [
+          {
+            "pins": {
+              "D": "VIN",
+              "G": "GATE",
+              "S": "VOUT"
+            },
+            "source_ref": "Q1"
+          }
+        ],
+        "OPAMP": [
+          {
+            "pins": {
+              "IN+": "SET",
+              "IN-": "FB",
+              "OUT": "OG"
+            },
+            "source_ref": "U1"
+          }
+        ],
+        "POT-HG": [
+          {
+            "pins": {
+              "1": "V+",
+              "2": "SET",
+              "3": "G0"
+            },
+            "source_ref": "RV1"
+          }
+        ],
+        "RESISTOR": [
+          {
+            "pins": {
+              "1": "OG",
+              "2": "GATE"
+            },
+            "source_ref": "RG"
+          },
+          {
+            "pins": {
+              "1": "VOUT",
+              "2": "FB"
+            },
+            "source_ref": "R1"
+          },
+          {
+            "pins": {
+              "1": "FB",
+              "2": "G0"
+            },
+            "source_ref": "R2"
+          },
+          {
+            "pins": {
+              "1": "VOUT",
+              "2": "G0"
+            },
+            "source_ref": "RL"
+          }
+        ],
+        "VSOURCE": [
+          {
+            "pins": {
+              "1": "V+",
+              "2": "G0"
+            },
+            "source_ref": "VCC"
+          },
+          {
+            "pins": {
+              "1": "G0",
+              "2": "V-"
+            },
+            "source_ref": "VEE"
+          },
+          {
+            "pins": {
+              "1": "VIN",
+              "2": "G0"
+            },
+            "source_ref": "VIN1"
+          }
+        ]
+      },
+      "node_labels": {
+        "FB": "FB",
+        "GATE": "GATE",
+        "GND": "G0",
+        "OG": "OG",
+        "SET": "SET",
+        "V+": "V+",
+        "V-": "V-",
+        "VIN": "VIN",
+        "VOUT": "VOUT"
+      },
+      "omitted_source_pins": [
+        {
+          "node": "V+",
+          "placement_family": "OPAMP",
+          "reason": "not_exposed_by_current_terminal_profile",
+          "source_pin": "V+",
+          "source_ref": "U1"
+        },
+        {
+          "node": "V-",
+          "placement_family": "OPAMP",
+          "reason": "not_exposed_by_current_terminal_profile",
+          "source_pin": "V-",
+          "source_ref": "U1"
+        }
+      ],
+      "policy": "canonical_node_name_to_exposed_terminal_pin",
+      "schema_version": "progen-proteus-terminal-label-projection/v1",
+      "source_pin_count": 27
+    }
   },
   "nets": [
     {

@@ -390,9 +390,237 @@
       "RESISTOR": 8,
       "VSOURCE": 3
     },
-    "mode": "placement_only_no_terminals",
-    "reason": "The canonical source JSON preserves all requested nets, but the current Proteus executable does not synthesize arbitrary physical wires. The sibling executable input validates donor-backed component placement only.",
-    "schema_version": "progen-proteus-placement-control/v1"
+    "mode": "terminalized_components_with_logical_node_labels_no_physical_wires",
+    "reason": "The canonical source JSON preserves all requested nets. The current Proteus executable uses those node names for donor-backed terminal labels, but does not synthesize arbitrary physical wires.",
+    "schema_version": "progen-proteus-placement-control/v1",
+    "terminal_label_projection": {
+      "exposed_terminal_label_count": 42,
+      "families": {
+        "LED-RED": [
+          {
+            "pins": {
+              "1": "A1",
+              "2": "G0"
+            },
+            "source_ref": "LED1"
+          },
+          {
+            "pins": {
+              "1": "A2",
+              "2": "G0"
+            },
+            "source_ref": "LED2"
+          },
+          {
+            "pins": {
+              "1": "A3",
+              "2": "G0"
+            },
+            "source_ref": "LED3"
+          },
+          {
+            "pins": {
+              "1": "A4",
+              "2": "G0"
+            },
+            "source_ref": "LED4"
+          }
+        ],
+        "OPAMP": [
+          {
+            "pins": {
+              "IN+": "VIN",
+              "IN-": "G0",
+              "OUT": "O1"
+            },
+            "source_ref": "U1"
+          },
+          {
+            "pins": {
+              "IN+": "VIN",
+              "IN-": "T3",
+              "OUT": "O2"
+            },
+            "source_ref": "U2"
+          },
+          {
+            "pins": {
+              "IN+": "VIN",
+              "IN-": "T2",
+              "OUT": "O3"
+            },
+            "source_ref": "U3"
+          },
+          {
+            "pins": {
+              "IN+": "VIN",
+              "IN-": "T1",
+              "OUT": "O4"
+            },
+            "source_ref": "U4"
+          }
+        ],
+        "RESISTOR": [
+          {
+            "pins": {
+              "1": "V+",
+              "2": "T1"
+            },
+            "source_ref": "R1"
+          },
+          {
+            "pins": {
+              "1": "T1",
+              "2": "T2"
+            },
+            "source_ref": "R2"
+          },
+          {
+            "pins": {
+              "1": "T2",
+              "2": "T3"
+            },
+            "source_ref": "R3"
+          },
+          {
+            "pins": {
+              "1": "T3",
+              "2": "G0"
+            },
+            "source_ref": "R4"
+          },
+          {
+            "pins": {
+              "1": "O1",
+              "2": "A1"
+            },
+            "source_ref": "RLED1"
+          },
+          {
+            "pins": {
+              "1": "O2",
+              "2": "A2"
+            },
+            "source_ref": "RLED2"
+          },
+          {
+            "pins": {
+              "1": "O3",
+              "2": "A3"
+            },
+            "source_ref": "RLED3"
+          },
+          {
+            "pins": {
+              "1": "O4",
+              "2": "A4"
+            },
+            "source_ref": "RLED4"
+          }
+        ],
+        "VSOURCE": [
+          {
+            "pins": {
+              "1": "V+",
+              "2": "G0"
+            },
+            "source_ref": "VCC"
+          },
+          {
+            "pins": {
+              "1": "G0",
+              "2": "V-"
+            },
+            "source_ref": "VEE"
+          },
+          {
+            "pins": {
+              "1": "VIN",
+              "2": "G0"
+            },
+            "source_ref": "VIN1"
+          }
+        ]
+      },
+      "node_labels": {
+        "A1": "A1",
+        "A2": "A2",
+        "A3": "A3",
+        "A4": "A4",
+        "GND": "G0",
+        "O1": "O1",
+        "O2": "O2",
+        "O3": "O3",
+        "O4": "O4",
+        "T1": "T1",
+        "T2": "T2",
+        "T3": "T3",
+        "V+": "V+",
+        "V-": "V-",
+        "VIN": "VIN"
+      },
+      "omitted_source_pins": [
+        {
+          "node": "V+",
+          "placement_family": "OPAMP",
+          "reason": "not_exposed_by_current_terminal_profile",
+          "source_pin": "V+",
+          "source_ref": "U1"
+        },
+        {
+          "node": "V-",
+          "placement_family": "OPAMP",
+          "reason": "not_exposed_by_current_terminal_profile",
+          "source_pin": "V-",
+          "source_ref": "U1"
+        },
+        {
+          "node": "V+",
+          "placement_family": "OPAMP",
+          "reason": "not_exposed_by_current_terminal_profile",
+          "source_pin": "V+",
+          "source_ref": "U2"
+        },
+        {
+          "node": "V-",
+          "placement_family": "OPAMP",
+          "reason": "not_exposed_by_current_terminal_profile",
+          "source_pin": "V-",
+          "source_ref": "U2"
+        },
+        {
+          "node": "V+",
+          "placement_family": "OPAMP",
+          "reason": "not_exposed_by_current_terminal_profile",
+          "source_pin": "V+",
+          "source_ref": "U3"
+        },
+        {
+          "node": "V-",
+          "placement_family": "OPAMP",
+          "reason": "not_exposed_by_current_terminal_profile",
+          "source_pin": "V-",
+          "source_ref": "U3"
+        },
+        {
+          "node": "V+",
+          "placement_family": "OPAMP",
+          "reason": "not_exposed_by_current_terminal_profile",
+          "source_pin": "V+",
+          "source_ref": "U4"
+        },
+        {
+          "node": "V-",
+          "placement_family": "OPAMP",
+          "reason": "not_exposed_by_current_terminal_profile",
+          "source_pin": "V-",
+          "source_ref": "U4"
+        }
+      ],
+      "policy": "canonical_node_name_to_exposed_terminal_pin",
+      "schema_version": "progen-proteus-terminal-label-projection/v1",
+      "source_pin_count": 50
+    }
   },
   "nets": [
     {

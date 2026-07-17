@@ -116,9 +116,72 @@
       "RESISTOR": 1,
       "VSINE": 1
     },
-    "mode": "placement_only_no_terminals",
-    "reason": "The canonical source JSON preserves all requested nets, but the current Proteus executable does not synthesize arbitrary physical wires. The sibling executable input validates donor-backed component placement only.",
-    "schema_version": "progen-proteus-placement-control/v1"
+    "mode": "terminalized_components_with_logical_node_labels_no_physical_wires",
+    "reason": "The canonical source JSON preserves all requested nets. The current Proteus executable uses those node names for donor-backed terminal labels, but does not synthesize arbitrary physical wires.",
+    "schema_version": "progen-proteus-placement-control/v1",
+    "terminal_label_projection": {
+      "exposed_terminal_label_count": 12,
+      "families": {
+        "DIODE": [
+          {
+            "pins": {
+              "1": "AC1",
+              "2": "VOUT"
+            },
+            "source_ref": "D1"
+          },
+          {
+            "pins": {
+              "1": "AC2",
+              "2": "VOUT"
+            },
+            "source_ref": "D2"
+          },
+          {
+            "pins": {
+              "1": "G0",
+              "2": "AC1"
+            },
+            "source_ref": "D3"
+          },
+          {
+            "pins": {
+              "1": "G0",
+              "2": "AC2"
+            },
+            "source_ref": "D4"
+          }
+        ],
+        "RESISTOR": [
+          {
+            "pins": {
+              "1": "VOUT",
+              "2": "G0"
+            },
+            "source_ref": "RL"
+          }
+        ],
+        "VSINE": [
+          {
+            "pins": {
+              "1": "AC1",
+              "2": "AC2"
+            },
+            "source_ref": "V1"
+          }
+        ]
+      },
+      "node_labels": {
+        "AC1": "AC1",
+        "AC2": "AC2",
+        "GND": "G0",
+        "VOUT": "VOUT"
+      },
+      "omitted_source_pins": [],
+      "policy": "canonical_node_name_to_exposed_terminal_pin",
+      "schema_version": "progen-proteus-terminal-label-projection/v1",
+      "source_pin_count": 12
+    }
   },
   "nets": [
     {

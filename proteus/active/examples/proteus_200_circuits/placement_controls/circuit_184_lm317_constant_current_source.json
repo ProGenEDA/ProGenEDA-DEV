@@ -7,5 +7,73 @@
   "layout": {
     "strategy": "beautify"
   },
-  "schema_version": "progen-proteus-placement-control/v1"
+  "schema_version": "progen-proteus-placement-control/v1",
+  "terminal_label_projection": {
+    "exposed_terminal_label_count": 6,
+    "families": {
+      "LM317T": [
+        {
+          "pins": {},
+          "source_ref": "U1"
+        }
+      ],
+      "RESISTOR": [
+        {
+          "pins": {
+            "1": "NOUT",
+            "2": "LOAD"
+          },
+          "source_ref": "RSET"
+        },
+        {
+          "pins": {
+            "1": "LOAD",
+            "2": "G0"
+          },
+          "source_ref": "RL"
+        }
+      ],
+      "VSOURCE": [
+        {
+          "pins": {
+            "1": "VIN",
+            "2": "G0"
+          },
+          "source_ref": "V1"
+        }
+      ]
+    },
+    "node_labels": {
+      "GND": "G0",
+      "LOAD": "LOAD",
+      "NOUT": "NOUT",
+      "VIN": "VIN"
+    },
+    "omitted_source_pins": [
+      {
+        "node": "LOAD",
+        "placement_family": "LM317T",
+        "reason": "not_exposed_by_current_terminal_profile",
+        "source_pin": "ADJ(1)",
+        "source_ref": "U1"
+      },
+      {
+        "node": "NOUT",
+        "placement_family": "LM317T",
+        "reason": "not_exposed_by_current_terminal_profile",
+        "source_pin": "OUT(2)",
+        "source_ref": "U1"
+      },
+      {
+        "node": "VIN",
+        "placement_family": "LM317T",
+        "reason": "not_exposed_by_current_terminal_profile",
+        "source_pin": "IN(3)",
+        "source_ref": "U1"
+      }
+    ],
+    "policy": "canonical_node_name_to_exposed_terminal_pin",
+    "schema_version": "progen-proteus-terminal-label-projection/v1",
+    "source_pin_count": 9
+  }
 }

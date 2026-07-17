@@ -18,9 +18,13 @@ from pathlib import Path
 import re
 from typing import Any, Iterable, Mapping
 
+from .component_catalog import load_component_catalog
+from .node_name_mapping import terminal_label_for_node
+
 
 SOURCE_SCHEMA = "progen-proteus-complete-pin-wiring/v1"
 EXECUTABLE_SCHEMA = "progen-proteus-placement-control/v1"
+TERMINAL_LABEL_PROJECTION_SCHEMA = "progen-proteus-terminal-label-projection/v1"
 CORPUS_SCHEMA = "progen-proteus-pdf-corpus/v1"
 DEFAULT_EXPECTED_CIRCUITS = 200
 
@@ -159,6 +163,89 @@ class CircuitRecord:
         counts = Counter(component.pdf_part for component in self.components)
         return dict(sorted(counts.items()))
 
+    def terminal_label_projection(self) -> dict[str, Any]:
+        """Project canonical node names into executable terminal metadata.
+
+        This is deliberately label metadata rather than a hidden netlist. The
+        executable may attach a terminal to a currently exposed donor-backed
+        pin, but it must not infer or emit physical source-PDF wiring until the
+        shared Wire Maker has an accepted Proteus route.
+        """
+
+        catalog = load_component_catalog()
+        used_labels: set[str] = set()
+        node_labels: dict[str, str] = {}
+        for index, (node, _endpoints) in enumerate(self.nets):
+            node_labels[node] = terminal_label_for_node(
+                node,
+                index=index,
+                used=used_labels,
+            )
+
+        families: dict[str, list[dict[str, Any]]] = {}
+        omitted_source_pins: list[dict[str, str]] = []
+        emitted_pin_count = 0
+        for component in self.components:
+            family = component.projection.placement_family
+            profile = catalog.get_profile(family)
+            if profile is None:
+                raise CircuitCorpusError(
+                    f"{component.ref}: placement family {family!r} has no catalogue profile."
+                )
+            pins: dict[str, str] = {}
+            for raw_pin, node in component.pins:
+                try:
+                    pin = profile.normalize_pin(raw_pin)
+                except ValueError:
+                    # The source OPAMP specification includes its supply pins,
+                    # but the current accepted OPAMP geometry exposes only
+                    # OUT/IN+/IN-. Record the omission explicitly; never
+                    # manufacture a terminal or pretend that it was wired.
+                    omitted_source_pins.append(
+                        {
+                            "source_ref": component.ref,
+                            "placement_family": family,
+                            "source_pin": raw_pin,
+                            "node": node,
+                            "reason": "not_exposed_by_current_terminal_profile",
+                        }
+                    )
+                    continue
+                if pin.hidden:
+                    omitted_source_pins.append(
+                        {
+                            "source_ref": component.ref,
+                            "placement_family": family,
+                            "source_pin": raw_pin,
+                            "node": node,
+                            "reason": "hidden_catalogue_pin",
+                        }
+                    )
+                    continue
+                if pin.name in pins and pins[pin.name] != node_labels[node]:
+                    raise CircuitCorpusError(
+                        f"{component.ref}: multiple source pins map to visible "
+                        f"terminal pin {pin.name!r}."
+                    )
+                pins[pin.name] = node_labels[node]
+                emitted_pin_count += 1
+            families.setdefault(family, []).append(
+                {
+                    "source_ref": component.ref,
+                    "pins": pins,
+                }
+            )
+
+        return {
+            "schema_version": TERMINAL_LABEL_PROJECTION_SCHEMA,
+            "policy": "canonical_node_name_to_exposed_terminal_pin",
+            "node_labels": node_labels,
+            "families": dict(sorted(families.items())),
+            "source_pin_count": self.pin_count,
+            "exposed_terminal_label_count": emitted_pin_count,
+            "omitted_source_pins": omitted_source_pins,
+        }
+
     def source_payload(self) -> dict[str, Any]:
         return {
             "schema_version": SOURCE_SCHEMA,
@@ -187,14 +274,14 @@ class CircuitRecord:
             },
             "executable_projection": {
                 "schema_version": EXECUTABLE_SCHEMA,
-                "mode": "placement_only_no_terminals",
+                "mode": "terminalized_components_with_logical_node_labels_no_physical_wires",
                 "reason": (
-                    "The canonical source JSON preserves all requested nets, but the "
-                    "current Proteus executable does not synthesize arbitrary physical "
-                    "wires. The sibling executable input validates donor-backed component "
-                    "placement only."
+                    "The canonical source JSON preserves all requested nets. The current "
+                    "Proteus executable uses those node names for donor-backed terminal "
+                    "labels, but does not synthesize arbitrary physical wires."
                 ),
                 "components": self.placement_counts,
+                "terminal_label_projection": self.terminal_label_projection(),
             },
         }
 
@@ -210,6 +297,7 @@ class CircuitRecord:
             "schema_version": EXECUTABLE_SCHEMA,
             "components": self.placement_counts,
             "layout": {"strategy": "beautify"},
+            "terminal_label_projection": self.terminal_label_projection(),
         }
 
 

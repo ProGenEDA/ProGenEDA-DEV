@@ -32,6 +32,12 @@ terminal-to-pin wires and, by default, any request that would silently leave a
 family unterminated. Use `--allow-unterminalized` only for an intentional
 mixed control project.
 
+For a canonical placement control, optional `terminal_label_projection`
+metadata assigns source-circuit node names to the exposed terminals before
+they are serialized. This changes labels (for example `VIN`, `G0`, `VOUT`),
+not physical routing: arbitrary `nets`, `wires`, `connections`, and `netlist`
+requests remain rejected until the shared Wire Maker is accepted.
+
 Build: 2026-07-17
 
-SHA-256: `BE444F1827440A01BCEEDB7A05794C794926CC4FCC3D76605B40743BEF7BE947`
+SHA-256: `4479E5C6F0CED0384F7C06BEB49CC78BFD47DDC01E1730A07AEDC729C7FD13D8`

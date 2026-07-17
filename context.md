@@ -34827,3 +34827,68 @@ Visible assistant responses (verbatim):
 Files edited:
 
 - `context.md`
+## 2026-07-17 15:27:22 +05:00 — semantic terminal-label correction
+
+User message (verbatim):
+
+> it opens yes but its terminals donot ave the circuit required names
+
+Visible assistant responses (verbatim):
+
+> The Circuit 180 label fix is in the shared terminal route and its rebuilt executable output: it now uses the circuit node names instead of generic pin labels. I’m finishing the compact-name executable batch for the remaining OPAMP circuits, so Windows does not block their internal temporary files.
+
+> I confirmed the new project’s internal `ROOT.DSN` contains the required labels and no generic `U107OUT/U107INP/U107INN` strings. I’m regenerating all 56 OPAMP-containing circuits through the rebuilt executable now, using short readable filenames to avoid the Windows temporary-path failure.
+
+> The sequential run is still progressing normally; it deliberately waits for each executable process to finish rather than risking the false parallel-launch failures. I’ll verify the generated reports and labels as soon as the batch completes.
+
+> I’m keeping the launcher serial and preserving every output. The status stream is buffered by the executable host, so I’m waiting for its completion rather than interrupting a valid run mid-project.
+
+> No new error has surfaced. This pass is intentionally quiet until it produces a complete result; I’ll inspect the per-circuit reports rather than relying on a process exit alone.
+
+> The run remains active and has not reported an executable failure. It is using the exact current EXE and the regenerated semantic-label controls; I’m letting it finish rather than falling back to a different generator.
+
+> This is taking longer than the single-circuit run because the larger OPAMP controls have more terminal records and byte rebasing. It is still the same serial route; I’ll stop only if the executor reports a concrete failure, then retain the completed projects.
+
+> All 56 OPAMP-containing controls have now passed through the rebuilt executable with valid terminal-route reports. I’m doing the final label audit against each control’s canonical node-name projection, not merely checking that the projects exist.
+
+> The label audit passes for all 56: every emitted terminal label matches its circuit’s canonical node map, and none use the old generic OPAMP labels. Circuit 180’s final label set is `A1–A4`, `G0`, `O1–O4`, `T1–T3`, `V+`, `V-`, and `VIN`.
+
+Files edited or added:
+
+- `proteus/active/src/proteusgen/component_terminal_placer.py`
+- `proteus/active/src/proteusgen/pdf_circuit_corpus.py`
+- `proteus/active/src/proteusgen/proteus_app.py`
+- `proteus/active/tests/test_pdf_circuit_corpus.py`
+- `proteus/active/tests/test_proteus_app.py`
+- `proteus/archive/backups/component_terminal_placer/component_terminal_placer_20260717_144714_before_semantic_terminal_labels.py`
+- `proteus/active/knowledge/semantic_terminal_labels_preflight_2026_07_17.md`
+- `proteus/active/examples/proteus_200_circuits/placement_controls/` and `specifications/` (regenerated canonical metadata)
+- `proteus/active/release/ProgenProteus.exe` (rebuilt)
+- `proteus/experiments/runs/2026-07-17_executable_terminal_route_opamp_semantic_labels/`
+- `proteus/experiments/runs/2026-07-17_opamp_exe/`
+
+Continuation updates (verbatim):
+
+> I found one remaining edge case while auditing the route: a circuit made only of catalogue-backed components could still retain donor labels. I’m closing that optional-label gap in the same shared placer before I checkpoint this, so the node-name rule applies consistently—not just to mixed OPAMP circuits.
+
+> The catalogue-only edge is now covered by the same override map, and the focused regression suite is 12/12. I’m rebuilding the executable once more from this final shared route; mixed OPAMP circuits remain unchanged by that additive branch.
+
+> The rebuilt executable’s fresh Circuit 180 output now explicitly reports `U107: OUT=O1, IN+=VIN, IN-=G0` (and the analogous labels for U108–U110). I’m giving the final EXE one catalogue-only OPAMP smoke test as well, to prove the same naming rule does not depend on a two-pin component being present.
+
+Planned final response (verbatim):
+
+> Fixed. The current executable now emits the canonical circuit node names on terminals instead of generic component/pin names.
+>
+> - Fresh Circuit 180: `U107 OUT=O1`, `IN+=VIN`, `IN-=G0`; the full project is at `proteus/experiments/runs/2026-07-17_opamp_exe/C180_current_exe_semantic_labels.pdsprj`.
+> - All 56 OPAMP-containing PDF circuits generated successfully through the executable and passed the label audit: 0 generic `U…OUT/U…INP/U…INN` labels.
+> - The rebuilt executable is `proteus/active/release/ProgenProteus.exe` (SHA-256 `4479E5C6F0CED0384F7C06BEB49CC78BFD47DDC01E1730A07AEDC729C7FD13D8`).
+>
+> This labels the accepted terminal route correctly; it does not yet physically wire the PDF netlists.
+
+Additional files edited or added:
+
+- `proteus/active/README.md`
+- `proteus/active/release/README.md`
+- `proteus/archive/backups/component_terminal_placer/component_terminal_placer_20260717_153100_before_catalogue_only_semantic_labels.py`
+- `proteus/experiments/runs/2026-07-17_opamp_exe/README.md`
+- `proteus/experiments/runs/2026-07-17_opamp_exe/catalogue_only_opamp_semantic_control.json`

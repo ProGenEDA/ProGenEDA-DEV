@@ -87,9 +87,61 @@
       "VPULSE": 1,
       "VSOURCE": 1
     },
-    "mode": "placement_only_no_terminals",
-    "reason": "The canonical source JSON preserves all requested nets, but the current Proteus executable does not synthesize arbitrary physical wires. The sibling executable input validates donor-backed component placement only.",
-    "schema_version": "progen-proteus-placement-control/v1"
+    "mode": "terminalized_components_with_logical_node_labels_no_physical_wires",
+    "reason": "The canonical source JSON preserves all requested nets. The current Proteus executable uses those node names for donor-backed terminal labels, but does not synthesize arbitrary physical wires.",
+    "schema_version": "progen-proteus-placement-control/v1",
+    "terminal_label_projection": {
+      "exposed_terminal_label_count": 9,
+      "families": {
+        "NMOSFET": [
+          {
+            "pins": {
+              "D": "VOUT",
+              "G": "GATE",
+              "S": "G0"
+            },
+            "source_ref": "Q1"
+          }
+        ],
+        "RESISTOR": [
+          {
+            "pins": {
+              "1": "V0",
+              "2": "VOUT"
+            },
+            "source_ref": "R1"
+          }
+        ],
+        "VPULSE": [
+          {
+            "pins": {
+              "1": "GATE",
+              "2": "G0"
+            },
+            "source_ref": "VIN1"
+          }
+        ],
+        "VSOURCE": [
+          {
+            "pins": {
+              "1": "V0",
+              "2": "G0"
+            },
+            "source_ref": "VDD1"
+          }
+        ]
+      },
+      "node_labels": {
+        "GATE": "GATE",
+        "GND": "G0",
+        "VDD": "V0",
+        "VOUT": "VOUT"
+      },
+      "omitted_source_pins": [],
+      "policy": "canonical_node_name_to_exposed_terminal_pin",
+      "schema_version": "progen-proteus-terminal-label-projection/v1",
+      "source_pin_count": 9
+    }
   },
   "nets": [
     {

@@ -7,5 +7,81 @@
   "layout": {
     "strategy": "beautify"
   },
-  "schema_version": "progen-proteus-placement-control/v1"
+  "schema_version": "progen-proteus-placement-control/v1",
+  "terminal_label_projection": {
+    "exposed_terminal_label_count": 18,
+    "families": {
+      "NMOSFET": [
+        {
+          "pins": {
+            "D": "B1",
+            "G": "B1",
+            "S": "G0"
+          },
+          "source_ref": "Q1"
+        },
+        {
+          "pins": {
+            "D": "B2",
+            "G": "B2",
+            "S": "B1"
+          },
+          "source_ref": "Q2"
+        },
+        {
+          "pins": {
+            "D": "NX",
+            "G": "B1",
+            "S": "G0"
+          },
+          "source_ref": "Q3"
+        },
+        {
+          "pins": {
+            "D": "OUT",
+            "G": "B2",
+            "S": "NX"
+          },
+          "source_ref": "Q4"
+        }
+      ],
+      "RESISTOR": [
+        {
+          "pins": {
+            "1": "V0",
+            "2": "B2"
+          },
+          "source_ref": "RREF"
+        },
+        {
+          "pins": {
+            "1": "V0",
+            "2": "OUT"
+          },
+          "source_ref": "RL"
+        }
+      ],
+      "VSOURCE": [
+        {
+          "pins": {
+            "1": "V0",
+            "2": "G0"
+          },
+          "source_ref": "VDD1"
+        }
+      ]
+    },
+    "node_labels": {
+      "B1": "B1",
+      "B2": "B2",
+      "GND": "G0",
+      "NX": "NX",
+      "OUT": "OUT",
+      "VDD": "V0"
+    },
+    "omitted_source_pins": [],
+    "policy": "canonical_node_name_to_exposed_terminal_pin",
+    "schema_version": "progen-proteus-terminal-label-projection/v1",
+    "source_pin_count": 18
+  }
 }

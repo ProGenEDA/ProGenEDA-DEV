@@ -7,5 +7,54 @@
   "layout": {
     "strategy": "beautify"
   },
-  "schema_version": "progen-proteus-placement-control/v1"
+  "schema_version": "progen-proteus-placement-control/v1",
+  "terminal_label_projection": {
+    "exposed_terminal_label_count": 8,
+    "families": {
+      "BZY88C": [
+        {
+          "pins": {
+            "1": "MID",
+            "2": "VOUT"
+          },
+          "source_ref": "DZ1"
+        },
+        {
+          "pins": {
+            "1": "MID",
+            "2": "G0"
+          },
+          "source_ref": "DZ2"
+        }
+      ],
+      "RESISTOR": [
+        {
+          "pins": {
+            "1": "VIN",
+            "2": "VOUT"
+          },
+          "source_ref": "R1"
+        }
+      ],
+      "VSINE": [
+        {
+          "pins": {
+            "1": "VIN",
+            "2": "G0"
+          },
+          "source_ref": "V1"
+        }
+      ]
+    },
+    "node_labels": {
+      "GND": "G0",
+      "MID": "MID",
+      "VIN": "VIN",
+      "VOUT": "VOUT"
+    },
+    "omitted_source_pins": [],
+    "policy": "canonical_node_name_to_exposed_terminal_pin",
+    "schema_version": "progen-proteus-terminal-label-projection/v1",
+    "source_pin_count": 8
+  }
 }

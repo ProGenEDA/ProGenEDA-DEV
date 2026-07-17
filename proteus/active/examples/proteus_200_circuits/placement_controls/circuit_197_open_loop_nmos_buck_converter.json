@@ -11,5 +11,100 @@
   "layout": {
     "strategy": "beautify"
   },
-  "schema_version": "progen-proteus-placement-control/v1"
+  "schema_version": "progen-proteus-placement-control/v1",
+  "terminal_label_projection": {
+    "exposed_terminal_label_count": 19,
+    "families": {
+      "CAP-ELEC": [
+        {
+          "pins": {
+            "1": "VOUT",
+            "2": "G0"
+          },
+          "source_ref": "COUT"
+        }
+      ],
+      "DIODE": [
+        {
+          "pins": {
+            "1": "G0",
+            "2": "SW"
+          },
+          "source_ref": "D1"
+        }
+      ],
+      "NMOSFET": [
+        {
+          "pins": {
+            "D": "VIN",
+            "G": "GATE",
+            "S": "SW"
+          },
+          "source_ref": "Q1"
+        }
+      ],
+      "REALIND": [
+        {
+          "pins": {
+            "1": "SW",
+            "2": "VOUT"
+          },
+          "source_ref": "L1"
+        }
+      ],
+      "RESISTOR": [
+        {
+          "pins": {
+            "1": "DRV",
+            "2": "GATE"
+          },
+          "source_ref": "RG"
+        },
+        {
+          "pins": {
+            "1": "GATE",
+            "2": "G0"
+          },
+          "source_ref": "RPD"
+        },
+        {
+          "pins": {
+            "1": "VOUT",
+            "2": "G0"
+          },
+          "source_ref": "RL"
+        }
+      ],
+      "VPULSE": [
+        {
+          "pins": {
+            "1": "DRV",
+            "2": "G0"
+          },
+          "source_ref": "VPWM"
+        }
+      ],
+      "VSOURCE": [
+        {
+          "pins": {
+            "1": "VIN",
+            "2": "G0"
+          },
+          "source_ref": "VIN1"
+        }
+      ]
+    },
+    "node_labels": {
+      "DRV": "DRV",
+      "GATE": "GATE",
+      "GND": "G0",
+      "SW": "SW",
+      "VIN": "VIN",
+      "VOUT": "VOUT"
+    },
+    "omitted_source_pins": [],
+    "policy": "canonical_node_name_to_exposed_terminal_pin",
+    "schema_version": "progen-proteus-terminal-label-projection/v1",
+    "source_pin_count": 19
+  }
 }

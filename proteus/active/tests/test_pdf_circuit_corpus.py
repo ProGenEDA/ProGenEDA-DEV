@@ -39,6 +39,26 @@ def test_all_pdf_part_labels_have_explicit_placement_projections() -> None:
     assert source_parts == set(PDF_PART_PROJECTIONS)
 
 
+def test_executable_projection_carries_canonical_terminal_labels_without_wiring() -> None:
+    records = parse_pdf_circuit_corpus(SOURCE_PDF)
+    circuit_180 = next(record for record in records if record.number == 180)
+
+    projection = circuit_180.executable_payload()
+    labels = projection["terminal_label_projection"]
+
+    assert not ({"connections", "wires", "nets", "netlist"} & set(projection))
+    assert labels["node_labels"]["GND"] == "G0"
+    assert labels["families"]["OPAMP"][0]["pins"] == {
+        "IN+": "VIN",
+        "IN-": "G0",
+        "OUT": "O1",
+    }
+    assert {
+        (row["source_ref"], row["source_pin"])
+        for row in labels["omitted_source_pins"]
+    } >= {("U1", "V+"), ("U1", "V-")}
+
+
 def test_written_corpus_matches_the_pinned_pdf_exactly() -> None:
     report = verify_written_circuit_corpus(source_pdf=SOURCE_PDF, output_root=CORPUS_ROOT)
 

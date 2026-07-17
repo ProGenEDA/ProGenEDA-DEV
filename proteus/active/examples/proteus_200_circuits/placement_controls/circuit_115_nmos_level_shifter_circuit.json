@@ -8,5 +8,72 @@
   "layout": {
     "strategy": "beautify"
   },
-  "schema_version": "progen-proteus-placement-control/v1"
+  "schema_version": "progen-proteus-placement-control/v1",
+  "terminal_label_projection": {
+    "exposed_terminal_label_count": 13,
+    "families": {
+      "NMOSFET": [
+        {
+          "pins": {
+            "D": "OUT",
+            "G": "IN",
+            "S": "G0"
+          },
+          "source_ref": "Q1"
+        }
+      ],
+      "RESISTOR": [
+        {
+          "pins": {
+            "1": "VDDL",
+            "2": "IN"
+          },
+          "source_ref": "R1"
+        },
+        {
+          "pins": {
+            "1": "VDDH",
+            "2": "OUT"
+          },
+          "source_ref": "R2"
+        }
+      ],
+      "VPULSE": [
+        {
+          "pins": {
+            "1": "IN",
+            "2": "G0"
+          },
+          "source_ref": "VIN1"
+        }
+      ],
+      "VSOURCE": [
+        {
+          "pins": {
+            "1": "VDDL",
+            "2": "G0"
+          },
+          "source_ref": "VLOW"
+        },
+        {
+          "pins": {
+            "1": "VDDH",
+            "2": "G0"
+          },
+          "source_ref": "VHIGH"
+        }
+      ]
+    },
+    "node_labels": {
+      "GND": "G0",
+      "IN": "IN",
+      "OUT": "OUT",
+      "VDDH": "VDDH",
+      "VDDL": "VDDL"
+    },
+    "omitted_source_pins": [],
+    "policy": "canonical_node_name_to_exposed_terminal_pin",
+    "schema_version": "progen-proteus-terminal-label-projection/v1",
+    "source_pin_count": 13
+  }
 }

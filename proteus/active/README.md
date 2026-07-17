@@ -94,6 +94,12 @@ the Proteus open/render gate. `FUSE` and `SWITCH` remain blocked from the
 combined total-mix terminal path. Multi-pin IC/display/transistor terminal
 claims are not promoted by this README.
 
+Canonical PDF placement controls may supply an optional
+`terminal_label_projection`.  The current executable carries those logical node
+names into the shared terminal route before record serialization, so labels
+such as `VIN`, `G0`, and `VOUT` replace generic component/pin labels without
+claiming that the physical circuit nets have been wired.
+
 Physical arbitrary-net wiring is not implemented. The executable rejects
 requests that would silently claim a routed circuit. See
 [`docs/current_limitations_bridges_costs_and_roadmap.md`](docs/current_limitations_bridges_costs_and_roadmap.md).

@@ -21,7 +21,7 @@ from dataclasses import dataclass, replace
 from pathlib import Path
 import shutil
 import struct
-from typing import Any, Iterable
+from typing import Any, Iterable, Mapping
 
 from .bidirectional import (
     BIDIR_MARKER,
@@ -2328,6 +2328,7 @@ def attach_catalogue_pin_bidir_terminals_to_project(
     use_donor_terminal_labels: bool = True,
     allow_progressive_scaling: bool = False,
     attachment_stage: str = "complete",
+    terminal_label_overrides: Mapping[str, Mapping[str, str]] | None = None,
 ) -> dict[str, Any]:
     """Attach catalogue-backed multi-pin terminals using placed WIRE skeletons.
 
@@ -2344,6 +2345,9 @@ def attach_catalogue_pin_bidir_terminals_to_project(
     user-requested, independently gated scaling experiment.
     """
 
+    normalized_label_overrides = _normalize_terminal_label_overrides(
+        terminal_label_overrides
+    )
     if attachment_stage not in {
         "complete",
         "native_pin_contact",
@@ -2989,6 +2993,13 @@ def attach_catalogue_pin_bidir_terminals_to_project(
                 appended_wire_records.append(bytes.fromhex(short_wire["record"]))
                 wire_count_added += 1
             terminal_dict = dict(row["terminal"])
+            semantic_label = _terminal_label_override(
+                normalized_label_overrides,
+                component_key=key,
+                pin_candidates=(pin_name,),
+            )
+            if semantic_label is not None:
+                terminal_dict["label"] = semantic_label
             terminal_dict["suffix"] = f"{temporary_suffix:04x}"
             terminal_link_trailer = bytes.fromhex(
                 str(
@@ -4031,6 +4042,7 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
     stream_mode: str = "conservative",
     force_grid_contact_short_wires: bool = False,
     final_wire_link_encoding: str = LEGACY_LOW16_WIRE_LINK_ENCODING,
+    terminal_label_overrides: Mapping[str, Mapping[str, str]] | None = None,
 ) -> dict[str, Any]:
     """Attach accepted two-pin and catalogue multi-pin terminals in one stream.
 
@@ -4043,6 +4055,9 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
     rebasing used by the accepted terminal paths.
     """
 
+    normalized_label_overrides = _normalize_terminal_label_overrides(
+        terminal_label_overrides
+    )
     if catalog is None:
         from .component_catalog import load_component_catalog
 
@@ -4381,6 +4396,7 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                 snap_terminal_contacts_to_grid=force_grid_contact_short_wires,
                 ensure_nonzero_grid_wire=force_grid_contact_short_wires,
                 mixed_native_wire_evidence=raw_mixed_native_wire_evidence,
+                terminal_label_overrides=normalized_label_overrides,
             )
         )
         if family in SOURCE_COMPONENT_BARE_BASE_SIZES:
@@ -4672,6 +4688,13 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                     )
                 )
             terminal_dict = dict(row["terminal"])
+            semantic_label = _terminal_label_override(
+                normalized_label_overrides,
+                component_key=key,
+                pin_candidates=(pin_name,),
+            )
+            if semantic_label is not None:
+                terminal_dict["label"] = semantic_label
             terminal_dict["suffix"] = f"{temporary_suffix:04x}"
             if combined_link_trailer_hex is not None:
                 terminal_dict["link_trailer"] = combined_link_trailer_hex
@@ -8523,6 +8546,115 @@ def _pair_terminal_roles(pair: Any) -> tuple[str, str]:
     return ("input", "output") if isinstance(pair, SourceTerminalPair) else ("left", "right")
 
 
+def _normalize_terminal_label_overrides(
+    terminal_label_overrides: Mapping[str, Mapping[str, str]] | None,
+) -> dict[str, dict[str, str]]:
+    """Validate optional logical-node labels before terminal serialization.
+
+    The mapping is keyed by the *placed* component key and normalized catalogue
+    pin name.  It is deliberately optional: absent labels retain the exact
+    frozen family defaults.  Labels are checked here, before any record is
+    built, so final ROOT.DSN/WIRE address rebasing sees the final byte lengths.
+    """
+
+    if terminal_label_overrides is None:
+        return {}
+    if not isinstance(terminal_label_overrides, Mapping):
+        raise ValueError("terminal_label_overrides must be a component-key mapping.")
+    normalized: dict[str, dict[str, str]] = {}
+    for raw_key, raw_pins in terminal_label_overrides.items():
+        key = str(raw_key)
+        if not isinstance(raw_pins, Mapping):
+            raise ValueError(
+                f"terminal_label_overrides[{key!r}] must map normalized pins to labels."
+            )
+        labels: dict[str, str] = {}
+        for raw_pin, raw_label in raw_pins.items():
+            pin = str(raw_pin)
+            if not isinstance(raw_label, str) or not raw_label:
+                raise ValueError(
+                    f"terminal label for {key}.{pin} must be a non-empty string."
+                )
+            try:
+                encoded = raw_label.encode("ascii")
+            except UnicodeEncodeError as exc:
+                raise ValueError(
+                    f"terminal label for {key}.{pin} must be ASCII.") from exc
+            if len(encoded) > 64 or any(byte < 0x20 for byte in encoded):
+                raise ValueError(
+                    f"terminal label for {key}.{pin} must contain 1..64 printable ASCII bytes."
+                )
+            labels[pin] = raw_label
+        if labels:
+            normalized[key] = labels
+    return normalized
+
+
+def _native_terminal_pin_candidates(terminal: TerminalSpec) -> tuple[str, ...]:
+    """Return catalogue-pin candidates for a native two-pin terminal spec.
+
+    Native planners carry donor-proven role hints rather than duplicate the
+    component catalogue's pin names.  This small, generic bridge translates
+    those existing hints to the normalized ``1``/``2`` pins used by the
+    catalogue-backed logical-node projection.  It does not select geometry or
+    alter attachment mechanics.
+    """
+
+    hint = terminal.pin_hint.strip()
+    lowered = hint.casefold()
+    candidates = [hint]
+    if lowered.startswith("pin:"):
+        candidates.append(hint.split(":", 1)[1].strip())
+    if "negative" in lowered or "cathode" in lowered or "right_pin" in lowered:
+        candidates.append("2")
+    if "positive" in lowered or "anode" in lowered or "left_pin" in lowered:
+        candidates.append("1")
+    if lowered == "input":
+        candidates.append("2")
+    if lowered == "output":
+        candidates.append("1")
+    return tuple(dict.fromkeys(candidate for candidate in candidates if candidate))
+
+
+def _terminal_label_override(
+    terminal_label_overrides: Mapping[str, Mapping[str, str]],
+    *,
+    component_key: str,
+    pin_candidates: Iterable[str],
+) -> str | None:
+    labels = terminal_label_overrides.get(component_key)
+    if labels is None:
+        return None
+    for pin in pin_candidates:
+        label = labels.get(str(pin))
+        if label is not None:
+            return label
+    return None
+
+
+def _apply_terminal_label_overrides_to_pair(
+    pair: Any,
+    *,
+    terminal_label_overrides: Mapping[str, Mapping[str, str]],
+) -> Any:
+    """Replace only optional display labels on an existing native pair."""
+
+    if not terminal_label_overrides:
+        return pair
+    replacements: dict[str, TerminalSpec] = {}
+    component_key = str(getattr(pair, "component_key", ""))
+    for role in _pair_terminal_roles(pair):
+        terminal = getattr(pair, role)
+        label = _terminal_label_override(
+            terminal_label_overrides,
+            component_key=component_key,
+            pin_candidates=_native_terminal_pin_candidates(terminal),
+        )
+        if label is not None and label != terminal.label:
+            replacements[role] = replace(terminal, label=label)
+    return replace(pair, **replacements) if replacements else pair
+
+
 def _replace_pair_temporary_suffixes(
     pair: Any,
     *,
@@ -8608,6 +8740,7 @@ def _mixed_overlay_family_parts(
     ensure_nonzero_grid_wire: bool = False,
     mixed_native_wire_evidence: dict[str, Any] | None = None,
     temporary_suffix_overrides: dict[tuple[str, str], int] | None = None,
+    terminal_label_overrides: Mapping[str, Mapping[str, str]] | None = None,
 ) -> tuple[
     tuple[Any, ...],
     list[bytes],
@@ -8752,6 +8885,17 @@ def _mixed_overlay_family_parts(
             else:
                 raise ValueError(f"No accepted mixed-overlay handler exists for {family}.")
             patched_by_id[id(group)] = patched
+    normalized_label_overrides = _normalize_terminal_label_overrides(
+        terminal_label_overrides
+    )
+    if normalized_label_overrides:
+        pairs = tuple(
+            _apply_terminal_label_overrides_to_pair(
+                pair,
+                terminal_label_overrides=normalized_label_overrides,
+            )
+            for pair in pairs
+        )
     if family == "RESISTOR":
         terminals = [
             *(pair.left for pair in pairs),
@@ -9307,6 +9451,7 @@ def attach_mixed_native_bidir_terminals_to_project(
     selected_groups: Iterable[Any],
     *,
     terminal_families: Iterable[str] | None = None,
+    terminal_label_overrides: Mapping[str, Mapping[str, str]] | None = None,
 ) -> dict[str, Any]:
     """Attach researched families to the beautified component stream.
 
@@ -9321,6 +9466,9 @@ def attach_mixed_native_bidir_terminals_to_project(
     nonzero.
     """
 
+    normalized_label_overrides = _normalize_terminal_label_overrides(
+        terminal_label_overrides
+    )
     groups = tuple(selected_groups)
     if not groups:
         raise ValueError("Native mixed attachment requires selected component groups.")
@@ -9384,6 +9532,7 @@ def attach_mixed_native_bidir_terminals_to_project(
             source_index_start=source_index_start,
             active_links=True,
             snap_terminal_contacts_to_grid=True,
+            terminal_label_overrides=normalized_label_overrides,
         )
         if family in SOURCE_COMPONENT_BARE_BASE_SIZES:
             source_index_start += len(family_groups)
@@ -9422,6 +9571,7 @@ def attach_mixed_native_bidir_terminals_to_project(
             active_links=True,
             snap_terminal_contacts_to_grid=True,
             temporary_suffix_overrides=overrides,
+            terminal_label_overrides=normalized_label_overrides,
         )
 
     for family in requested:
@@ -10792,6 +10942,7 @@ def attach_component_bidir_terminals_to_project(
     label_prefix: str | None = None,
     suffix_start: int | None = None,
     terminal_families: Iterable[str] | None = None,
+    terminal_label_overrides: Mapping[str, Mapping[str, str]] | None = None,
 ) -> dict[str, Any]:
     """Attach accepted families and preserve every unsupported mixed packet.
 
@@ -10800,6 +10951,9 @@ def attach_component_bidir_terminals_to_project(
     from the final ROOT.DSN WIRE addresses.
     """
 
+    normalized_label_overrides = _normalize_terminal_label_overrides(
+        terminal_label_overrides
+    )
     groups = tuple(selected_groups)
     if not groups:
         raise ValueError("Shared terminal attachment requires selected component groups.")
@@ -10848,7 +11002,10 @@ def attach_component_bidir_terminals_to_project(
     )
 
     if len(families) == 1 and eligible_families and not preserved_groups:
-        if label_prefix is not None or suffix_start is not None:
+        if (
+            label_prefix is not None
+            or suffix_start is not None
+        ) and not normalized_label_overrides:
             report = _attach_single_family_bidir_terminals_to_project(
                 project,
                 output,
@@ -10862,6 +11019,7 @@ def attach_component_bidir_terminals_to_project(
                 output,
                 groups,
                 terminal_families=eligible_families,
+                terminal_label_overrides=normalized_label_overrides,
             )
             return report
         return _rebase_terminal_links_to_final_wire_addresses(output, report)
@@ -10917,6 +11075,7 @@ def attach_component_bidir_terminals_to_project(
         destination,
         groups,
         terminal_families=eligible_families,
+        terminal_label_overrides=normalized_label_overrides,
     )
 
 

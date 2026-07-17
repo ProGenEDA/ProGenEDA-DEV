@@ -209,9 +209,136 @@
       "RESISTOR": 5,
       "VSOURCE": 2
     },
-    "mode": "placement_only_no_terminals",
-    "reason": "The canonical source JSON preserves all requested nets, but the current Proteus executable does not synthesize arbitrary physical wires. The sibling executable input validates donor-backed component placement only.",
-    "schema_version": "progen-proteus-placement-control/v1"
+    "mode": "terminalized_components_with_logical_node_labels_no_physical_wires",
+    "reason": "The canonical source JSON preserves all requested nets. The current Proteus executable uses those node names for donor-backed terminal labels, but does not synthesize arbitrary physical wires.",
+    "schema_version": "progen-proteus-placement-control/v1",
+    "terminal_label_projection": {
+      "exposed_terminal_label_count": 22,
+      "families": {
+        "CAP": [
+          {
+            "pins": {
+              "1": "TRI",
+              "2": "NINV2"
+            },
+            "source_ref": "C1"
+          }
+        ],
+        "OPAMP": [
+          {
+            "pins": {
+              "IN+": "NPLUS1",
+              "IN-": "TRI",
+              "OUT": "SQUARE"
+            },
+            "source_ref": "U1"
+          },
+          {
+            "pins": {
+              "IN+": "G0",
+              "IN-": "NINV2",
+              "OUT": "TRI"
+            },
+            "source_ref": "U2"
+          }
+        ],
+        "RESISTOR": [
+          {
+            "pins": {
+              "1": "SQUARE",
+              "2": "NPLUS1"
+            },
+            "source_ref": "R1"
+          },
+          {
+            "pins": {
+              "1": "NPLUS1",
+              "2": "G0"
+            },
+            "source_ref": "R2"
+          },
+          {
+            "pins": {
+              "1": "SQUARE",
+              "2": "NINV2"
+            },
+            "source_ref": "R3"
+          },
+          {
+            "pins": {
+              "1": "SQUARE",
+              "2": "G0"
+            },
+            "source_ref": "R4"
+          },
+          {
+            "pins": {
+              "1": "TRI",
+              "2": "G0"
+            },
+            "source_ref": "R5"
+          }
+        ],
+        "VSOURCE": [
+          {
+            "pins": {
+              "1": "V+",
+              "2": "G0"
+            },
+            "source_ref": "VCC"
+          },
+          {
+            "pins": {
+              "1": "G0",
+              "2": "V-"
+            },
+            "source_ref": "VEE"
+          }
+        ]
+      },
+      "node_labels": {
+        "GND": "G0",
+        "NINV2": "NINV2",
+        "NPLUS1": "NPLUS1",
+        "SQUARE": "SQUARE",
+        "TRI": "TRI",
+        "V+": "V+",
+        "V-": "V-"
+      },
+      "omitted_source_pins": [
+        {
+          "node": "V+",
+          "placement_family": "OPAMP",
+          "reason": "not_exposed_by_current_terminal_profile",
+          "source_pin": "V+",
+          "source_ref": "U1"
+        },
+        {
+          "node": "V-",
+          "placement_family": "OPAMP",
+          "reason": "not_exposed_by_current_terminal_profile",
+          "source_pin": "V-",
+          "source_ref": "U1"
+        },
+        {
+          "node": "V+",
+          "placement_family": "OPAMP",
+          "reason": "not_exposed_by_current_terminal_profile",
+          "source_pin": "V+",
+          "source_ref": "U2"
+        },
+        {
+          "node": "V-",
+          "placement_family": "OPAMP",
+          "reason": "not_exposed_by_current_terminal_profile",
+          "source_pin": "V-",
+          "source_ref": "U2"
+        }
+      ],
+      "policy": "canonical_node_name_to_exposed_terminal_pin",
+      "schema_version": "progen-proteus-terminal-label-projection/v1",
+      "source_pin_count": 26
+    }
   },
   "nets": [
     {

@@ -7,5 +7,46 @@
   "layout": {
     "strategy": "beautify"
   },
-  "schema_version": "progen-proteus-placement-control/v1"
+  "schema_version": "progen-proteus-placement-control/v1",
+  "terminal_label_projection": {
+    "exposed_terminal_label_count": 6,
+    "families": {
+      "LED-RED": [
+        {
+          "pins": {
+            "1": "LED_A",
+            "2": "G0"
+          },
+          "source_ref": "LED1"
+        }
+      ],
+      "RESISTOR": [
+        {
+          "pins": {
+            "1": "V0",
+            "2": "LED_A"
+          },
+          "source_ref": "R1"
+        }
+      ],
+      "VSOURCE": [
+        {
+          "pins": {
+            "1": "V0",
+            "2": "G0"
+          },
+          "source_ref": "V1"
+        }
+      ]
+    },
+    "node_labels": {
+      "GND": "G0",
+      "LED_A": "LED_A",
+      "VDD": "V0"
+    },
+    "omitted_source_pins": [],
+    "policy": "canonical_node_name_to_exposed_terminal_pin",
+    "schema_version": "progen-proteus-terminal-label-projection/v1",
+    "source_pin_count": 6
+  }
 }

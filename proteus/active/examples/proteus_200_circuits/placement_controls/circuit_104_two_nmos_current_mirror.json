@@ -7,5 +7,63 @@
   "layout": {
     "strategy": "beautify"
   },
-  "schema_version": "progen-proteus-placement-control/v1"
+  "schema_version": "progen-proteus-placement-control/v1",
+  "terminal_label_projection": {
+    "exposed_terminal_label_count": 12,
+    "families": {
+      "NMOSFET": [
+        {
+          "pins": {
+            "D": "REF",
+            "G": "REF",
+            "S": "G0"
+          },
+          "source_ref": "Q1"
+        },
+        {
+          "pins": {
+            "D": "OUT",
+            "G": "REF",
+            "S": "G0"
+          },
+          "source_ref": "Q2"
+        }
+      ],
+      "RESISTOR": [
+        {
+          "pins": {
+            "1": "V0",
+            "2": "REF"
+          },
+          "source_ref": "RREF"
+        },
+        {
+          "pins": {
+            "1": "V0",
+            "2": "OUT"
+          },
+          "source_ref": "RL"
+        }
+      ],
+      "VSOURCE": [
+        {
+          "pins": {
+            "1": "V0",
+            "2": "G0"
+          },
+          "source_ref": "VDD1"
+        }
+      ]
+    },
+    "node_labels": {
+      "GND": "G0",
+      "OUT": "OUT",
+      "REF": "REF",
+      "VDD": "V0"
+    },
+    "omitted_source_pins": [],
+    "policy": "canonical_node_name_to_exposed_terminal_pin",
+    "schema_version": "progen-proteus-terminal-label-projection/v1",
+    "source_pin_count": 12
+  }
 }

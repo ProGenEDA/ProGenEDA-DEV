@@ -18,7 +18,9 @@ from .component_placer import ComponentPlacerBlocked, RawPlacementResult, genera
 from .component_terminal_placer import (
     ACCEPTED_TERMINAL_FAMILY_ORDER,
     TOTALMIX_BLOCKED_FAMILIES,
+    attach_catalogue_pin_bidir_terminals_to_project,
     attach_component_bidir_terminals_to_project,
+    attach_mixed_component_and_catalogue_bidir_terminals_to_project,
 )
 from .component_value_changer import (
     ProjectValuePropertiesEditResult,
@@ -31,12 +33,26 @@ class ProteusApplicationError(RuntimeError):
     """Raised when the executable cannot safely complete the requested flow."""
 
 
-# These families are the active native two-pin route.  FUSE and SWITCH remain
-# deliberately blocked from mixed terminal emission; adding a new family must
-# happen through the shared terminal placer and its donor-backed catalogue
-# evidence, never through this application wrapper.
-EXECUTABLE_TERMINAL_FAMILIES = frozenset(ACCEPTED_TERMINAL_FAMILY_ORDER) - frozenset(
-    TOTALMIX_BLOCKED_FAMILIES
+# The frozen native route covers the user-accepted two-pin families.  These
+# four catalogue-backed families have their own accepted pin geometry and
+# native terminal/WIRE units in the shared placer.  Keeping the sets separate
+# means a native-only request retains its frozen serializer while a mixed PDF
+# circuit takes the one shared native-plus-catalogue route.
+EXECUTABLE_NATIVE_TERMINAL_FAMILIES = (
+    frozenset(ACCEPTED_TERMINAL_FAMILY_ORDER)
+    - frozenset(TOTALMIX_BLOCKED_FAMILIES)
+)
+EXECUTABLE_CATALOGUE_TERMINAL_FAMILIES = frozenset(
+    {
+        "LM317T",
+        "NMOSFET",
+        "OPAMP",
+        "POT-HG",
+    }
+)
+EXECUTABLE_TERMINAL_FAMILIES = (
+    EXECUTABLE_NATIVE_TERMINAL_FAMILIES
+    | EXECUTABLE_CATALOGUE_TERMINAL_FAMILIES
 )
 POST_TERMINAL_EDIT_KEYS = (
     "post_terminal_edits",
@@ -44,6 +60,8 @@ POST_TERMINAL_EDIT_KEYS = (
     "value_properties",
 )
 WIRING_REQUEST_KEYS = ("connections", "wires", "nets", "netlist")
+TERMINAL_LABEL_PROJECTION_KEY = "terminal_label_projection"
+_PLACEMENT_INFRASTRUCTURE_KEYS = frozenset({"D20", "DISPLAY_ANODE_SENTINEL"})
 
 
 @dataclass(frozen=True)
@@ -119,6 +137,84 @@ def _unsupported_terminal_families(placement: RawPlacementResult) -> tuple[str, 
             }
         )
     )
+
+
+def _terminal_label_overrides(
+    payload: Mapping[str, Any],
+    placement: RawPlacementResult,
+) -> dict[str, dict[str, str]]:
+    """Resolve canonical-node terminal labels onto newly placed component keys.
+
+    The PDF corpus cannot know the current mega-donor instance keys (for
+    example, canonical ``U1`` may be placed as ``U107``).  Its projection
+    therefore supplies ordered source components within each family.  The
+    component placer owns the current keys; this adapter joins the two by that
+    family-local order and rejects any count mismatch rather than guessing.
+    """
+
+    raw_projection = payload.get(TERMINAL_LABEL_PROJECTION_KEY)
+    if raw_projection is None:
+        return {}
+    projection = _mapping(
+        raw_projection,
+        context=TERMINAL_LABEL_PROJECTION_KEY,
+    )
+    if projection.get("schema_version") != "progen-proteus-terminal-label-projection/v1":
+        raise ProteusApplicationError(
+            "Unsupported terminal_label_projection schema; expected "
+            "progen-proteus-terminal-label-projection/v1."
+        )
+    raw_families = _mapping(
+        projection.get("families", {}),
+        context="terminal_label_projection.families",
+    )
+    visible_groups_by_family: dict[str, list[Any]] = {}
+    for group in placement.selected_groups:
+        family = str(group.family)
+        if str(group.key) in _PLACEMENT_INFRASTRUCTURE_KEYS:
+            continue
+        visible_groups_by_family.setdefault(family, []).append(group)
+
+    overrides: dict[str, dict[str, str]] = {}
+    for raw_family, raw_components in raw_families.items():
+        family = str(raw_family)
+        if not isinstance(raw_components, list):
+            raise ProteusApplicationError(
+                f"terminal_label_projection.families.{family} must be an array."
+            )
+        placed_groups = visible_groups_by_family.get(family, [])
+        if len(placed_groups) != len(raw_components):
+            raise ProteusApplicationError(
+                "Terminal-label projection count mismatch for "
+                f"{family}: {len(raw_components)} source component(s) but "
+                f"{len(placed_groups)} placed component(s)."
+            )
+        for index, (group, raw_component) in enumerate(
+            zip(placed_groups, raw_components, strict=True),
+            start=1,
+        ):
+            component = _mapping(
+                raw_component,
+                context=(
+                    f"terminal_label_projection.families.{family}[{index - 1}]"
+                ),
+            )
+            raw_pins = _mapping(
+                component.get("pins", {}),
+                context=(
+                    f"terminal_label_projection.families.{family}[{index - 1}].pins"
+                ),
+            )
+            labels: dict[str, str] = {}
+            for raw_pin, raw_label in raw_pins.items():
+                if not isinstance(raw_label, str) or not raw_label:
+                    raise ProteusApplicationError(
+                        f"Terminal label for {family}[{index}].{raw_pin} must be a non-empty string."
+                    )
+                labels[str(raw_pin)] = raw_label
+            if labels:
+                overrides[str(group.key)] = labels
+    return overrides
 
 
 def _require_nonzero_terminal_wires(report: Mapping[str, Any]) -> None:
@@ -215,6 +311,10 @@ def generate_proteus_project(
         terminal_report: Mapping[str, Any] | None = None
         current = bare
         if terminalize:
+            terminal_label_overrides = _terminal_label_overrides(
+                source_payload,
+                placement,
+            )
             unsupported = _unsupported_terminal_families(placement)
             if unsupported and not allow_unterminalized:
                 raise ProteusApplicationError(
@@ -223,13 +323,20 @@ def generate_proteus_project(
                     f"{', '.join(unsupported)}. Use --allow-unterminalized only for a deliberate mixed control."
                 )
             terminalized = work / "terminalized.pdsprj"
-            terminal_families = tuple(
+            native_terminal_families = tuple(
                 family
                 for family in ACCEPTED_TERMINAL_FAMILY_ORDER
-                if family in EXECUTABLE_TERMINAL_FAMILIES
+                if family in EXECUTABLE_NATIVE_TERMINAL_FAMILIES
                 and any(group.family == family for group in placement.selected_groups)
             )
-            if not terminal_families:
+            catalogue_terminal_families = tuple(
+                sorted(
+                    family
+                    for family in EXECUTABLE_CATALOGUE_TERMINAL_FAMILIES
+                    if any(group.family == family for group in placement.selected_groups)
+                )
+            )
+            if not native_terminal_families and not catalogue_terminal_families:
                 if not allow_unterminalized:
                     raise ProteusApplicationError(
                         "No selected component has a proven terminal route. Use --no-terminals for a placement-only project."
@@ -244,12 +351,40 @@ def generate_proteus_project(
                 }
             else:
                 try:
-                    terminal_report = attach_component_bidir_terminals_to_project(
-                        bare,
-                        terminalized,
-                        placement.selected_groups,
-                        terminal_families=terminal_families,
-                    )
+                    if native_terminal_families and catalogue_terminal_families:
+                        terminal_report = (
+                            attach_mixed_component_and_catalogue_bidir_terminals_to_project(
+                                bare,
+                                terminalized,
+                                placement.selected_groups,
+                                native_terminal_families=native_terminal_families,
+                                catalogue_terminal_families=catalogue_terminal_families,
+                                force_grid_contact_short_wires=True,
+                                terminal_label_overrides=terminal_label_overrides,
+                            )
+                        )
+                    elif catalogue_terminal_families:
+                        # A catalogue-only circuit keeps its established
+                        # homogeneous complete route.  The combined writer is
+                        # intentionally only for a stream containing both
+                        # accepted native and catalogue families.
+                        terminal_report = attach_catalogue_pin_bidir_terminals_to_project(
+                            bare,
+                            terminalized,
+                            placement.selected_groups,
+                            terminal_families=catalogue_terminal_families,
+                            use_donor_terminal_labels=False,
+                            allow_progressive_scaling=True,
+                            terminal_label_overrides=terminal_label_overrides,
+                        )
+                    else:
+                        terminal_report = attach_component_bidir_terminals_to_project(
+                            bare,
+                            terminalized,
+                            placement.selected_groups,
+                            terminal_families=native_terminal_families,
+                            terminal_label_overrides=terminal_label_overrides,
+                        )
                 except (ValueError, FileNotFoundError) as exc:
                     raise ProteusApplicationError(str(exc)) from exc
                 if not terminal_report.get("valid"):
