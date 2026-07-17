@@ -22613,3 +22613,34 @@ Visible assistant final response (verbatim):
 Visible assistant response (verbatim):
 
 > The expanded section is ready in an isolated worktree, so it won’t carry the unrelated EasyEDA work currently ahead in the main checkout. I’ve validated the Markdown/SVG assets and am pushing only this README showcase commit to `main`.
+
+---
+
+## 2026-07-17 13:02:39 +05:00 — Circuit 180 OPAMP terminal-attachment trial
+
+User request (verbatim):
+
+> i am not talking about wiring logic, that ill have u import form someplace else
+> i am talking about if u can
+> try by wiring the opamps u left alone in the terminalized version
+
+Visible assistant responses (verbatim):
+
+> Got it—you mean a terminal-attachment trial for the OPAMPs left untouched in Circuit 180, not the circuit’s logical net routing. I’ll use the same grid-aligned terminal + short-wire method, research the accepted OPAMP donor first, and keep the existing accepted two-pin behavior unchanged.
+
+> I’m checking the emitted project now. I won’t call it a pass until its native stream contains the expected 42 terminal/short-wire attachments; then I’ll open that exact file for you to inspect.
+
+> The shared placer passed its own structural gate: 42 terminals and 42 nonzero short wires—30 for the already-supported parts plus 12 for `U107`–`U110` (`IN+`, `IN−`, `OUT`). All terminal contacts are grid-aligned. I’m opening this exact generated project now for the visual check.
+
+Files created:
+
+- `proteus/experiments/runs/2026-07-17_opamp_terminal_attachment_trial/C180_OPAMP_4X_MIXED_NATIVE_CATALOGUE_BARE.pdsprj`
+- `proteus/experiments/runs/2026-07-17_opamp_terminal_attachment_trial/C180_OPAMP_4X_MIXED_NATIVE_CATALOGUE_BARE.pdsprj.manifest.json`
+- `proteus/experiments/runs/2026-07-17_opamp_terminal_attachment_trial/C180_OPAMP_4X_MIXED_NATIVE_CATALOGUE_TERMINALIZED.pdsprj`
+- `proteus/experiments/runs/2026-07-17_opamp_terminal_attachment_trial/README.md`
+
+Result: a new component-placer control was emitted, then the existing shared
+native-plus-catalogue terminal placer added three donor-backed terminal/WIRE
+attachments to each of four OPAMPs. The output passed static terminal/link/grid
+checks and was opened in Proteus for user visual verification. No logical circuit
+wiring and no shared-terminal-source modification occurred in this trial.
