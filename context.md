@@ -34962,6 +34962,26 @@ I’m finishing the bounded gate bridge now: documenting the screenshot-verified
 - `proteus/active/knowledge/catalogue_only_gate_totalmix_probe_2026_07_17.md`
 - `proteus/active/release/ProgenProteus.exe`
 
+---
+
+## 2026-07-17 21:59:26 +05:00 — User
+
+no json generated circuits
+10 most impressive circuits. move them into one folder and give em location of that folder
+
+## 2026-07-17 21:59:26 +05:00 — Agent
+
+Moved the ten highest-complexity generated Proteus projects, with their generated inspection reports, from the 200-circuit output directory into one ranked folder. These are `.pdsprj` projects, not JSON specifications.
+
+### Files moved
+
+- `proteus/experiments/runs/2026-07-17_pdf_200_circuit_placement_controls/generated_projects/circuit_{073,108,139,155,156,171,173,180,193,196}.pdsprj`
+- matching `.pdsprj.progen_report.json` files
+
+### Destination
+
+- `proteus/experiments/runs/2026-07-17_pdf_200_circuit_placement_controls/10_most_impressive_generated_circuits/`
+
 Files edited or added in `MuhammadTahaBinZaeem/ProGenEDA-WEB` (remote commits `0b5d386` and `82230b4`):
 
 - `apps/api/src/services/proteus-executable-service.mjs`
