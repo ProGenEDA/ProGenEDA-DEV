@@ -346,10 +346,15 @@ def _path_clear(
     return True
 
 
-def _candidate_paths(start: Point, end: Point, envelope: Rect, lane_index: int) -> tuple[tuple[Point, ...], ...]:
+def _candidate_paths(
+    start: Point,
+    end: Point,
+    envelope: Rect,
+    lane_index: int,
+) -> tuple[tuple[Point, ...], ...]:
     left, top, right, bottom = envelope
-    offset = 35.0 + lane_index * 12.0
-    nudge = 12.0 + (lane_index % 24) * 6.0
+    offset = 16.0 + lane_index * 4.0
+    nudge = 6.0 + (lane_index % 16) * 3.0
     return (
         (start, (end[0], start[1]), end),
         (start, (start[0], end[1]), end),
@@ -392,6 +397,21 @@ def _candidate_paths(start: Point, end: Point, envelope: Rect, lane_index: int) 
     )
 
 
+def _path_length(points: tuple[Point, ...]) -> float:
+    return sum(
+        abs(end[0] - start[0]) + abs(end[1] - start[1])
+        for start, end in points_to_segments(points)
+    )
+
+
+def _path_is_compact(points: tuple[Point, ...]) -> bool:
+    direct = (
+        abs(points[-1][0] - points[0][0])
+        + abs(points[-1][1] - points[0][1])
+    )
+    return _path_length(points) <= max(direct * 2.25, direct + 96.0)
+
+
 def _pin_escape(point: Point, body: Rect, distance: float = 18.0) -> Point:
     left, top, right, bottom = body
     outside = {
@@ -418,6 +438,34 @@ def _pin_escape(point: Point, body: Rect, distance: float = 18.0) -> Point:
     if side == "top":
         return point[0], round(min(point[1], top) - distance, 6)
     return point[0], round(max(point[1], bottom) + distance, 6)
+
+
+def _pin_terminal_keepout(point: Point, body: Rect) -> Rect:
+    left, top, right, bottom = body
+    outside = {
+        "left": left - point[0],
+        "right": point[0] - right,
+        "top": top - point[1],
+        "bottom": point[1] - bottom,
+    }
+    outside = {side: amount for side, amount in outside.items() if amount > 0}
+    if outside:
+        side = max(outside, key=outside.get)
+    else:
+        distances = {
+            "left": abs(point[0] - left),
+            "right": abs(point[0] - right),
+            "top": abs(point[1] - top),
+            "bottom": abs(point[1] - bottom),
+        }
+        side = min(distances, key=distances.get)
+    if side == "left":
+        return point[0] - 42.0, point[1] - 7.0, point[0] + 2.0, point[1] + 7.0
+    if side == "right":
+        return point[0] - 2.0, point[1] - 7.0, point[0] + 42.0, point[1] + 7.0
+    if side == "top":
+        return point[0] - 7.0, point[1] - 42.0, point[0] + 7.0, point[1] + 2.0
+    return point[0] - 7.0, point[1] - 2.0, point[0] + 7.0, point[1] + 42.0
 
 
 def _visibility_route(
@@ -507,6 +555,7 @@ def route_nets(
     placed: tuple[PlacedComponent, ...],
     *,
     high_fanout_threshold: int = 5,
+    additional_terminal_keepouts: frozenset[str] = frozenset(),
 ) -> tuple[RoutedNet, ...]:
     by_reference = {item.component.reference: item for item in placed}
     obstacles = [inflate(item.body, 8.0) for item in placed if item.component.kind not in {"GND", "VCC"}]
@@ -519,7 +568,47 @@ def route_nets(
     )
     routed: list[RoutedNet] = []
     reserved_segments = WireSpanIndex()
-    lane_index = 0
+    terminalized_endpoints: set[str] = set()
+    for candidate_net, candidate_members in circuit.nets.items():
+        valid_members = [
+            endpoint
+            for endpoint in candidate_members
+            if "." in endpoint
+            and endpoint.rsplit(".", 1)[0] in by_reference
+            and endpoint.rsplit(".", 1)[1]
+            in by_reference[endpoint.rsplit(".", 1)[0]].pins
+        ]
+        candidate_power = candidate_net.upper() in {
+            "GND",
+            "VCC",
+            "+5V",
+            "5V",
+            "+3V3",
+            "3V3",
+            "VDD",
+            "VSS",
+        }
+        known_terminal = (
+            len(valid_members) < 2
+            or circuit.routing_mode == "terminal"
+            or (
+                circuit.routing_mode == "combination"
+                and not candidate_power
+                and len(valid_members) > high_fanout_threshold
+            )
+        )
+        if known_terminal:
+            terminalized_endpoints.update(valid_members)
+    terminalized_endpoints.update(additional_terminal_keepouts)
+    terminal_keepouts = {
+        endpoint: _pin_terminal_keepout(
+            by_reference[endpoint.rsplit(".", 1)[0]].pins[
+                endpoint.rsplit(".", 1)[1]
+            ],
+            by_reference[endpoint.rsplit(".", 1)[0]].body,
+        )
+        for endpoint in terminalized_endpoints
+    }
     for net_name, members in sorted(circuit.nets.items(), key=lambda item: (-len(item[1]), item[0])):
         resolved: list[tuple[str, Point, Point]] = []
         for endpoint in members:
@@ -573,22 +662,34 @@ def route_nets(
             for requested, pin_point in item.pins.items()
             if f"{item.component.reference}.{requested}" not in members
         ]
-        net_obstacles = obstacles + other_pin_obstacles
+        foreign_terminal_keepouts = [
+            keepout
+            for terminal_endpoint, keepout in terminal_keepouts.items()
+            if terminal_endpoint not in members
+        ]
+        net_obstacles = obstacles + other_pin_obstacles + foreign_terminal_keepouts
         net_segments: list[tuple[Point, Point]] = []
         reserved_before_net = reserved_segments.checkpoint()
         failed = False
         for endpoint, point, escape in resolved[1:]:
             branch: tuple[tuple[Point, Point], ...] | None = None
             lane_attempts = 0
-            lane_limit = 32 if circuit.routing_mode == "combination" else 128
+            lane_limit = 24 if circuit.routing_mode == "combination" else 64
+            branch_envelope = (
+                min(root_escape[0], escape[0]),
+                min(root_escape[1], escape[1]),
+                max(root_escape[0], escape[0]),
+                max(root_escape[1], escape[1]),
+            )
             for lane_attempts in range(lane_limit):
-                candidate_lane = lane_index + lane_attempts
                 for candidate in _candidate_paths(
                     root_escape,
                     escape,
-                    envelope,
-                    candidate_lane,
+                    branch_envelope,
+                    lane_attempts,
                 ):
+                    if not _path_is_compact(candidate):
+                        continue
                     candidate_segments = points_to_segments(candidate)
                     candidate_branch = (
                         (root_point, root_escape),
@@ -600,6 +701,10 @@ def route_nets(
                         net_obstacles,
                         allowed_start=root_escape,
                         allowed_end=escape,
+                    ) or any(
+                        segment_hits_rect(start, end, keepout)
+                        for start, end in candidate_branch
+                        for keepout in foreign_terminal_keepouts
                     ) or reserved_segments.overlaps(
                         candidate_branch,
                         net_name,
@@ -617,23 +722,32 @@ def route_nets(
                         escape,
                         net_obstacles,
                         envelope,
-                        lane_index + visibility_attempt,
+                        visibility_attempt,
                     )
                     if found is None:
+                        continue
+                    found_points = (
+                        found[0][0],
+                        *(segment[1] for segment in found),
+                    )
+                    if not _path_is_compact(found_points):
                         continue
                     candidate_branch = (
                         (root_point, root_escape),
                         *found,
                         (escape, point),
                     )
-                    if reserved_segments.overlaps(
+                    if any(
+                        segment_hits_rect(start, end, keepout)
+                        for start, end in candidate_branch
+                        for keepout in foreign_terminal_keepouts
+                    ) or reserved_segments.overlaps(
                         candidate_branch,
                         net_name,
                     ):
                         continue
                     branch = candidate_branch
                     break
-            lane_index += lane_attempts + 1
             if branch is None:
                 failed = True
                 break
@@ -674,4 +788,21 @@ def route_nets(
                     "shared_power_terminal" if shared_power_terminal else "routed",
                 )
             )
-    return tuple(routed)
+    routed_result = tuple(routed)
+    if circuit.routing_mode == "combination":
+        fallback_endpoints = frozenset(
+            endpoint
+            for net in routed_result
+            if net.reason == "router_fallback"
+            for endpoint in net.endpoints
+        )
+        if not fallback_endpoints.issubset(additional_terminal_keepouts):
+            return route_nets(
+                circuit,
+                placed,
+                high_fanout_threshold=high_fanout_threshold,
+                additional_terminal_keepouts=(
+                    additional_terminal_keepouts | fallback_endpoints
+                ),
+            )
+    return routed_result

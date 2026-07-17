@@ -14,6 +14,7 @@ from .geometry import (
     Point,
     Rect,
     WireSpanIndex,
+    inflate,
     rects_overlap,
     rotate_point,
     segment_hits_rect,
@@ -425,6 +426,39 @@ def _geometry_errors(
                 f"{other_net!r} {other_start}->{other_end}"
             )
         wire_spans.add(net, start, end)
+    physical_bodies = [
+        instance["body"]
+        for instance in all_instances
+        if instance.get("reference")
+    ]
+    if physical_bodies:
+        component_bounds = (
+            min(body[0] for body in physical_bodies),
+            min(body[1] for body in physical_bodies),
+            max(body[2] for body in physical_bodies),
+            max(body[3] for body in physical_bodies),
+        )
+        span = max(
+            component_bounds[2] - component_bounds[0],
+            component_bounds[3] - component_bounds[1],
+        )
+        margin = max(120.0, min(280.0, span * 0.18))
+        wire_bounds = inflate(component_bounds, margin)
+        for net, start, end in wires:
+            start_inside = (
+                wire_bounds[0] <= start[0] <= wire_bounds[2]
+                and wire_bounds[1] <= start[1] <= wire_bounds[3]
+            )
+            end_inside = (
+                wire_bounds[0] <= end[0] <= wire_bounds[2]
+                and wire_bounds[1] <= end[1] <= wire_bounds[3]
+            )
+            if start_inside and end_inside:
+                continue
+            errors.append(
+                f"wire {net!r} leaves compact schematic bounds "
+                f"{wire_bounds}: {start}->{end}"
+            )
     return errors
 
 

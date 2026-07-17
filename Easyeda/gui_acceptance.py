@@ -119,6 +119,9 @@ def open_project(
         stderr=subprocess.PIPE,
         text=True,
     )
+    launched_at = time.monotonic()
+    native_source_valid = _sqlite_integrity(launched_project)
+    native_observation_seconds = min(5.0, max(1.0, wait_seconds))
     deadline = time.monotonic() + wait_seconds
     converted_projects: list[Path] = []
     while time.monotonic() < deadline:
@@ -127,7 +130,13 @@ def open_project(
             for path in acceptance_root.glob("*.eprj2")
             if _sqlite_integrity(path)
         ]
-        if converted_projects and _easyeda_processes():
+        running_now = _easyeda_processes()
+        native_project_stable = (
+            native_source_valid
+            and bool(running_now)
+            and time.monotonic() - launched_at >= native_observation_seconds
+        )
+        if running_now and (converted_projects or native_project_stable):
             break
         time.sleep(0.5)
     running = _easyeda_processes()
@@ -157,8 +166,13 @@ def open_project(
         if path.suffix.lower() == ".eprj2" and _sqlite_integrity(path)
     ]
     native_conversion_completed = bool(converted_projects)
+    native_project_stable = (
+        native_source_valid
+        and bool(running)
+        and time.monotonic() - launched_at >= native_observation_seconds
+    )
     project_loaded = debug_project_loaded or (
-        bool(running) and native_conversion_completed
+        bool(running) and (native_conversion_completed or native_project_stable)
     )
     original_unchanged = project.is_file() and _sha256(project) == original_hash
     return {
@@ -169,6 +183,8 @@ def open_project(
         "generated_sidecars": [str(path) for path in sidecars],
         "converted_projects": [str(path) for path in converted_projects],
         "native_conversion_completed": native_conversion_completed,
+        "native_source_valid": native_source_valid,
+        "native_project_stable": native_project_stable,
         "original_sha256": original_hash,
         "original_unchanged": original_unchanged,
         "mime": mime,

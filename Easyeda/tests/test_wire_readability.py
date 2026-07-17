@@ -1,4 +1,9 @@
-from Easyeda.geometry import WireSpanIndex, segments_collinear_overlap
+from Easyeda.geometry import (
+    WireSpanIndex,
+    _candidate_paths,
+    _path_is_compact,
+    segments_collinear_overlap,
+)
 
 
 def test_collinear_overlap_requires_positive_shared_length() -> None:
@@ -28,3 +33,25 @@ def test_wire_span_index_rollback_removes_failed_route() -> None:
     index.rollback(checkpoint)
 
     assert not index.overlaps((((10, 10), (10, 40)),), "NEXT")
+
+
+def test_dense_lane_search_stays_local_to_branch() -> None:
+    paths = _candidate_paths(
+        (100.0, 100.0),
+        (300.0, 300.0),
+        (100.0, 100.0, 300.0, 300.0),
+        23,
+    )
+    coordinates = [point for path in paths for point in path]
+
+    assert min(point[0] for point in coordinates) >= -8.0
+    assert max(point[0] for point in coordinates) <= 408.0
+    assert min(point[1] for point in coordinates) >= -8.0
+    assert max(point[1] for point in coordinates) <= 408.0
+
+
+def test_compact_path_budget_rejects_perimeter_loops() -> None:
+    assert _path_is_compact(((0.0, 0.0), (0.0, 30.0), (100.0, 30.0), (100.0, 0.0)))
+    assert not _path_is_compact(
+        ((0.0, 0.0), (0.0, 1000.0), (100.0, 1000.0), (100.0, 0.0))
+    )

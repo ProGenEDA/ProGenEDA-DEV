@@ -36,6 +36,15 @@ native records and rejects any different-net collinear overlap. This keeps
 every pin escape and trunk visually traceable instead of allowing unrelated
 nets to collapse into an apparent bus.
 
+Routing is also bounded locally. Candidate lanes are selected per branch at
+four-unit spacing, and a route is rejected when its detour exceeds the larger
+of 2.25 times the direct Manhattan distance or 96 additional units. Explicit
+terminal footprints are reserved before routing. If combination-mode routing
+discovers additional fallback terminals, the planner reruns with those exact
+footprints reserved instead of preserving wires through their label space.
+Dense terminal banks use ordered source-native rows and bounded spill rows or
+one 48-unit outward column; they never escape to a whole-sheet perimeter.
+
 Terminalized nets use copied source `netport-in` or `netport-out` components
 and short orthogonal wire stubs. A guessed net with exactly one endpoint may
 use a source-native net port attached directly at that source pin; this avoids
@@ -61,8 +70,10 @@ the exact audited source rows required by the locked catalogue.
 5. No schematic component overlap or wire/body contact away from pins.
 6. No positive-length collinear overlap between wires belonging to different
    nets; point crossings remain legal.
-7. Source symbol and footprint payload hashes are unchanged.
-8. When PCB is present: footprint instances, `PAD_NET`, nets, tracks, vias,
+7. Every emitted wire endpoint remains inside the component envelope plus a
+   bounded 120-280-unit local routing margin.
+8. Source symbol and footprint payload hashes are unchanged.
+9. When PCB is present: footprint instances, `PAD_NET`, nets, tracks, vias,
    outline, and pad-level physical connectivity.
 
 The donor manifest records terminal packet types separately from terminal

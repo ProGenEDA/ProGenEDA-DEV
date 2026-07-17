@@ -34618,6 +34618,147 @@ native-plus-catalogue terminal placer added three donor-backed terminal/WIRE
 attachments to each of four OPAMPs. The output passed static terminal/link/grid
 checks and was opened in Proteus for user visual verification. No logical circuit
 wiring and no shared-terminal-source modification occurred in this trial.
+
+---
+
+## 2026-07-17T13:12:48+05:00 - EasyEDA compact schematic routing release
+
+User request (verbatim):
+
+> bro th is this wirig fix it, y are these so so long and so far away, so v far away
+> make it much much more compact much more proper. even v small distance of a wire with other is fine enough for humans to follow, this is so long that it is now impossible to follow again
+
+The user attached four EasyEDA screenshots showing whole-sheet perimeter loops
+around a small central component cluster.
+
+Visible assistant responses (verbatim):
+
+> You’re right. The no-overlap rule solved the false-bus problem by escaping into increasingly distant lanes, but that traded one unreadable result for another: huge perimeter loops and an unusable sheet envelope. I’m treating compactness as a second hard constraint now, with tightly spaced local lanes around component clusters and a strict maximum detour ratio; the router must terminalize a difficult net instead of drawing one of these enormous loops.
+
+> I’ve isolated both causes. The main router used one ever-increasing global lane counter, so the 80th net could be sent tens of thousands of units outside a 1,700-unit component area; terminal fallback also retained old whole-sheet perimeter escapes. I’m replacing that with per-branch local lanes spaced four units apart, a bounded detour budget, direct source-native ports for terminalized endpoints, and a validator limit on how far any wire may leave the actual component envelope.
+
+> The compact-lane unit gate passes. The new search cannot exceed 108 units beyond a branch’s local endpoint box in combination mode, and a perimeter loop with the old thousands-unit detour is explicitly rejected. I’m generating the 110-net dual-MCU project through the untouched pipeline now and measuring its actual component-to-wire envelope before opening it.
+
+> The generation reached final validation and exposed a straightforward integration miss: the new compact-envelope validator uses the shared `inflate` helper but did not import it. The project was not accepted or published. I’m adding that import and rerunning the exact same input; no routing rule is being relaxed.
+
+> The dense 110-net project now passes end to end with a dramatically tighter envelope. Components occupy `160..1766 × 160..1934`; wires now stay within `80..1810 × 86..1992`, only 44–80 units beyond the actual design. The previous output reached roughly `-15,000..17,500`, so the pathological spread is gone rather than merely reduced. I’m opening this exact regenerated project in EasyEDA now for the visual gate.
+
+> The native screenshot now shows the full 110-net design at 28% occupying a compact rectangular region instead of a tiny center point with sheet-length spikes. Its wire envelope is only about 7% wider and 7% taller than the component envelope. The remaining outer runs are real connections around the design, not runaway lane escalation; I’m testing all ten complex inputs now so compactness is enforced across the corpus, not just this screenshot.
+
+User follow-up (verbatim):
+
+> continue
+
+User follow-up (verbatim):
+
+> continue
+
+User visual acceptance (verbatim):
+
+> lovely absolutly love
+
+Visible assistant response (verbatim):
+
+> Perfect, that is the visual confirmation I needed. I’m keeping this compact envelope as a validator-enforced release rule, letting the ten-project regression finish, then I’ll rebuild the portable executable, push the checkpoint, and give you the complete supported-component catalogue.
+
+Visible assistant responses during final dense-terminal regressions (verbatim):
+
+> The regression caught one narrow compactness edge case, `q10 U3.5`: its normal direct net-port orientation was blocked by nearby planned wires, and the old fallback only knew how to move the port far away. I’m adding a compact source-native solution instead: rotate the terminal 90 degrees while keeping its electrical anchor directly on the pin. That changes only the label’s local footprint, adds no long stub, and preserves connectivity.
+
+> The rotated port is also blocked, so this confirms the stage-order issue: another net is being routed through the small area where an explicit NC port must live. I’m reserving only the exact 44×14 source-port footprint around known terminal/NC pins before wire routing. This is much narrower than the abandoned 72-unit corridors, so it protects local labels without pushing ordinary wires to the sheet perimeter.
+
+> The exact blocker is `I2C_SDA` ending at adjacent pin `U3.15`; its final horizontal segment lies on `U3.5`’s NC-port area. The keepout existed, but the generic path checker incorrectly treated any obstacle containing a branch endpoint as that branch’s own component body. I’m separating terminal keepouts from endpoint body exceptions, so a route may enter its intended pin body but can never borrow a neighboring pin’s terminal space.
+
+> `U3.5` is now clear; the next adjacent NC pin, `U3.9`, is blocked by a previously placed terminal rather than by a routed wire. I’m adding precise blocker identities to the existing failure report for this local placement stage, then I’ll compact the whole DS3231 port bank as one ordered row instead of moving individual labels outward blindly.
+
+> The blocker identities confirm a local cascade: ports for `U3.10` and `U3.11` were allowed to move into `U3.9`’s natural slot, then their short wires occupied it too. I’m reserving every known terminal endpoint’s exact source-native label rectangle up front. Each endpoint owns its compact slot; another terminal may touch its boundary but cannot occupy it or route through it.
+
+> The slot reservation is working; the remaining blocker is a post-selection path normalization step that bent `IO_U3_4` through `U3.11`’s reserved slot after the candidate had already passed its checks. I’m adding the same ownership check to that final normalization gate, closing the only bypass rather than expanding placement.
+
+> The remaining `IO_U3_4` contact is only tangential: its wire runs along the outer edge of `U3.11`’s 10-unit-high label rectangle. The final validator already correctly treats edge tangency as legal, but terminal placement was still using inclusive body contact. I’m aligning the planner with the validator: crossing a terminal interior is forbidden; touching its boundary is allowed.
+
+> The blocker report is now empty because the remaining rejection is self-inflicted: two DS3231 pin columns are close enough that their natural 40-unit labels overlap, so reserving every raw pin slot makes a valid compact layout mathematically impossible. I’m switching to the existing grouped terminal-bank targets as the reservation source: each side gets tightly spaced 18-unit label rows, paths respect future rows, and labels are checked against actual placed labels rather than impossible raw-pin rectangles.
+
+> The bank is now using grouped targets, but `U3.9` still cannot claim its row. I’m extending the existing failure evidence with the assigned target and exact prior terminal coordinates; this is the last local ordering issue, and the data will let me fix the bank deterministically instead of reopening broad search.
+
+> The assigned row itself is clear; only its first dogleg crosses the already placed `U3.10` label. I’m adding the mirrored compact dogleg to the same target: escape eight units from the pin, travel outward first, then move along the terminal bank. Both variants remain local and pass the same body, pin, span, and slot checks.
+
+> Same-bank row ownership is now working; `U3.10` remains in its own row, but `U3.9`’s straight approach crosses that row on the way outward. I’m adding four tiny approach lanes around the assigned row, offset by only 12 or 24 units, with the final six-unit segment entering the terminal anchor directly. This keeps the entire fanout local and traceable.
+
+> The final dense-bank case passes now: `q10` generated in 3.56 seconds with 49 wire nets, 24 compact terminal nets, exact netlist match, and zero geometry errors. I’m rerunning all ten once more on this final terminal-bank logic, then the full suite and portable rebuild.
+
+> Eight pass. The two remaining failures are different and now well bounded: one terminal bank needs a local obstacle-aware path to its already-clear assigned row; the 110-net board has a router-fallback port whose slot was unknowable during the first wire pass. I’m adding a deterministic second routing pass only when fallback terminals appear, reserving those newly known slots, plus a compact visibility path to clear terminal-bank rows. No route may expand the sheet envelope.
+
+> The terminal-bank path is compact, but on `q04` the assigned row itself is occupied by `SWITCH_SW2`; on `q11` four routed nets occupy the assigned row. I’m giving each bank two deterministic spill rows immediately outside its own top and bottom edges, then using the compact visibility search to the first clear row. This adds at most one bank height, not a sheet perimeter.
+
+> The spill rows are clear, but the sparse visibility grid cannot leave this source symbol’s irregular pin geometry. I’m using the same proven compact orthogonal candidate set as the main router for these three local targets before visibility fallback. It stays within the same 108-unit local bound and obeys all terminal/body/span checks.
+
+> This DS3231 symbol has a pin physically trapped between two same-column pins and another pin directly in front, so only the bank spill rows can work. I’m recording those two spill-row blockers explicitly now; the next change will address the actual blocker rather than increasing distances.
+
+> The spill diagnostics found one simple geometric fact: `SWITCH_SW2` is a single vertical trunk at `x=326` passing through the entire bank, so changing Y can never help. I’m adding an outward bank column only 48 units farther from the component. Wires may cross that trunk at a point, while terminal label bodies sit cleanly beyond it. The same rule addresses the four vertical trunks blocking `q11`.
+
+> The outward column is geometrically clear; the obstruction is request order inside the bank, not available space. I’m reversing bank placement so the trapped inner pin claims its compact route before the neighboring outer pin. Because every later port still obeys occupied-row and span checks, this changes deterministic ordering without weakening geometry.
+
+> Reversing order simply transfers the conflict to the neighboring pin, proving the whole bank must sit beyond that trunk. I’m moving grouped terminal-bank anchors from 50 to 96 units outside their source pins. That is still a compact local fanout, but it places the 40-unit native labels fully beyond nearby route trunks instead of straddling them.
+
+> Both hard cases now pass with the 96-unit bank anchor. `q04` is 43 wire / 21 terminal nets; `q11` is 71 wire / 39 terminal nets, and both have exact netlists plus zero compactness, overlap, or body-contact errors. I’m running the final 10/10 gate and full tests now.
+
+> The final corpus gate is clean: 10/10 passed, zero validation errors, average 7.35 seconds, and the 110-net maximum is 19.32 seconds. That is both substantially more compact and faster than the pre-fix release. The full 24-test suite is running as the last code gate.
+
+> All 24 EasyEDA tests pass, including the locked all-family generation, source/native validation, input fixer, value editor, PCB path, and new compact readability checks. I’m rebuilding the single-file portable now and running the same ten inputs through that artifact, so the shipped executable, not only the Python source, earns the final result.
+
+User follow-ups (verbatim):
+
+> continue
+
+> continue
+
+> continue
+
+Latest visible assistant responses (verbatim):
+
+> The final compact router and portable have passed the ten-project gate; I’m closing the release checkpoint now. I’m checking the exact 59-entry catalogue, recording the compactness rules and evidence, then I’ll commit, push, and return the full supported-component list with the reproducible report paths.
+
+> The remote branch advanced by two commits while the long qualification was running. I’m rebasing this completed EasyEDA work onto the current remote before documenting and publishing it; generated run directories and unrelated KiCad examples will remain untouched and uncommitted.
+
+> The catalogue is exactly 59 logical entries across eight categories, and the rebuilt portable hash is `fa796ef…f6c5`. I’m adding the hard compactness contract to the architecture and release evidence now: local per-branch lanes, bounded detours, reserved terminal footprints, fallback rerouting, and a final emitted-wire envelope gate.
+
+> I’m making three documentation edits: the architecture gets the exact routing/validation contract, the README gets the release-facing compactness guarantee, and the qualification record gets the final 10/10 portable results plus the user-accepted native screenshot evidence. No generated project or historical run is being overwritten.
+
+Files edited:
+
+- `Easyeda/ARCHITECTURE.md`
+- `Easyeda/README.md`
+- `Easyeda/dist/progen-easyeda`
+- `Easyeda/geometry.py`
+- `Easyeda/gui_acceptance.py`
+- `Easyeda/native.py`
+- `Easyeda/native_acceptance_runner.py`
+- `Easyeda/qualification/RESULTS_2026_07_17.md`
+- `Easyeda/tests/test_wire_readability.py`
+- `Easyeda/validator.py`
+- `context.md`
+
+Final visible assistant responses (verbatim):
+
+> The rebased tree passes `diff --check`, Python compilation, and the portable hash matches the qualified artifact. I’m rerunning the full EasyEDA suite once on the rebased `main`; after that I’ll stage only the eleven tracked release files, leaving every generated/debug directory untouched.
+
+> The suite is still in its all-family/native generation tests, which are the slow part; no failure has appeared. I’m letting that authoritative run finish rather than replacing it with a narrower smoke check, then I’ll close the remaining EasyEDA GUI process and publish the release checkpoint.
+
+> The final rebased suite is green: `24 passed` in 148.69 seconds, and the native GUI process has been closed cleanly. I’m recording that exact result, reviewing the scoped diff, then committing and pushing the compact-routing release without adding any local generated runs.
+
+Final verification:
+
+- `git diff --check`: passed.
+- `.venv/bin/python -m compileall -q Easyeda`: passed.
+- `.venv/bin/python -m pytest Easyeda/tests -q`: 24 passed in 148.69 seconds.
+- Portable SHA-256: `fa796ef81603cde2e745b48e95c33051a92c440179e91302043dd0bf8ce6f6c5`.
+- Final portable 10-project report: `/home/zaruka/Documents/easyeda_compactness_runs/2026_07_17_130707_810819_qualification/qualification_report.json`.
+- Final compact native screenshot: `/tmp/easyeda_compact_q11_open.png`.
+
+Commit-stage visible assistant response (verbatim):
+
+> The scoped release is committed as `9704a627b` with only the EasyEDA router, validator, acceptance helpers, portable, tests, docs, and continuation record. I’m adding this checkpoint line to the record, amending the same commit, then pushing normally and verifying local and remote hashes match.
 >
 > ## My request for Codex:
 > continue

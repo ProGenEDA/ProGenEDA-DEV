@@ -116,6 +116,10 @@ def run_native_acceptance(
                         "native_conversion_completed": opened[
                             "native_conversion_completed"
                         ],
+                        "native_source_valid": opened["native_source_valid"],
+                        "native_project_stable": opened[
+                            "native_project_stable"
+                        ],
                         "disposable_directory": opened[
                             "disposable_directory"
                         ],
@@ -133,6 +137,10 @@ def run_native_acceptance(
                     "original_unchanged": opened["original_unchanged"],
                     "native_conversion_completed": opened[
                         "native_conversion_completed"
+                    ],
+                    "native_source_valid": opened["native_source_valid"],
+                    "native_project_stable": opened[
+                        "native_project_stable"
                     ],
                     "disposable_directory": opened["disposable_directory"],
                     "converted_projects": opened["converted_projects"],

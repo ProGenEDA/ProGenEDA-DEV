@@ -20,6 +20,8 @@ from .geometry import (
     Rect,
     RoutedNet,
     WireSpanIndex,
+    _candidate_paths,
+    _path_is_compact,
     _visibility_route,
     inflate,
     points_to_segments,
@@ -174,12 +176,12 @@ def _terminal_orientation(item: PlacedComponent, point: Point) -> tuple[str, int
     }
     side = max(outside, key=outside.get) if outside else min(distances, key=distances.get)
     if side == "left":
-        return "in", 0, (min(point[0], left) - 50.0, point[1])
+        return "in", 0, (min(point[0], left) - 96.0, point[1])
     if side == "right":
-        return "out", 0, (max(point[0], right) + 50.0, point[1])
+        return "out", 0, (max(point[0], right) + 96.0, point[1])
     if side == "top":
-        return "out", 270, (point[0], min(point[1], top) - 50.0)
-    return "out", 90, (point[0], max(point[1], bottom) + 50.0)
+        return "out", 270, (point[0], min(point[1], top) - 96.0)
+    return "out", 90, (point[0], max(point[1], bottom) + 96.0)
 
 
 def _build_terminals(
@@ -240,6 +242,23 @@ def _build_terminals(
             max(point[1] + value[1] for value in local),
         )
 
+    def segment_enters_terminal_rect(
+        start: Point,
+        end: Point,
+        rect: Rect,
+    ) -> bool:
+        interior = (
+            rect[0] + 1e-6,
+            rect[1] + 1e-6,
+            rect[2] - 1e-6,
+            rect[3] - 1e-6,
+        )
+        return (
+            interior[0] < interior[2]
+            and interior[1] < interior[3]
+            and segment_hits_rect(start, end, interior)
+        )
+
     def placement_candidates(
         point: Point,
         target: Point,
@@ -252,6 +271,62 @@ def _build_terminals(
             or (not horizontal and target[1] >= point[1])
             else -1.0
         )
+        if horizontal:
+            pivot = (point[0] + 8.0 * outward_sign, point[1])
+            assigned_points = (
+                point,
+                pivot,
+                (pivot[0], target[1]),
+                target,
+            )
+        else:
+            pivot = (point[0], point[1] + 8.0 * outward_sign)
+            assigned_points = (
+                point,
+                pivot,
+                (target[0], pivot[1]),
+                target,
+            )
+        yield target, assigned_points
+        if horizontal:
+            alternate_assigned_points = (
+                point,
+                pivot,
+                (target[0], pivot[1]),
+                target,
+            )
+        else:
+            alternate_assigned_points = (
+                point,
+                pivot,
+                (pivot[0], target[1]),
+                target,
+            )
+        yield target, alternate_assigned_points
+        for lane_offset in (12.0, -12.0, 24.0, -24.0):
+            if horizontal:
+                lane = target[1] + lane_offset
+                approach = target[0] - outward_sign * 6.0
+                lane_points = (
+                    point,
+                    pivot,
+                    (pivot[0], lane),
+                    (approach, lane),
+                    (approach, target[1]),
+                    target,
+                )
+            else:
+                lane = target[0] + lane_offset
+                approach = target[1] - outward_sign * 6.0
+                lane_points = (
+                    point,
+                    pivot,
+                    (lane, pivot[1]),
+                    (lane, approach),
+                    (target[0], approach),
+                    target,
+                )
+            yield target, lane_points
         for shift in (
             12.0,
             -12.0,
@@ -402,7 +477,7 @@ def _build_terminals(
         net_name: str,
     ) -> bool:
         return any(
-            segment_hits_rect(start, end, rect)
+            segment_enters_terminal_rect(start, end, rect)
             for wire_net, start, end in (*route_segments, *terminal_wires)
             if wire_net != net_name
             or not (start == candidate or end == candidate)
@@ -414,7 +489,7 @@ def _build_terminals(
         candidate: Point,
     ) -> bool:
         return any(
-            segment_hits_rect(start, end, rect)
+            segment_enters_terminal_rect(start, end, rect)
             and start != candidate
             and end != candidate
             for start, end in points_to_segments(points)
@@ -526,6 +601,28 @@ def _build_terminals(
                 (outward, slot) if horizontal else (slot, outward)
             )
 
+    reserved_terminal_zones: dict[str, Rect] = {}
+    for net, endpoint, _, _, direction, rotation, _ in requests:
+        terminal_packet = packets.setdefault(
+            direction,
+            source.resolve_terminal_port(direction=direction),
+        )
+        reserved_terminal_zones[endpoint] = terminal_rect(
+            terminal_packet,
+            assigned_targets[(net.name, endpoint)],
+            rotation,
+        )
+    terminal_group_sizes = {
+        request[1]: len(group)
+        for group in grouped.values()
+        for request in group
+    }
+    endpoint_group_keys = {
+        request[1]: group_key
+        for group_key, group in grouped.items()
+        for request in group
+    }
+
     requests.sort(
         key=lambda request: (
             -len(
@@ -549,14 +646,25 @@ def _build_terminals(
             -len(request[2].pins),
             component_order[request[2].component.reference],
             request[5],
-            assigned_targets[(request[0].name, request[1])],
+            -(
+                assigned_targets[(request[0].name, request[1])][1]
+                if request[5] in {0, 180}
+                else assigned_targets[(request[0].name, request[1])][0]
+            ),
             request[0].name,
         )
     )
     for net, endpoint, item, point, direction, rotation, _ in requests:
         target = assigned_targets[(net.name, endpoint)]
+        foreign_reserved_terminal_zones = [
+            zone
+            for other_endpoint, zone in reserved_terminal_zones.items()
+            if other_endpoint != endpoint
+            and endpoint_group_keys[other_endpoint]
+            == endpoint_group_keys[endpoint]
+        ]
         foreign_terminal_zones = [
-            inflate(other.body, 80.0)
+            inflate(other.body, 24.0)
             for other in placed
             if other.component.reference != item.component.reference
         ]
@@ -575,7 +683,7 @@ def _build_terminals(
         )
         direct_candidates: Iterable[tuple[Point, tuple[Point, ...]]] = (
             ((point, (point,)),)
-            if net.reason == "single_endpoint"
+            if terminal_group_sizes[endpoint] == 1
             else ()
         )
         for candidate, candidate_points in chain(
@@ -602,6 +710,9 @@ def _build_terminals(
             if component_collision or any(
                 rects_overlap(rect, other, touch_is_overlap=False)
                 for other in terminal_rects
+            ) or any(
+                rects_overlap(rect, other, touch_is_overlap=False)
+                for other in foreign_reserved_terminal_zones
             ) or (
                 not direct_attachment
                 and any(
@@ -634,11 +745,15 @@ def _build_terminals(
                 for start, end in candidate_wires
                 for other_endpoint, keepout in pin_keepouts.items()
                 if other_endpoint != endpoint
+            ) or any(
+                segment_hits_rect(start, end, zone)
+                for start, end in candidate_wires
+                for zone in foreign_reserved_terminal_zones
             ):
                 rejection_counts["other_pin"] += 1
                 continue
             if any(
-                segment_hits_rect(start, end, other_rect)
+                segment_enters_terminal_rect(start, end, other_rect)
                 for start, end in candidate_wires
                 for other_rect in terminal_rects
             ):
@@ -660,6 +775,181 @@ def _build_terminals(
             )
             break
         if selected is None:
+            bank_zones = [
+                reserved_terminal_zones[endpoint],
+                *foreign_reserved_terminal_zones,
+            ]
+            if rotation in {0, 180}:
+                outward_sign = 1.0 if target[0] >= point[0] else -1.0
+                visibility_targets = (
+                    target,
+                    (
+                        target[0] + outward_sign * 48.0,
+                        target[1],
+                    ),
+                    (
+                        target[0],
+                        min(zone[1] for zone in bank_zones) - 18.0,
+                    ),
+                    (
+                        target[0],
+                        max(zone[3] for zone in bank_zones) + 18.0,
+                    ),
+                )
+            else:
+                outward_sign = 1.0 if target[1] >= point[1] else -1.0
+                visibility_targets = (
+                    target,
+                    (
+                        target[0],
+                        target[1] + outward_sign * 48.0,
+                    ),
+                    (
+                        min(zone[0] for zone in bank_zones) - 18.0,
+                        target[1],
+                    ),
+                    (
+                        max(zone[2] for zone in bank_zones) + 18.0,
+                        target[1],
+                    ),
+                )
+            assigned_obstacles = [
+                *component_obstacles,
+                *(
+                    keepout
+                    for other_endpoint, keepout in pin_keepouts.items()
+                    if other_endpoint != endpoint
+                ),
+                *terminal_rects,
+                *foreign_reserved_terminal_zones,
+            ]
+            for visibility_target in visibility_targets:
+                assigned_rect = terminal_rect(
+                    packet,
+                    visibility_target,
+                    rotation,
+                )
+                assigned_body_clear = (
+                    not any(
+                        rects_overlap(
+                            inflate(assigned_rect, 4.0),
+                            obstacle,
+                        )
+                        for obstacle in component_obstacles
+                    )
+                    and not any(
+                        rects_overlap(
+                            assigned_rect,
+                            other,
+                            touch_is_overlap=False,
+                        )
+                        for other in terminal_rects
+                    )
+                    and not any(
+                        rects_overlap(
+                            assigned_rect,
+                            other,
+                            touch_is_overlap=False,
+                        )
+                        for other in foreign_reserved_terminal_zones
+                    )
+                    and not any(
+                        rects_overlap(
+                            assigned_rect,
+                            other,
+                            touch_is_overlap=False,
+                        )
+                        for other in foreign_terminal_zones
+                    )
+                    and not terminal_body_hits_wire(
+                        assigned_rect,
+                        visibility_target,
+                        net.name,
+                    )
+                )
+                if not assigned_body_clear:
+                    continue
+                local_envelope = (
+                    min(point[0], visibility_target[0]),
+                    min(point[1], visibility_target[1]),
+                    max(point[0], visibility_target[0]),
+                    max(point[1], visibility_target[1]),
+                )
+                for local_lane in range(24):
+                    local_path = next(
+                        (
+                            candidate_path
+                            for candidate_path in _candidate_paths(
+                                point,
+                                visibility_target,
+                                local_envelope,
+                                local_lane,
+                            )
+                            if _path_is_compact(candidate_path)
+                            and path_is_clear(
+                                candidate_path,
+                                assigned_obstacles,
+                            )
+                            and not path_reuses_other_net(
+                                candidate_path,
+                                net.name,
+                            )
+                        ),
+                        None,
+                    )
+                    if local_path is not None:
+                        selected = (
+                            direction,
+                            rotation,
+                            visibility_target,
+                            packet,
+                            assigned_rect,
+                            local_path,
+                        )
+                        break
+                if selected is not None:
+                    break
+                found = _visibility_route(
+                    point,
+                    visibility_target,
+                    assigned_obstacles,
+                    (
+                        min(point[0], visibility_target[0]),
+                        min(point[1], visibility_target[1]),
+                        max(point[0], visibility_target[0]),
+                        max(point[1], visibility_target[1]),
+                    ),
+                    0,
+                )
+                if found is not None:
+                    wire_points = (
+                        point,
+                        *(segment[1] for segment in found),
+                    )
+                    direct_length = (
+                        abs(visibility_target[0] - point[0])
+                        + abs(visibility_target[1] - point[1])
+                    )
+                    routed_length = sum(
+                        abs(end[0] - start[0])
+                        + abs(end[1] - start[1])
+                        for start, end in points_to_segments(wire_points)
+                    )
+                    if (
+                        routed_length
+                        <= max(direct_length * 2.25, direct_length + 96.0)
+                        and not path_reuses_other_net(wire_points, net.name)
+                    ):
+                        selected = (
+                            direction,
+                            rotation,
+                            visibility_target,
+                            packet,
+                            assigned_rect,
+                            wire_points,
+                        )
+                        break
+        if selected is None:
             horizontal = rotation in {0, 180}
             outward_sign = (
                 1.0
@@ -675,6 +965,7 @@ def _build_terminals(
                     if other_endpoint != endpoint
                 ),
                 *terminal_rects,
+                *foreign_reserved_terminal_zones,
             ]
             pivot_offsets = (
                 0.0,
@@ -721,6 +1012,9 @@ def _build_terminals(
                         ) or any(
                             rects_overlap(rect, other, touch_is_overlap=False)
                             for other in terminal_rects
+                        ) or any(
+                            rects_overlap(rect, other, touch_is_overlap=False)
+                            for other in foreign_reserved_terminal_zones
                         ) or any(
                             rects_overlap(rect, other, touch_is_overlap=False)
                             for other in foreign_terminal_zones
@@ -796,21 +1090,37 @@ def _build_terminals(
                 (rotation + 90) % 360,
                 (rotation + 270) % 360,
             ):
-                for distance in (18.0, 24.0, 32.0, 40.0, 48.0, 56.0, 64.0, 72.0):
+                for distance in (0.0, 18.0, 24.0, 32.0, 40.0, 48.0, 56.0, 64.0, 72.0):
                     candidate = (
                         (point[0] + distance * outward_sign, point[1])
                         if horizontal
                         else (point[0], point[1] + distance * outward_sign)
                     )
-                    wire_points = (point, candidate)
+                    direct_attachment = distance == 0.0
+                    wire_points = (point,) if direct_attachment else (point, candidate)
                     candidate_wires = points_to_segments(wire_points)
                     rect = terminal_rect(packet, candidate, alternate_rotation)
-                    if any(
-                        rects_overlap(inflate(rect, 4.0), other)
-                        for other in component_obstacles
-                    ) or any(
+                    component_collision = (
+                        any(
+                            rects_overlap(
+                                rect,
+                                other.body,
+                                touch_is_overlap=False,
+                            )
+                            for other in placed
+                        )
+                        if direct_attachment
+                        else any(
+                            rects_overlap(inflate(rect, 4.0), other)
+                            for other in component_obstacles
+                        )
+                    )
+                    if component_collision or any(
                         rects_overlap(rect, other, touch_is_overlap=False)
                         for other in terminal_rects
+                    ) or any(
+                        rects_overlap(rect, other, touch_is_overlap=False)
+                        for other in foreign_reserved_terminal_zones
                     ) or any(
                         rects_overlap(rect, other, touch_is_overlap=False)
                         for other in foreign_terminal_zones
@@ -835,10 +1145,14 @@ def _build_terminals(
                         for start, end in candidate_wires
                         for other_endpoint, keepout in pin_keepouts.items()
                         if other_endpoint != endpoint
+                    ) or any(
+                        segment_hits_rect(start, end, zone)
+                        for start, end in candidate_wires
+                        for zone in foreign_reserved_terminal_zones
                     ):
                         continue
                     if any(
-                        segment_hits_rect(start, end, other_rect)
+                        segment_enters_terminal_rect(start, end, other_rect)
                         for start, end in candidate_wires
                         for other_rect in terminal_rects
                     ):
@@ -871,6 +1185,7 @@ def _build_terminals(
                 and other_endpoint.startswith(f"{item.component.reference}.")
             )
             compact_obstacles.extend(terminal_rects)
+            compact_obstacles.extend(foreign_reserved_terminal_zones)
             horizontal = rotation in {0, 180}
             outward_sign = (
                 1.0
@@ -906,6 +1221,9 @@ def _build_terminals(
                             for other in terminal_rects
                         ) or any(
                             rects_overlap(rect, other, touch_is_overlap=False)
+                            for other in foreign_reserved_terminal_zones
+                        ) or any(
+                            rects_overlap(rect, other, touch_is_overlap=False)
                             for other in foreign_terminal_zones
                         ):
                             continue
@@ -937,10 +1255,198 @@ def _build_terminals(
                 if selected is not None:
                     break
         if selected is None:
+            direct_rect = terminal_rect(packet, point, rotation)
+            assigned_rect = terminal_rect(packet, target, rotation)
+            horizontal = rotation in {0, 180}
+            outward_sign = (
+                1.0
+                if (horizontal and target[0] >= point[0])
+                or (not horizontal and target[1] >= point[1])
+                else -1.0
+            )
+            if horizontal:
+                assigned_pivot = (
+                    point[0] + 8.0 * outward_sign,
+                    point[1],
+                )
+                assigned_points = (
+                    point,
+                    assigned_pivot,
+                    (assigned_pivot[0], target[1]),
+                    target,
+                )
+            else:
+                assigned_pivot = (
+                    point[0],
+                    point[1] + 8.0 * outward_sign,
+                )
+                assigned_points = (
+                    point,
+                    assigned_pivot,
+                    (target[0], assigned_pivot[1]),
+                    target,
+                )
+            assigned_segments = points_to_segments(assigned_points)
+            direct_blockers = {
+                "components": [
+                    other.component.reference
+                    for other in placed
+                    if rects_overlap(
+                        direct_rect,
+                        other.body,
+                        touch_is_overlap=False,
+                    )
+                ],
+                "terminals": [
+                    result[index].endpoint
+                    for index, other_rect in enumerate(terminal_rects)
+                    if rects_overlap(
+                        direct_rect,
+                        other_rect,
+                        touch_is_overlap=False,
+                    )
+                ],
+                "route_nets": sorted(
+                    {
+                        route_net
+                        for route_net, start, end in route_segments
+                        if segment_enters_terminal_rect(start, end, direct_rect)
+                    }
+                ),
+                "terminal_nets": sorted(
+                    {
+                        terminal_net
+                        for terminal_net, start, end in terminal_wires
+                        if segment_enters_terminal_rect(start, end, direct_rect)
+                    }
+                ),
+                "pin_keepouts": [
+                    other_endpoint
+                    for other_endpoint, keepout in pin_keepouts.items()
+                    if other_endpoint != endpoint
+                    and any(
+                        segment_hits_rect(start, end, keepout)
+                        for start, end in assigned_segments
+                    )
+                ],
+                "reserved_slots": [
+                    other_endpoint
+                    for other_endpoint, zone in reserved_terminal_zones.items()
+                    if other_endpoint != endpoint
+                    and any(
+                        segment_hits_rect(start, end, zone)
+                        for start, end in assigned_segments
+                    )
+                ],
+                "terminal_bodies": [
+                    result[index].endpoint
+                    for index, other_rect in enumerate(terminal_rects)
+                    if any(
+                        segment_enters_terminal_rect(
+                            start,
+                            end,
+                            other_rect,
+                        )
+                        for start, end in assigned_segments
+                    )
+                ],
+            }
+            assigned_blockers = {
+                "target": target,
+                "terminals": [
+                    {
+                        "endpoint": result[index].endpoint,
+                        "x": result[index].x,
+                        "y": result[index].y,
+                    }
+                    for index, other_rect in enumerate(terminal_rects)
+                    if rects_overlap(
+                        assigned_rect,
+                        other_rect,
+                        touch_is_overlap=False,
+                    )
+                ],
+                "route_nets": sorted(
+                    {
+                        route_net
+                        for route_net, start, end in route_segments
+                        if segment_enters_terminal_rect(
+                            start,
+                            end,
+                            assigned_rect,
+                        )
+                    }
+                ),
+                "terminal_nets": sorted(
+                    {
+                        terminal_net
+                        for terminal_net, start, end in terminal_wires
+                        if segment_enters_terminal_rect(
+                            start,
+                            end,
+                            assigned_rect,
+                        )
+                    }
+                ),
+            }
+            if rotation in {0, 180}:
+                diagnostic_spill_targets = (
+                    (
+                        target[0],
+                        min(zone[1] for zone in bank_zones) - 18.0,
+                    ),
+                    (
+                        target[0],
+                        max(zone[3] for zone in bank_zones) + 18.0,
+                    ),
+                )
+            else:
+                diagnostic_spill_targets = (
+                    (
+                        min(zone[0] for zone in bank_zones) - 18.0,
+                        target[1],
+                    ),
+                    (
+                        max(zone[2] for zone in bank_zones) + 18.0,
+                        target[1],
+                    ),
+                )
+            assigned_blockers["spill_rows"] = [
+                {
+                    "target": spill_target,
+                    "route_nets": sorted(
+                        {
+                            route_net
+                            for route_net, start, end in route_segments
+                            if segment_enters_terminal_rect(
+                                start,
+                                end,
+                                terminal_rect(
+                                    packet,
+                                    spill_target,
+                                    rotation,
+                                ),
+                            )
+                        }
+                    ),
+                    "components": [
+                        other.component.reference
+                        for other in placed
+                        if rects_overlap(
+                            terminal_rect(packet, spill_target, rotation),
+                            other.body,
+                            touch_is_overlap=False,
+                        )
+                    ],
+                }
+                for spill_target in diagnostic_spill_targets
+            ]
             raise NativeProjectError(
                 f"Cannot place native terminal for {endpoint} on {net.name!r} "
                 "without touching a component or planned route; "
-                f"candidate rejections={rejection_counts}."
+                f"candidate rejections={rejection_counts}; "
+                f"direct blockers={direct_blockers}; "
+                f"assigned blockers={assigned_blockers}."
             )
         _, rotation, candidate, packet, rect, wire_points = selected
         normalized_wire_points = normalize_terminal_approach(
@@ -968,9 +1474,14 @@ def _build_terminals(
                     if other_endpoint != endpoint
                 )
                 and not any(
-                    segment_hits_rect(start, end, other_rect)
+                    segment_enters_terminal_rect(start, end, other_rect)
                     for start, end in normalized_segments
                     for other_rect in terminal_rects
+                )
+                and not any(
+                    segment_hits_rect(start, end, zone)
+                    for start, end in normalized_segments
+                    for zone in foreign_reserved_terminal_zones
                 )
             )
             if normalized_is_clear:

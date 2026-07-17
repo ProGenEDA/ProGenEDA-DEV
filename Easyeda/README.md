@@ -59,6 +59,9 @@ Easyeda/dist/progen-easyeda edit circuit.json edits.json --output edited.json
 - Different nets may cross at a point, but may not share any positive-length
   horizontal or vertical wire span. Planning, terminal placement, and the
   independent native-record validator all enforce this readability rule.
+- Routing lanes remain local to each branch, use compact four-unit spacing,
+  and have a bounded detour and emitted-wire envelope. A difficult net is
+  terminalized in combination mode instead of producing a whole-sheet loop.
 - Single-endpoint guessed nets may attach a source-native net port directly at
   the component pin; they remain explicit and auditable without decorative
   wire stubs.
