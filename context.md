@@ -34759,6 +34759,20 @@ Final verification:
 Commit-stage visible assistant response (verbatim):
 
 > The scoped release is committed as `9704a627b` with only the EasyEDA router, validator, acceptance helpers, portable, tests, docs, and continuation record. I’m adding this checkpoint line to the record, amending the same commit, then pushing normally and verifying local and remote hashes match.
+
+Push-stage visible assistant responses (verbatim):
+
+> The amend completed as `8cc454cf1`, but the combined shell stopped before the network push, so the remote is still two commits behind. I’m issuing the push separately now; no source or artifact is changing.
+
+> The server reported a ref-lock race at the end of the long upload, but its own message says `origin/main` is already at our exact `8cc454cf1` commit. I’m verifying the remote hash directly; if it matches, the release is published despite the transport’s final nonzero status.
+
+> Local `HEAD`, fetched `origin/main`, and direct `ls-remote` all match at `8cc454cf15e56ea5cad78c2fe33402b828eb7ba8`; the release is published. I’m adding that final remote proof to the append-only project record in one tiny follow-up commit, then I’ll return the complete catalogue and evidence paths.
+
+Remote verification:
+
+- Release commit: `8cc454cf15e56ea5cad78c2fe33402b828eb7ba8`.
+- Local `HEAD`, fetched `origin/main`, and direct GitHub `ls-remote` matched.
+- Untracked generated EasyEDA runs and unrelated KiCad visual runs remained untouched.
 >
 > ## My request for Codex:
 > continue
