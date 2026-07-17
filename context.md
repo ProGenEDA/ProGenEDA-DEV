@@ -33404,6 +33404,33 @@ Rebase and verification:
 - Embedded portable hashes matched at `1094fe32d60d6389f86f94e190863a7efe695478e2318d549283afa786966d85`.
 - Post-rebase test suite: 27 passed in 90.76 seconds.
 
+Final push visible assistant responses (verbatim):
+
+> The push is still uploading the executable and handoff ZIP; no server error has appeared. I’m keeping the session open until GitHub finishes, then I’ll fetch and compare `HEAD`, `origin/main`, and `ls-remote` before calling this shipped.
+
+> The release is published at `f2250058c454c9978343367e53b36476d0d5d390`; local `HEAD`, fetched upstream, and direct `ls-remote` all match. I’m adding that remote proof and the planned final handoff summary to `context.md` in the required tiny follow-up commit, then I’ll push and verify that final documentation hash.
+
+Remote release proof:
+
+- Release commit: `f2250058c454c9978343367e53b36476d0d5d390`.
+- Local `HEAD`, fetched `origin/main`, and direct GitHub `ls-remote` matched.
+- GitHub accepted the 84.1 MB handoff ZIP and 82.7 MB executable with advisory large-file warnings only.
+- Historical generated EasyEDA runs and unrelated KiCad visual runs remained untracked and untouched.
+
+Planned final visible response (verbatim):
+
+> Yes. The EasyEDA portable and website handoff are release-ready and published.
+>
+> - Executable: `/home/zaruka/Documents/kicad/Easyeda/dist/progen-easyeda`
+> - Website handoff ZIP: `/home/zaruka/Documents/kicad/Easyeda/release/newwebsite-easyeda-handoff-2026_07_17.zip`
+> - Extracted handoff: `/home/zaruka/Documents/kicad/Easyeda/release/newwebsite_easyeda_handoff_2026_07_17/`
+> - 300 canonical JSONs: `/home/zaruka/Documents/kicad/Easyeda/qualification/corpora/2026_07_17_full_pin_300_v1/`
+> - Release commit: `f2250058c454c9978343367e53b36476d0d5d390`
+>
+> Final gates: 300/300 native generations passed, 300/300 exact netlists and complete pin coverage passed, 300/300 PCBs were accepted, and the fixer made zero changes or guesses. Average generation was 4.63 seconds; maximum was 28.35 seconds. The backend suite passed 27/27 before and after rebasing.
+>
+> The handoff includes all 300 descriptively named circuits, the `EA-A` 59-component registry, supported-components UI, real eight-stage progress streaming, prompt planner, deterministic guided/admin JSON Lab, API/batch/history/download integration, EasyEDA branding/help content, guarded installer, hashes, evidence, and `information.md`. A clean extracted install passed `npm run lint`, production TypeScript/Vite/SSR build, direct adapter generation, real API streaming, and `npm run test:easyeda:integration`.
+
 ## 2026-07-17T03:00:00+05:00 — Final EasyEDA complex native-open gate
 
 User request (verbatim):
