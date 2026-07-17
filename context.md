@@ -34773,6 +34773,28 @@ Remote verification:
 - Release commit: `8cc454cf15e56ea5cad78c2fe33402b828eb7ba8`.
 - Local `HEAD`, fetched `origin/main`, and direct GitHub `ls-remote` matched.
 - Untracked generated EasyEDA runs and unrelated KiCad visual runs remained untouched.
+
+Planned visible final response (verbatim):
+
+> Done. The compact EasyEDA router is hardened, documented, rebuilt, and pushed at `d545b7109`.
+>
+> - Final portable: `/home/zaruka/Documents/kicad/Easyeda/dist/progen-easyeda`
+> - SHA-256: `fa796ef81603cde2e745b48e95c33051a92c440179e91302043dd0bf8ce6f6c5`
+> - Final complex gate: 10/10 generated, exact netlists 10/10, zero geometry/compactness errors, PCB 10/10.
+> - Performance: 8.01 seconds average, 20.16 seconds maximum.
+> - Tests: 24/24 passed on rebased `main`.
+> - Native evidence: all ten complex projects completed the 20-second open gate; the final compact 110-net project was reopened, visually accepted, and unchanged after opening.
+>
+> **Supported Components (59)**
+> - Basic: `R`, `R_POT`, `C`, `CAP_ELEC`, `L`, `DIODE`, `1N4007`, `1N4148`, `LED`, `SPST_SWITCH`.
+> - Lab/digital: `NPN`, `PNP`, `NMOS`, `LM7805`, `LM317`, `BRIDGE_RECTIFIER`, `TRANSFORMER`, `FUSE`, `TERMINAL_BLOCK`, `PIN_HEADER`, `GND`, `VCC`, `LM358`, `NE555`, `74HC00`, `74HC04`, `74HC08`, `74HC32`, `74HC74`, `74HC595`.
+> - Embedded: `ESP32_WROOM`, `ESP12F`, `ATMEGA328P`, `STM32F103C8T6`, `CP2102`, `CH340`, `BME280`, `DS3231`, `W25Q64`, `SSD1306`.
+> - PCB utility: `TEST_POINT`, `MOUNTING_HOLE_NPTH`, `MOUNTING_HOLE_PTH`, `HEADER_1X2`, `HEADER_1X6`, `HEADER_2X3`, `HEADER_2X5_1P27`.
+> - Power/USB: `USB_C_RECEPTACLE`, `AP2112K_3V3`, `USBLC6_2SC6`, `PTC_FUSE`, `FERRITE_BEAD`.
+> - Communications: `SN65HVD230`, `SM24CANB`, `MAX485`.
+> - I2C: `AT24C256`, `PCF8574`, `PCA9685`, `ADS1115`.
+>
+> Limits remain 80 schematic input components and 32 physical PCB components. Full aliases and value rules are in `Easyeda/SUPPORTED_COMPONENTS.md`; qualification evidence is in `Easyeda/qualification/RESULTS_2026_07_17.md`.
 >
 > ## My request for Codex:
 > continue
