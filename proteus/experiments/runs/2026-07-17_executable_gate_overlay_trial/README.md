@@ -30,16 +30,18 @@ failure.
 | 74HC86 | 10 | pass | 10 |
 | 74HC266 | 10 | pass | 10 |
 
-The exact rebuilt executable was independently exercised for 74HC08 10x:
+The rebuilt executable was independently exercised across the complete
+single-family matrix, not only through the source application:
 
-- input: `current_app_gate_bridge/EXEC_GATE_74HC08_10X_TERMINALIZED_CURRENT_PLACER.json`
-- output: `current_app_gate_bridge/EXACT_EXE_74HC08_10X_SEMANTIC_TERMINALIZED.pdsprj`
-- screenshot proof: `current_app_gate_bridge/ss/EXE_H08/EXE_H08_G_cold_open_2.png`
+- `74HC00` 8x and `74HC02` 4x;
+- `74HC04`, `74HC08`, `74HC32`, `74HC86`, and `74HC266` 10x each.
 
-That project has 120 grid-attached terminals and 120 nonzero short WIRE
-records, passed cold open and cold reopen, and its disposable gate copy kept
-the same hash. The captured image visibly shows the terminalized 74HC08 gate
-groups and semantic labels.
+All seven generated projects are in
+`current_app_gate_bridge/exact_executable_matrix/`. Each one has its native
+inspection report and two 12-second delayed cold-open screenshots. Every gate
+passed cold open and cold reopen with an unchanged disposable-copy hash and no
+loader dialog. The 74HC08 and 74HC266 screenshots visibly show the grid
+attached semantic terminals and nonzero short wires across their gate units.
 
 ## Deliberate boundary
 

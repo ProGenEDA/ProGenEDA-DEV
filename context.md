@@ -35021,6 +35021,21 @@ Regenerated the same ten complex circuits through the current portable executabl
 - `ProgenProteus.exe` SHA-256: `41C15EAE737E4A5617E79504C136129C3B970B376C127DDAD0454EC709086388`
 - terminalized-component / short-WIRE counts in rank order: `19/42`, `16/35`, `15/33`, `18/36`, `15/32`, `16/34`, `12/26`, `13/27`, `12/26`, `12/26`
 
+---
+
+## 2026-07-17 22:38:07 +05:00 — User
+
+continue with this
+
+## 2026-07-17 22:38:07 +05:00 — Agent
+
+Continued the current-executable, single-gate-family route from the proven 74HC08 10x release-path gate. Regenerated each safe gate ceiling through `ProgenProteus.exe`, then cold-opened and cold-reopened every output with 12-second delayed checks and screenshots. All seven passed: 74HC00 8x, 74HC02 4x, and 74HC04/74HC08/74HC32/74HC86/74HC266 at 10x. Their reports show active terminal stages and nonzero grid-attached short WIREs; 14 screenshots are preserved.
+
+### Files added or updated
+
+- `proteus/experiments/runs/2026-07-17_executable_gate_overlay_trial/current_app_gate_bridge/exact_executable_matrix/`
+- `proteus/experiments/runs/2026-07-17_executable_gate_overlay_trial/README.md`
+
 Files edited or added in `MuhammadTahaBinZaeem/ProGenEDA-WEB` (remote commits `0b5d386` and `82230b4`):
 
 - `apps/api/src/services/proteus-executable-service.mjs`
