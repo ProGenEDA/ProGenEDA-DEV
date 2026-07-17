@@ -35135,3 +35135,202 @@ Validation completed:
 - Portable executable integration smoke test passed.
 - Full 200-circuit corpus: 200 passed, 0 failed; static generation and `.pdsprj` container inspection only, no Proteus GUI open test by user instruction.
 - Website `npm run lint` and production `npm run build` passed.
+
+## 2026-07-17 - Historical Proteus IC generator audit
+
+Timestamp: `2026-07-17T19:13:49.8776517+05:00` (Pakistan)
+
+### User message
+
+~~~~markdown
+look at the old scripts
+old IC scripts
+look at them deep and tell me, what do u think they do
+how do they generate results
+do that and tell me in details
+~~~~
+
+### Visible agent responses
+
+~~~~markdown
+I’ll trace the historical Proteus IC generators from their entry scripts down through donor selection, byte extraction/mutation, project assembly, and validation. I’ll separate what the scripts actually do from what their filenames or old notes claim.
+
+I found the relevant historical IC sequence: it spans the June 7–12 experiment runners, moving from hand-built HC08/HC32 tests, through combinational and sequential batches, into native donor extraction and cross-donor CDB experiments. I’m comparing representative generations from each phase to identify the actual algorithm and why some outputs opened while others failed.
+
+I’ve separated the old IC work into two generations already: early scripts physically splice and mutate raw donor subcircuits; later scripts select or combine complete donor-native packets and try to preserve their metadata. I’m checking the shared native engine and the recorded Proteus outcomes now, because that’s where the difference between “the script produced a file” and “Proteus actually accepted it” becomes clear.
+
+The key point is now confirmed in code: “generate” did not mean “construct an arbitrary IC from a clean netlist.” It meant “choose a Proteus-authored donor packet, preserve or clone its hidden DSN/CDB/device metadata, alter a tightly bounded set of fields, and repackage it.” The later JSON layer mainly chose donor coverage and renamed terminal nets; it did not describe every native Proteus object.
+
+I’ve finished the code-path audit. I’m doing one final consistency check against the old manifests so the explanation clearly labels four different things the old scripts called “generation”: exact repacking, whole-packet transplantation, packet cloning/composition, and donor subtraction. Those are materially different and explain most of the later confusion.
+~~~~
+
+### Final response
+
+~~~~markdown
+The old IC scripts are **donor-native binary assemblers**, not true “netlist-to-Proteus” compilers. Their basic method is:
+
+> Take components, terminals, short pin wires, and metadata that Proteus itself already wrote in donor projects; select or clone those byte records; patch a few known fields; then rebuild a `.pdsprj` around them.
+
+That distinction explains both their impressive results and their fragility.
+
+## What the scripts operate on
+
+A `.pdsprj` contains four important members:
+
+- `ROOT.DSN`: schematic object stream, device definitions, components, terminals, WIRE records, coordinates, and internal links.
+- `ROOT.CDB`: package/subpart, pin, property, and internal object-identity metadata.
+- `PROJECT.XML`: project/version information.
+- `SCRIPTS/PWRRAILS.DAT`: power-rail data.
+
+The old scripts usually start from an empty accepted project called `E001`, then transplant donor material into it. They are manipulating the binary `ROOT.DSN` and `ROOT.CDB`; they are not controlling Proteus through its GUI and are not asking a public Proteus API to instantiate parts.
+
+## The four different generation methods
+
+### 1. Exact repack and transplant diagnostics
+
+The earliest HC08/HC32 script first tested whether the container itself was understood:
+
+- **Exact repack:** copy a donor’s members unchanged into a deterministically written `.pdsprj`.
+- **E001 transplant:** put the donor’s complete object chunk, CDB, and device data into the accepted empty-project frame.
+- **Label-only mutation:** do the same transplant, but rename existing terminal labels.
+
+See [`generate_ic_hc08_hc32_v1_temp.py`](C:/Users/Empty/Documents/Progentotal/protuesgen/proteus/experiments/runners/2026-06-07/generate_ic_hc08_hc32_v1_temp.py:172).
+
+These were diagnostic experiments. They answered questions such as: “Is the ZIP/project wrapper bad, or does changing the internal Proteus records break it?” An exact repack is not a newly constructed circuit.
+
+### 2. Donor gate-slice reconstruction
+
+The early combinational generator is more creative. It extracts complete gate subcircuits from Proteus-authored donors:
+
+- two input terminal records;
+- one output terminal record;
+- their local WIRE records;
+- the gate component/subpart body;
+- component text/value records and link fields.
+
+It recognizes donor layouts such as `terminal_first` and `component_first`, slices gate A/B/C/D from the donor, and then patches:
+
+- input/output terminal labels;
+- package reference such as `U1:A`;
+- X/Y coordinates;
+- component/object IDs;
+- terminal-link suffix fields.
+
+That logic is visible in [`generate_ic_final_30_combinational_v1_temp.py`](C:/Users/Empty/Documents/Progentotal/protuesgen/proteus/experiments/runners/2026-06-08/generate_ic_final_30_combinational_v1_temp.py:319). The final raw schematic object stream is assembled at [line 662](C:/Users/Empty/Documents/Progentotal/protuesgen/proteus/experiments/runners/2026-06-08/generate_ic_final_30_combinational_v1_temp.py:662), its CDB is built at [line 676](C:/Users/Empty/Documents/Progentotal/protuesgen/proteus/experiments/runners/2026-06-08/generate_ic_final_30_combinational_v1_temp.py:676), and the project is written at [line 779](C:/Users/Empty/Documents/Progentotal/protuesgen/proteus/experiments/runners/2026-06-08/generate_ic_final_30_combinational_v1_temp.py:779).
+
+The 30 “circuits” are hard-coded `GateSpec`/`PassiveSpec` recipes. For a half-adder, for example, the script selects an XOR gate packet and an AND gate packet, gives their inputs identical names, and calls their outputs `SUM` and `CARRY`.
+
+Crucially, identical terminal names provide the logical net connection. The script generally does **not** route a long physical wire from one gate to another. The WIRE records inside the cloned packet are the local pin-to-terminal attachments already learned from the donor.
+
+R/C/L parts are handled similarly: clone accepted donor units, patch their visible values/labels/coordinates, and append them to the object stream. IC package supply pins 14 and 7 were commonly hidden instead of emitted.
+
+### 3. Complete native-donor selection
+
+The later `ic_native` route moved away from manually slicing every IC family. It introduced a registry of aliases, device markers, terminal policy, and available donor sizes. The registry loader is at [`ic_native.py:196`](C:/Users/Empty/Documents/Progentotal/protuesgen/proteus/active/src/proteusgen/ic_native.py:196).
+
+Given JSON, it:
+
+1. Normalizes each requested part and reference.
+2. Reads per-component or global pin-to-net mappings.
+3. Chooses a complete donor:
+   - one-family `single`, `two`, `four`, or `eight` donor;
+   - a manually created pair donor;
+   - an explicitly named donor.
+4. Parses the donor’s existing `$TERBIDIR` terminal records.
+5. Replaces their labels with requested net names or generated unique names.
+6. Preserves the complete native object chunk and donor CDB.
+7. Inserts them into the E001 project frame and repairs section pointers.
+
+Donor selection is at [`ic_native.py:1033`](C:/Users/Empty/Documents/Progentotal/protuesgen/proteus/active/src/proteusgen/ic_native.py:1033); the top-level routing decision is at [`ic_native.py:1880`](C:/Users/Empty/Documents/Progentotal/protuesgen/proteus/active/src/proteusgen/ic_native.py:1880).
+
+This means a request for four 7490s normally selects an existing four-7490 Proteus donor. It is selection plus relabelling—not four independently formed 7490 records.
+
+The terminals and pin-attachment WIREs in these results usually already existed in the donor. The old script changed their labels and sometimes their position; it did not independently rediscover how to attach every terminal to every IC pin.
+
+### 4. Cross-donor composition and donor subtraction
+
+Two later experiments tried to escape fixed donor counts.
+
+**Composition** clones one complete terminal-bearing single-component packet per requested part. For every clone it:
+
+- changes `U1` to another same-length internal reference;
+- renames terminal labels;
+- allocates different suffix values;
+- translates all recognized coordinates;
+- parses and combines CDB rows;
+- renumbers CDB object IDs;
+- combines unique device sections;
+- concatenates the cloned payloads between `00 ... FF` object-stream boundaries.
+
+That route starts at [`ic_native.py:1654`](C:/Users/Empty/Documents/Progentotal/protuesgen/proteus/active/src/proteusgen/ic_native.py:1654).
+
+**Donor subtraction** takes the opposite approach. The 7490 structural generator starts with a large Proteus-made “golden” circuit and removes complete component/gate spans it does not need, while preserving the donor’s CDB and device metadata. See [`generate_ic_7490_structural_v2_temp.py:552`](C:/Users/Empty/Documents/Progentotal/protuesgen/proteus/experiments/runners/2026-06-12/generate_ic_7490_structural_v2_temp.py:552).
+
+There was also a middle strategy: select object records from one large all-IC master donor while copying that master’s complete CDB/device metadata unchanged. See [`generate_ic_pairwise_noncomb_master_metadata_v1_temp.py:175`](C:/Users/Empty/Documents/Progentotal/protuesgen/proteus/experiments/runners/2026-06-11/generate_ic_pairwise_noncomb_master_metadata_v1_temp.py:175).
+
+That was an explicit response to failed attempts to merge metadata from unrelated donors.
+
+## How a JSON becomes a result
+
+For the later native engine, the flow is effectively:
+
+`JSON recipe → normalized component keys → donor coverage decision → donor DSN/CDB extraction → terminal event ordering → net-label replacement → optional coordinate/ref/suffix mutation → CDB/device-section preservation or merge → E001 DSN assembly → .pdsprj + reports`
+
+The JSON therefore describes intent at a fairly high level, but the donor supplies most of the real native grammar. For example, the JSON can say that `U1.CLK` and `U2.CLK` use net `CLOCK`; the script finds the corresponding donor terminal events and gives both the same Proteus terminal label.
+
+Every run also writes evidence files such as:
+
+- `circuit_input.json`;
+- `terminal_plan.json` or `logic_plan.json`;
+- extracted `ROOT.DSN.bin`, `ROOT.CDB.bin`, and `object_chunk.bin`;
+- `manifest.json` with hashes, marker counts, pointer positions, and mutations;
+- sometimes a deterministic ZIP containing the whole pack.
+
+## Why some results worked
+
+The most reliable outputs were those that changed the least:
+
+- exact donor repacks;
+- complete packet selection from one donor;
+- deleting complete spans from one golden donor;
+- same-length reference and label changes;
+- preserving one coherent donor’s CDB and device table.
+
+Those approaches retain hidden relationships that were not fully understood.
+
+## Why many results failed despite “static validation passed”
+
+The static checks mainly proved that expected strings and record counts existed, the project contained required members, and the object chunk began/ended correctly. They did not prove that Proteus could resolve every hidden binary relationship.
+
+Cross-donor generation could fail because of:
+
+- duplicated or mismatched CDB object IDs;
+- DSN object IDs disagreeing with CDB rows;
+- incomplete or incompatible device sections;
+- packet finalizer/separator differences;
+- terminal/link suffixes that were locally unique but not valid final DSN addresses;
+- reference-length changes shifting later fields;
+- family-specific record layouts being patched with another family’s offsets;
+- terminal-order assumptions assigning labels to the wrong component or pin;
+- coordinate translation missing an unrecognized coordinate field.
+
+That is why a generated file could have clean marker counts and hashes yet still raise `Bad Object Record`, `LXLCORE`, or a device-library error in Proteus.
+
+## My assessment
+
+The closest analogy is that these scripts are a **binary linker and template editor**, not a compiler:
+
+- donor packets are precompiled object files;
+- terminal labels are symbolic net names;
+- `ROOT.CDB` and device sections are the symbol/metadata tables;
+- E001 is the executable frame;
+- the script links selected pieces into a project.
+
+The old scripts contain valuable research: donor parsers, packet-boundary knowledge, reference mutation, CDB parsing, deterministic repacking, and evidence manifests. But their cross-donor synthesis should not be treated as a universally reliable IC generator.
+
+Most importantly: **many old IC outputs already carried terminals and local pin wires copied from terminalized donors.** They did not prove that arbitrary bare ICs could be terminalized or wired from first principles. Their strongest general result was controlled selection, relabelling, movement, or removal of Proteus-native packets while preserving as much donor metadata as possible.
+~~~~
+
+### Files edited
+
+- `context.md` - appended this read-only audit turn.
