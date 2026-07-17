@@ -9,6 +9,8 @@ import pytest
 from proteusgen.pdsprj import read_internal_file
 from proteusgen.proteus_app import (
     EXECUTABLE_CATALOGUE_TERMINAL_FAMILIES,
+    EXECUTABLE_GATE_PACKAGE_LIMITS,
+    EXECUTABLE_GATE_TERMINAL_FAMILIES,
     EXECUTABLE_TERMINAL_FAMILIES,
     ProteusApplicationError,
     generate_proteus_project,
@@ -177,6 +179,54 @@ def test_executable_uses_node_names_for_catalogue_only_components(tmp_path: Path
         for row in opamp["terminal_pins"]
     }
     assert labels == {"OUT": "VOUT", "IN+": "VIN", "IN-": "G0"}
+
+
+def test_executable_terminalizes_one_gate_family_from_current_component_placer(
+    tmp_path: Path,
+) -> None:
+    result = generate_proteus_project(
+        {
+            "schema_version": "progen-proteus-placement-control/v1",
+            "components": {"74HC08": 1},
+            "layout": {"strategy": "beautify"},
+        },
+        tmp_path / "74hc08_current_placer_terminalized.pdsprj",
+    )
+
+    assert result.valid
+    assert result.terminal_report is not None
+    assert result.terminal_report["terminalized_component_count"] == 1
+    assert result.terminal_report["terminal_count_added"] == 12
+    assert result.terminal_report["wire_count_added"] == 12
+    assert all(
+        check["wire_is_nonzero"]
+        for check in result.terminal_report["wire_path_contact_checks"]
+    )
+    assert EXECUTABLE_GATE_TERMINAL_FAMILIES <= EXECUTABLE_TERMINAL_FAMILIES
+
+
+def test_executable_rejects_unproven_mixed_gate_stream(tmp_path: Path) -> None:
+    with pytest.raises(ProteusApplicationError, match="one gate family per project"):
+        generate_proteus_project(
+            {
+                "components": {"74HC08": 1, "74HC32": 1},
+                "layout": {"strategy": "beautify"},
+            },
+            tmp_path / "mixed_gate_stream_must_not_emit.pdsprj",
+        )
+
+
+def test_executable_rejects_gate_scale_above_screenshot_proven_limit(
+    tmp_path: Path,
+) -> None:
+    with pytest.raises(ProteusApplicationError, match="screenshot-proven executable ceiling"):
+        generate_proteus_project(
+            {
+                "components": {"74HC02": EXECUTABLE_GATE_PACKAGE_LIMITS["74HC02"] + 1},
+                "layout": {"strategy": "beautify"},
+            },
+            tmp_path / "74hc02_above_proven_limit.pdsprj",
+        )
 
 
 def test_executable_rejects_zero_length_terminal_wires(tmp_path: Path) -> None:

@@ -40,4 +40,19 @@ requests remain rejected until the shared Wire Maker is accepted.
 
 Build: 2026-07-17
 
-SHA-256: `4479E5C6F0CED0384F7C06BEB49CC78BFD47DDC01E1730A07AEDC729C7FD13D8`
+SHA-256: `41C15EAE737E4A5617E79504C136129C3B970B376C127DDAD0454EC709086388`
+
+## Screenshot-proven gate bridge
+
+The current executable can terminalize one gate family per project through the
+current locked-mega component placer and the shared catalogue terminal route;
+it does not use the historic E001 IC envelope. Supply
+`terminal_label_projection` in the ordinary circuit JSON to name the exposed
+pins semantically. Screenshot-backed cold-open and cold-reopen tests prove the
+following current ceilings: `74HC00=8`, `74HC02=4`, and
+`74HC04/74HC08/74HC32/74HC86/74HC266=10` component groups. Requests above
+those ceilings, multiple gate families, or gates mixed with another family are
+rejected rather than returning a project whose devices may silently disappear.
+
+The exact executable 74HC08 10x evidence and cold-open screenshots are in
+`proteus/experiments/runs/2026-07-17_executable_gate_overlay_trial/`.

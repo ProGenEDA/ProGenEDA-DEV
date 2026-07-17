@@ -42,6 +42,26 @@ EXECUTABLE_NATIVE_TERMINAL_FAMILIES = (
     frozenset(ACCEPTED_TERMINAL_FAMILY_ORDER)
     - frozenset(TOTALMIX_BLOCKED_FAMILIES)
 )
+EXECUTABLE_GATE_TERMINAL_FAMILIES = frozenset(
+    {
+        "74HC00",
+        "74HC02",
+        "74HC04",
+        "74HC08",
+        "74HC32",
+        "74HC86",
+        "74HC266",
+    }
+)
+EXECUTABLE_GATE_PACKAGE_LIMITS = {
+    "74HC00": 8,
+    "74HC02": 4,
+    "74HC04": 10,
+    "74HC08": 10,
+    "74HC32": 10,
+    "74HC86": 10,
+    "74HC266": 10,
+}
 EXECUTABLE_CATALOGUE_TERMINAL_FAMILIES = frozenset(
     {
         "LM317T",
@@ -49,7 +69,7 @@ EXECUTABLE_CATALOGUE_TERMINAL_FAMILIES = frozenset(
         "OPAMP",
         "POT-HG",
     }
-)
+) | EXECUTABLE_GATE_TERMINAL_FAMILIES
 EXECUTABLE_TERMINAL_FAMILIES = (
     EXECUTABLE_NATIVE_TERMINAL_FAMILIES
     | EXECUTABLE_CATALOGUE_TERMINAL_FAMILIES
@@ -137,6 +157,51 @@ def _unsupported_terminal_families(placement: RawPlacementResult) -> tuple[str, 
             }
         )
     )
+
+
+def _reject_unproven_gate_mix(placement: RawPlacementResult) -> None:
+    """Keep the executable on screenshot-proven gate stream shapes.
+
+    A single gate family can scale through the shared catalogue writer.  A
+    multi-family or gate-plus-non-gate catalogue stream can currently pass
+    static checks while Proteus silently drops component packets, so it must
+    fail clearly instead of producing a misleading project.
+    """
+
+    selected_families = {
+        str(group.family)
+        for group in placement.selected_groups
+        if str(group.key) not in _PLACEMENT_INFRASTRUCTURE_KEYS
+    }
+    selected_gates = selected_families & EXECUTABLE_GATE_TERMINAL_FAMILIES
+    if selected_gates and (
+        len(selected_gates) != 1 or selected_families != selected_gates
+    ):
+        raise ProteusApplicationError(
+            "The current executable gate bridge supports one gate family per "
+            "project. Screenshot-backed Proteus tests proved the individual "
+            "family route, but mixed gate-family and gate-plus-other-family "
+            "streams can silently hide component packets. Split this trial "
+            "request by gate family until the donor-derived mixed stream "
+            "boundary is promoted."
+        )
+    if selected_gates:
+        family = next(iter(selected_gates))
+        package_count = sum(
+            1
+            for group in placement.selected_groups
+            if str(group.family) == family
+            and str(group.key) not in _PLACEMENT_INFRASTRUCTURE_KEYS
+        )
+        safe_limit = EXECUTABLE_GATE_PACKAGE_LIMITS[family]
+        if package_count > safe_limit:
+            raise ProteusApplicationError(
+                f"{family} requests {package_count} package(s), above the "
+                f"screenshot-proven executable ceiling of {safe_limit}. "
+                "The placer may contain more donor packets, but the executable "
+                "will not emit a project known to exceed its local Proteus "
+                "cold-open evidence."
+            )
 
 
 def _terminal_label_overrides(
@@ -307,6 +372,7 @@ def generate_proteus_project(
                 "Component placement failed validation: "
                 + "; ".join(issue.message for issue in placement.errors)
             )
+        _reject_unproven_gate_mix(placement)
 
         terminal_report: Mapping[str, Any] | None = None
         current = bare

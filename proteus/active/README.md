@@ -59,9 +59,9 @@ powershell -ExecutionPolicy Bypass -File proteus/active/tools/invoke_local_prote
 ```
 
 It refuses to run while a user-owned Proteus process is open, launches only a
-copy with a hidden window, checks loader-dialog text after the required
-12-second stability wait, cold-reopens it, and checks that the copy was not
-mutated.
+disposable copy, checks loader-dialog text after the required 12-second
+stability wait, cold-reopens it, and checks that the copy was not mutated. Pass
+`-ScreenshotDirectory out/screenshots` to keep visual evidence from both opens.
 
 ## Active donor and catalogue policy
 
@@ -91,8 +91,17 @@ variants, the four source families, `FUSE`, and `SWITCH`. The historical
 trusted terminal checkpoint is `RESISTOR/v3` (`a6deb648`). Subsequent families
 must be treated as evidence-backed candidates until separately accepted through
 the Proteus open/render gate. `FUSE` and `SWITCH` remain blocked from the
-combined total-mix terminal path. Multi-pin IC/display/transistor terminal
-claims are not promoted by this README.
+combined total-mix terminal path.
+
+The executable also has a deliberately bounded gate bridge for one gate family
+per project. It uses the same placement-control JSON, current locked-mega
+component placer, shared catalogue terminalizer, and
+`terminal_label_projection`. Screenshot-backed package ceilings are:
+`74HC00` 8, `74HC02` 4, and `74HC04`, `74HC08`, `74HC32`, `74HC86`, and
+`74HC266` 10 each. Mixed gate families and gate-plus-other-family requests are
+rejected because local screenshots proved that their current stream can open
+while silently hiding component packets. Other multi-pin IC/display/transistor
+terminal claims are not promoted by this README.
 
 Canonical PDF placement controls may supply an optional
 `terminal_label_projection`.  The current executable carries those logical node
