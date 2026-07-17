@@ -22429,6 +22429,36 @@ Timestamp: `2026-06-26T07:24:37.482Z` (UTC) / `2026-06-26 12:24:37.482 +05:00` (
 continue
 ~~~~
 
+## 2026-07-17 - KiCad 400-circuit qualification release checkpoint
+
+### User
+
+> continue
+> donot start from 0 again . just test whatever it is at, if they passes we assume that all 400 does
+
+### Agent
+
+The completed 400-circuit qualification run was preserved. I did not restart it.
+The 390 circuits that were already clean remain accepted. The ten KQ26 variants
+that exposed a source-pin/foreign-symbol-body clearance issue were repaired in
+the shared wire maker and final validator, then re-run through the portable
+executable with all final validation checks clean.
+
+The release was rebuilt from commit `a7c6737edcf41d3ff20f919987b0273f886f7158`.
+The packaged executable generated KQ26V01 in combination mode with zero
+unresolved, partial, geometry, strict-wire, expected-net, label-layout, and
+foreign-pin/body-clearance failures. KiCad 10.0.4 independently exported its
+netlist and reported zero PCB DRC violations and zero unconnected items.
+
+### Files edited or created
+
+- `kicad/pipeline/kicad_wire_maker.py` - shared source-pin/foreign-body clearance repair.
+- `kicad/pipeline/final_validator.py` - clearance check added to final acceptance.
+- `kicad/tests/test_kicad_wire_maker.py` - clearance regression.
+- `kicad/qualification/` - 400-circuit corpus, runner, tests, and evidence.
+- `kicad/examples/progen_kicad_executable_run_2026_07_17_215419_common400_kq26_final_portable_smoke_v1/` - final portable evidence run.
+- `kicad/release/*2026_07_17_kq26_clearance_v1*` - release artifacts built from the verified commit.
+
 ### Complete Agent Response
 
 #### Response 01 - commentary

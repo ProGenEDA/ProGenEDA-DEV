@@ -1,0 +1,29 @@
+{
+  "schema": "progen-kicad-release-build/v0.1",
+  "built_at": "2026-07-17T16:53:53.040375+00:00",
+  "date_label": "2026_07_17_kq26_clearance_v1",
+  "git_commit": "a7c6737edcf41d3ff20f919987b0273f886f7158",
+  "artifacts": {
+    "portable_executable_zip": {
+      "path": "kicad/release/progen-kicad-portable-2026_07_17_kq26_clearance_v1.zip",
+      "size_bytes": 3575772,
+      "sha256": "b92eb1bf04ff4e2babd9f7e92c12ae75635b453c1ab902e40241a4d8d389c834"
+    },
+    "newwebsite_handoff_zip": {
+      "path": "kicad/release/newwebsite-kicad-handoff-2026_07_17_kq26_clearance_v1.zip",
+      "size_bytes": 15061,
+      "sha256": "2c57db1e3bb2dfd24a746c4f624708681aedada20a48e1ac49917d00595a370e"
+    }
+  },
+  "kicad_registry": {
+    "service": "KC",
+    "version": "A",
+    "component_word_count": 103,
+    "group_count": 15
+  },
+  "verification": {
+    "run_executable_help": "unzip progen-kicad-portable-2026_07_17_kq26_clearance_v1.zip && ./progen-kicad-portable/progen-kicad --help",
+    "smoke_command": "./progen-kicad-portable/progen-kicad run examples/ee215_diode_iv.json --output-root /tmp/progen-kicad-smoke --routing-mode combination",
+    "pcb_only_smoke_command": "./progen-kicad-portable/progen-kicad run-pcb examples/ee215_diode_iv.json --output-root /tmp/progen-kicad-pcb-smoke --routing-mode combination"
+  }
+}
