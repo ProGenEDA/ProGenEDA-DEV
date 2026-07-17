@@ -34982,6 +34982,23 @@ Moved the ten highest-complexity generated Proteus projects, with their generate
 
 - `proteus/experiments/runs/2026-07-17_pdf_200_circuit_placement_controls/10_most_impressive_generated_circuits/`
 
+---
+
+## 2026-07-17 22:07:23 +05:00 — User
+
+bro tf what the actual fk
+y dont they have terminals?
+does the executable not make them with terminals?
+
+## 2026-07-17 22:07:23 +05:00 — Agent
+
+Confirmed the collected projects are placement-only outputs, not terminalized results. `corpus_manifest.json` explicitly records `executable_projection: placement_only_no_terminals`, and their `.progen_report.json` files contain `terminal_placer: null`. The 200-circuit runner documentation incorrectly claimed the accepted terminal route for these historic artifacts. The current executable has a terminal stage for its accepted families, but these files were emitted without entering that stage and must not be treated as terminalized proof.
+
+### Evidence inspected
+
+- `proteus/active/examples/proteus_200_circuits/corpus_manifest.json`
+- `proteus/experiments/runs/2026-07-17_pdf_200_circuit_placement_controls/10_most_impressive_generated_circuits/01_circuit_180_op_amp_led_level_indicator.pdsprj.progen_report.json`
+
 Files edited or added in `MuhammadTahaBinZaeem/ProGenEDA-WEB` (remote commits `0b5d386` and `82230b4`):
 
 - `apps/api/src/services/proteus-executable-service.mjs`
