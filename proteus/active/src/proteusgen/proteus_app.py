@@ -65,6 +65,7 @@ EXECUTABLE_GATE_PACKAGE_LIMITS = {
 }
 EXECUTABLE_CATALOGUE_TERMINAL_FAMILIES = frozenset(
     {
+        "2N3904",
         "LM317T",
         "NMOSFET",
         "NPN",

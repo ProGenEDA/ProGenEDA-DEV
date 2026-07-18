@@ -52,6 +52,13 @@ passed the full staged loader proof, `1x`/`9x`/`15x` solo gates, a ratio mix,
 a heterogeneous non-IC mix, and a dense 15x stress mix. Every emitted NMOSFET
 terminal has a grid-aligned contact and a nonzero short WIRE to its exact pin.
 
+`2N3904` is included in the same locked non-IC terminal route. Its accepted
+combined donor proves that its `EMITTER`/`COLLECTOR`/`BASE` attachment tail
+must follow the complete placed component stream. Fresh `1x`/`9x`/`15x` solos,
+asymmetric and heterogeneous mixes, a dense 15-per-family mix, and a fresh
+portable-executable ratio mix all passed normal open and cold reopen with
+grid-aligned, nonzero terminal-to-pin WIREs.
+
 For a canonical placement control, optional `terminal_label_projection`
 metadata assigns source-circuit node names to the exposed terminals before
 they are serialized. This changes labels (for example `VIN`, `G0`, `VOUT`),
@@ -60,7 +67,7 @@ requests remain rejected until the shared Wire Maker is accepted.
 
 Build: 2026-07-18
 
-SHA-256: `F278F4E6E1B4A2EA34309B30B6914F73331110CDBD7864806CCA2495F77776FB`
+SHA-256: `808F0BE99A8644F204A97775D71B99CF67A28CC86A954E57A7D61A254319375D`
 
 ## Screenshot-proven gate bridge
 

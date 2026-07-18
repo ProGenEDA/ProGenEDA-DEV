@@ -117,6 +117,16 @@ mix, a heterogeneous non-IC mix, and a dense `15x` NMOSFET/PNP/diode/resistor/
 capacitor mix all passed the two-open, 12-second local Proteus gate. Evidence
 is in [`../experiments/runs/2026-07-18_nmosfet_terminal_promotion_matrix`](../experiments/runs/2026-07-18_nmosfet_terminal_promotion_matrix).
 
+`2N3904` is now enabled in the executable through the shared catalogue route.
+Its accepted combined donor proved that the `EMITTER`/`COLLECTOR`/`BASE`
+attachment tail must follow the full placed component stream, rather than be
+inserted directly after Q65 when later diode packets exist. Fresh staged 1x,
+9x, and 15x solos; an asymmetric native ratio mix; a heterogeneous non-IC
+mix; and a dense 15-per-family mixed project all passed the two-open,
+12-second local Proteus gate with nonzero grid-attached terminal WIREs. The
+route remains pending user visual review; evidence is in
+[`../experiments/runs/2026-07-18_2n3904_terminal_promotion_matrix`](../experiments/runs/2026-07-18_2n3904_terminal_promotion_matrix).
+
 The executable also has a deliberately bounded gate bridge for one gate family
 per project. It uses the same placement-control JSON, current locked-mega
 component placer, shared catalogue terminalizer, and

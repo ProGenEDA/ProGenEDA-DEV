@@ -1709,12 +1709,7 @@ def test_resistor_terminal_attachment_patches_links_and_adds_short_wires(tmp_pat
         "NPN",
         "PNP",
         "NMOSFET",
-        pytest.param(
-            "2N3904",
-            marks=pytest.mark.xfail(
-                reason="Current 2N3904 profile still emits a zero-length attachment; retained as untrusted research.",
-            ),
-        ),
+        "2N3904",
         pytest.param(
             "2N4401",
             marks=pytest.mark.xfail(
