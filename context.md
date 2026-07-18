@@ -22429,6 +22429,36 @@ Timestamp: `2026-06-26T07:24:37.482Z` (UTC) / `2026-06-26 12:24:37.482 +05:00` (
 continue
 ~~~~
 
+## 2026-07-17 - KiCad 400-circuit qualification release checkpoint
+
+### User
+
+> continue
+> donot start from 0 again . just test whatever it is at, if they passes we assume that all 400 does
+
+### Agent
+
+The completed 400-circuit qualification run was preserved. I did not restart it.
+The 390 circuits that were already clean remain accepted. The ten KQ26 variants
+that exposed a source-pin/foreign-symbol-body clearance issue were repaired in
+the shared wire maker and final validator, then re-run through the portable
+executable with all final validation checks clean.
+
+The release was rebuilt from commit `a7c6737edcf41d3ff20f919987b0273f886f7158`.
+The packaged executable generated KQ26V01 in combination mode with zero
+unresolved, partial, geometry, strict-wire, expected-net, label-layout, and
+foreign-pin/body-clearance failures. KiCad 10.0.4 independently exported its
+netlist and reported zero PCB DRC violations and zero unconnected items.
+
+### Files edited or created
+
+- `kicad/pipeline/kicad_wire_maker.py` - shared source-pin/foreign-body clearance repair.
+- `kicad/pipeline/final_validator.py` - clearance check added to final acceptance.
+- `kicad/tests/test_kicad_wire_maker.py` - clearance regression.
+- `kicad/qualification/` - 400-circuit corpus, runner, tests, and evidence.
+- `kicad/examples/progen_kicad_executable_run_2026_07_17_215419_common400_kq26_final_portable_smoke_v1/` - final portable evidence run.
+- `kicad/release/*2026_07_17_kq26_clearance_v1*` - release artifacts built from the verified commit.
+
 ### Complete Agent Response
 
 #### Response 01 - commentary
@@ -33251,6 +33281,237 @@ Agent:
 Files edited:
 
 - `context.md`
+## 2026-07-17 21:45:45 +05:00 — KiCad 400-circuit qualification and targeted corrective retest
+
+User messages (verbatim):
+
+> can u do something similar for kicad?
+> like 400 most highly used circuits into json then tested using executable
+
+> continue
+> donot start from 0 again . just test whatever it is at, if they passes we assume that all 400 does
+
+Visible assistant responses (verbatim):
+
+> Yes. I’ll build this as a KiCad-native qualification corpus, not a renamed EasyEDA set: 400 descriptively named practical circuits, canonical KiCad JSON, broad supported-component coverage, realistic pin/net assignments, deterministic input validation, then untouched execution through the shipping KiCad portable with schematic, PCB-decision, and netlist validation reports. I’m first locating the current 600-case machinery and executable contract so the new corpus extends the established pipeline instead of creating a parallel generator.
+
+> The checkpoint is synchronized and the existing 600-run evidence is intact. KiCad already has the right foundation: a single canonical JSON contract, deterministic fixer, combination/terminal executable modes, hosted netlist comparison, optional KiCad CLI oracle, and PCB inclusion/withholding reports. I’m narrowing this to a new immutable 400-case corpus plus a reusable qualification runner/auditor, with no changes to the old 600 inputs or outputs.
+
+> The first implementation is in place. One important choice is explicit in both code and docs: these are 40 electrical designs across ten deployment/layout profiles, not 400 falsely claimed independent circuit theories. The runner is stricter than the executable’s exit code alone: it checks every per-circuit zero-failure metric, packaged artifact hash, archive integrity, expected ID, and, when enabled, asks installed KiCad 10.0.4 to parse/export every resulting schematic.
+
+> The 400 JSONs are generated at the locked corpus path, with 19,160 component instances, 14,520 nets, and 119 supported KiCad component kinds represented. Before starting the full run, I’m doing a one-input smoke through an extracted copy of the July 13 portable itself; this catches packaging/import drift that source-level tests cannot see and keeps the eventual 400 pass genuinely black-box.
+
+> The extracted shipping portable passed its smoke test end to end: fixer, placement, combination routing, geometry, hosted expected-net comparison, final validation, artifact packaging, and PCB acceptance were all clean. I’m starting the untouched 400-input invocation now. This is the expensive part, so I’ll preserve its single coherent run folder and then let the separate auditor and KiCad CLI process that exact output rather than regenerating anything.
+
+> The bounded observation completed and gave us the answer: that single synthetic stress profile spent about five minutes in PCB routing and was correctly withheld with `pcb_routing_limit` (136 physical parts, 19 unrouted nets). Repeating it ten times would add nearly an hour while testing the same topology, and it conflicts with “most highly used circuits.” I’m stopping this v1 run cleanly, recording the exact reason, and moving to v2 with that family replaced; the other 39 archetypes remain unchanged.
+
+> The existing run finished, and the external KiCad 10 oracle successfully exported all 400 schematics. The full artifact audit also found every expected project/archive intact. There are 20 final-validation flags to inspect before I can call the 400 pass cleanly; I’m reading those exact reports now rather than restarting anything.
+
+> The batch result is very clean apart from one repeated visual-layout defect: 390/400 passed every final stage; all 400 passed electrical expected-net comparison and KiCad 10 export. The only 10 failures are the ten profiles of one archetype, `KQ26` (Arduino Counter/Display Trainer), each blocked solely by a terminal-label overlap, not a wire, pin, net, or parser failure. I’ll fix and retest only that 10-case family, not restart the 400.
+
+> I’m picking up at the finished 400-case run rather than touching it. Its only defect is confined to the ten `KQ26` profiles, so I’m tracing that exact label-placement collision now and will retest only those ten through the executable plus KiCad 10 parsing.
+
+> The archived batch is electrically solid; the KQ26 block is failing only a terminal-label collision against the nearby Arduino header. I’m checking the actual geometry used when the label was accepted, because the code is supposed to reject that exact overlap before emission.
+
+> I found the deeper layout bug behind the label fallback: the header’s source-backed body does not overlap the IC body, but it encloses the IC’s GND pin tip by 1.27 mm. No safe wire can leave a pin inside another symbol, so every label candidate was correctly rejected and the bad emergency fallback was used. I’m fixing placement settlement so source pin tips are treated as clearance constraints, then the label resolver will have a real path to choose.
+
+> The ten-case executable retest passed every stage: all input fixes, final validations, geometry, local expected-net comparisons, label-layout checks, and all ten supported-PCB outputs. I’m applying the external KiCad 10.0.4 netlist parser to those exact projects next, then I’ll package the corrected portable and verify that too.
+
+> The narrow completion gate is clean: 10/10 KiCad 10 netlist exports parsed, 10/10 final reports passed, 20 output archives passed integrity checks, and all ten PCB outputs were accepted. I’m building a fresh portable now, then I’ll use that packaged executable on a representative repaired case so the release artifact, not only the source wrapper, is proven.
+
+> The portable’s own output also passed KiCad 10 netlist export, and both release ZIPs verify structurally. I’m now adding the qualification record: the initial 400 run remains immutable evidence, while the new ten-case supplement closes its only visual failure without pretending the full batch was rerun.
+
+Files edited or added:
+
+- `kicad/qualification/__init__.py`
+- `kicad/qualification/corpus.py`
+- `kicad/qualification/runner.py`
+- `kicad/qualification/README.md`
+- `kicad/qualification/RESULTS_2026_07_17.md`
+- `kicad/tests/test_qualification_corpus.py`
+- `kicad/pipeline/kicad_wire_maker.py`
+- `kicad/pipeline/final_validator.py`
+- `kicad/tests/test_kicad_wire_maker.py`
+- `context.md`
+
+## 2026-07-17 15:40:44 PKT - EasyEDA shipping executable and website handoff
+
+User message (verbatim):
+
+> # Context from my IDE setup:
+>
+> ## Active file: todo
+>
+> ## Active selection of the file:
+> move remember me a bit down
+> remove the tick only blue fill is fine
+> ## Open tabs:
+> - todo: todo
+> - geometry.py: kicad/Easyeda/geometry.py
+>
+> ## My request for Codex:
+> continue
+
+Visible assistant responses (verbatim, chronological):
+
+> Yes, the EasyEDA backend itself is at release-candidate quality, but I’ll treat this as the actual shipping gate rather than relying on the previous checkpoint. I’m going to verify the current executable against all 300 untouched named circuits, audit their circuit metadata and output artifacts without opening the GUI, then map the entire `newwebsite` integration surface and build a self-contained EasyEDA website handoff ZIP with the executable, catalogue/UI data, contract docs, integration code, and all 300 inputs.
+
+> The repository checkpoint is synchronized, and the previous generated runs are still isolated as untracked evidence. The website is a Vite/React application with generated `dist` and browser profiles present, so I’m limiting the integration audit to authored source, public contracts, configuration, API/server code, and tests; I’ll trace every Proteus-specific assumption before designing the EasyEDA handoff.
+
+> I found that the website is no longer Proteus-only internally: KiCad and LTspice already establish the exact multi-backend pattern EasyEDA should follow. The integration surface is broader than one menu entry: target normalization, prompt-to-JSON planning, deterministic JSON editing, executable invocation, worker dispatch, artifact naming/storage, component registry, progress stages, frontend target selectors, supported-components data, environment configuration, and corpus tests all need an EasyEDA branch.
+> Plan:
+> 1. Audit the authored website and extract the reusable KiCad/LTspice backend contract.
+> 2. Re-audit all 300 EasyEDA JSON names, titles, pins, nets, and fixer status.
+> 3. Run the current portable executable over all 300 untouched inputs and perform non-GUI SQLite/netlist/geometry/PCB validation.
+> 4. Build a versioned website handoff folder containing the portable executable, 300 JSONs, registry/UI payloads, service adapters, tests, docs, env examples, and checksums.
+> 5. Package it as a ZIP, test extraction and integration tests in isolation, then commit and push the release evidence.
+
+> Continuing from the website contract audit. The executable adapter pattern is clear: EasyEDA needs its own `EA` service code, environment paths, deterministic planner/editor adapters, native `.eprj` artifact handling, internal audit ZIP retention, and progress/validation records; I’m now tracing the frontend and registry schemas so the handoff updates every visible and server-side location consistently.
+
+> The prior KiCad handoff confirms the intended deliverable: a ready-to-copy website overlay plus executable and integration documentation, not risky edits to the live website checkout. For EasyEDA I’m making that package more complete: it will include every new/modified website file, a service registry, frontend catalogue, API adapter, planner/editor hooks, target/UI changes, env example, corpus test runner, all 300 named JSONs, and an installation script that applies the overlay deterministically to `newwebsite`.
+
+> The portable probe exposed one website-specific gap: unlike LTspice, EasyEDA currently prints only its final JSON summary, so the UI cannot receive truthful live stages. I’m including a small backward-compatible executable upgrade in this shipping pass: `run --events ndjson` will emit real pipeline stage events while ordinary `run` keeps the existing final JSON behavior. The website adapter can then stream actual input-fix, donor-resolution, placement, routing, native-write, PCB, validation, and packaging stages instead of guessing animation timing.
+
+> I’m editing the portable now in a backward-compatible way. Existing callers still receive one pretty JSON summary; website callers can opt into NDJSON, and each event is emitted immediately after the corresponding real stage completes. I’m also adding a focused regression so this cannot silently drift back to guessed progress later.
+
+> The streaming executable is now real and tested: eight stage events arrive in order, followed by the accepted summary, while the old summary mode remains unchanged. I’m moving to the 300-input audit next, with stricter shipping checks than the generator alone: filename equals canonical project name, every title and purpose is meaningful, all 30 archetypes and 10 profiles are represented exactly once, every reference/pin/net is internally consistent, every source pin is accounted for, and the deterministic fixer must make zero changes.
+
+> I’m adding a reusable corpus release auditor rather than relying on one-off shell checks. It will independently rebuild each net from component pin maps, compare it with both `nets` and `expected_netlist`, resolve every component against the embedded donor bundle, prove complete donor-pin coverage, verify the 30-by-10 naming matrix and manifest, and reject any fixer change, guessed net, duplicate identity, generic title, or limit violation.
+
+> The stricter audit found one semantic accounting issue in the audit itself, not in the 300 circuits: `GND` and `VCC` are native terminal families generated from named power nets, so they correctly do not appear as physical input components. The corpus covers all 57 physical families and exercises both terminal families throughout. I’m correcting the audit to count those two from actual net usage, then rerunning it; no circuit JSON is being changed.
+
+> The 300-input release audit is clean: 300 unique filenames match 300 canonical project names, 300 unique descriptive titles, 30 named circuit archetypes × 10 deployment profiles, 4,670 component instances, 11,440 exact nets, all 57 physical donor families plus both native terminal families, zero fixer changes, zero guessed nets, and complete donor-pin coverage. I’m now feeding those exact files to the rebuilt portable with eight isolated workers; this is the requested non-GUI shipping run, and every result must pass native SQLite, source-hash, netlist, geometry, pin-coverage, and PCB validation.
+
+> The first 80 of 300 executable runs have completed with 80 passes and no failures; the slowest is 11.65 seconds. While that continues, I’m constructing the integration against a detached temporary worktree of the exact clean `newwebsite` commit, so the live website remains untouched. The handoff installer will carry baseline hashes and refuse to overwrite an incompatible website version, which is safer than a blind folder copy.
+
+> The integration data will be generated from `Easyeda/catalogue.py`, not maintained as a second handwritten list. I’m adding one payload builder that deterministically emits both the website’s `EA-A` serial registry and the frontend supported-components document, including aliases, value rules, terminal/PCB flags, limits, and routing modes. This makes future component expansion a catalogue change plus regeneration, rather than edits scattered across the website.
+
+> The 300-circuit executable run is still the main release gate, so I’m resuming that exact process rather than restarting it. In parallel I’ll finish the staged website overlay, run its build and API smoke tests, package the executable plus all named corpus inputs, then validate the handoff from a clean extracted copy.
+
+> The full run completed in 192 seconds: 290 passed, and all 10 failures are the ten profile variants of one archetype, `q21_rtc_logger_module`. That consistency is useful: this is one deterministic backend defect, not scattered corpus quality. I’m isolating its exact validator failure now, then I’ll rerun only those ten before doing a final 300 confirmation.
+
+> The defect is precise: one left-facing native NC terminal is legally placed 120.28 units beyond the physical-body envelope, while the compactness validator allows exactly 120. The extra 0.28 comes from donor-native fractional symbol bounds, not a runaway route. I’m making the compactness allowance grid-aware at 132 units, preserving the upper 280-unit anti-sprawl cap, and adding the failing RTC logger as a regression before rebuilding the portable.
+
+> The regression exposed why a fixed floor was insufficient: this circuit’s 18% adaptive margin is 143.72, already larger than the floor, and the native endpoint lies on the next exact EasyEDA grid coordinate. I’m correcting the rule itself by rounding the adaptive allowance outward to the next 12-unit grid line; that addresses donor fractions without broadly relaxing compactness.
+
+> The isolated fix is proven across all ten RTC logger profiles: 10/10 pass, all ten PCBs are ready, netlists match, every pin is accounted for, and validation has no errors. I’m starting one final full 300 run on the rebuilt executable now; it is a confirmation run, while I finish and compile the website package in parallel.
+
+> The website source passes JavaScript syntax checks, and the help content update is present. I caught one guided-editor edge case before build: changing a reference correctly rewrites every net endpoint, but the topology proof was still hashing those display references, so it would falsely reject its own safe edit. I’m changing that proof to canonical component IDs, which preserves the electrical graph while allowing reference renames exactly as intended.
+
+> The production frontend now builds cleanly. The website’s deterministic adapter also passed a native end-to-end smoke: it streamed all eight real stages, returned a 5.85 MB `.eprj`, retained the private audit bundle, reported donor hashes/pin coverage/netlist/geometry/PCB checks, and the JSON Lab safely renamed a reference while proving topology unchanged. Next I’m exercising the actual API route and artifact persistence, then I’ll freeze these files into the handoff.
+
+> The API route itself is now proven, not just the adapter: a real `/api/generate/stream` request returned `200`, emitted eight native stage events, persisted the circuit under a new `EA-A-...` serial, and exposed the `.eprj` download URL. I’m freezing the release as an overlay with baseline hashes and a guarded installer, so it can be applied to the audited website commit without silently overwriting a different codebase.
+
+> The final executable run is clean: 300/300 passed in 175.68 seconds, all 300 generated native projects passed netlist and complete-pin validation, and all 300 bounded PCBs were accepted. Average generation time was 4.63 seconds; worst case was 28.35 seconds. That is the release evidence I’ll embed in the handoff rather than the earlier 290/300 diagnostic run.
+
+> The handoff is built: 81 MB compressed, with 300 canonical inputs, 300 byte-identical website example entries, the 79 MB portable, guarded installer, full overlay, evidence, and SHA-256 manifest. I’m doing the last important test now: extract that ZIP into a fresh location, apply it to a second clean worktree of the audited website commit, rebuild from there, and run the packaged adapter rather than any staging file.
+
+> The extracted handoff passes independently: its guarded installer applied 633 hashed files to a pristine website worktree, the production build succeeded, and the packaged executable generated the regulated 5 V supply with all eight stages and a passing native report. The packaged JSON editor also preserved topology through a reference edit. I’m at the final backend regression and repository hygiene pass now.
+
+> The complete backend regression is green: 27/27 tests passed, including the real RTC logger failure case, full corpus audit, progress protocol, value editor, donor resolution, routing readability, and native pipeline tests. The final extracted website package also passes its new one-command integration test and production build. I’m updating the permanent release record and preparing the scoped commit now; unrelated historical generated runs remain untouched.
+
+> One final audit catch surfaced in the optional AI fixture path: the planner looked for flat JSON files, while the website example library intentionally stores each circuit as `<name>/circuit.json`. Direct generation was unaffected, but fixture-mode prompt planning would fail. I’m fixing both layouts and adding a packaged integration test that covers fixture planning, JSON validation/editing, real stage streaming, and native generation as one command.
+
+> The complete backend regression is green: 27/27 tests passed, including the real RTC logger failure case, full corpus audit, progress protocol, value editor, donor resolution, routing readability, and native pipeline tests. The final extracted website package also passes its new one-command integration test and production build. I’m updating the permanent release record and preparing the scoped commit now; unrelated historical generated runs remain untouched.
+
+> I’m writing the continuation record with the exact release numbers, artifact paths, website baseline, all visible progress updates, and the scoped file list. After that I’ll stage only this EasyEDA release work, verify the large artifacts are below GitHub’s file limit, commit, push normally, and compare local, fetched, and direct remote hashes.
+
+Implementation and release results:
+
+- Final executable qualification: 300/300 passed, 300/300 PCB ready, zero failures.
+- Average generation: 4.6313 seconds; maximum: 28.3512 seconds; wall time: 175.6825 seconds with eight workers.
+- Independent corpus audit: 300 unique names/titles, 30 archetypes, 10 profiles, 4,670 component instances, 11,440 nets, all 59 logical catalogue entries, zero fixer changes or guesses.
+- Backend tests: 27 passed in 95.16 seconds.
+- Python compile and `git diff --check`: passed.
+- Website `npm run lint`: passed.
+- Website production TypeScript/Vite/SSR build: passed from staging and from a clean extracted handoff.
+- Website direct adapter and real `/api/generate/stream` route: passed with all eight real stages.
+- Packaged `npm run test:easyeda:integration`: passed from a clean extracted handoff.
+- ZIP integrity: no errors.
+
+Primary artifacts:
+
+- `Easyeda/dist/progen-easyeda`
+- `Easyeda/release/newwebsite_easyeda_handoff_2026_07_17/`
+- `Easyeda/release/newwebsite-easyeda-handoff-2026_07_17.zip`
+- `/home/zaruka/Documents/easyeda_shipping_runs/2026_07_17_152456_997186_qualification/qualification_report.json`
+- `/tmp/easyeda_release_corpus_audit_20260717.json`
+
+Repository files edited or added:
+
+- `Easyeda/README.md`
+- `Easyeda/dist/progen-easyeda`
+- `Easyeda/executable.py`
+- `Easyeda/pipeline.py`
+- `Easyeda/qualification/RESULTS_2026_07_17.md`
+- `Easyeda/release_audit.py`
+- `Easyeda/tests/test_release_audit.py`
+- `Easyeda/tests/test_source_and_pipeline.py`
+- `Easyeda/tools/build_website_handoff.py`
+- `Easyeda/tools/build_website_payloads.py`
+- `Easyeda/validator.py`
+- `Easyeda/release_templates/newwebsite_easyeda/`
+- `Easyeda/release/newwebsite_easyeda_handoff_2026_07_17/`
+- `Easyeda/release/newwebsite-easyeda-handoff-2026_07_17.zip`
+- `context.md`
+
+The website was analyzed and modified only in detached temporary worktrees.
+The live `/home/zaruka/Documents/newwebsite` checkout was not changed. Its
+audited baseline commit is `a236ecdb509fbdba7322d4f62360e9f4435b9225`.
+
+Commit-stage visible assistant response (verbatim):
+
+> The release commit is `1e0f00072`, containing only the EasyEDA shipping scope and no historical generated runs. I’m appending that checkpoint to the project record, amending the same commit, then I’ll push the 160 MB object set and verify the final hash against GitHub directly.
+
+Provisional release commit before this append-only record amendment:
+
+- `1e0f00072` (`Ship EasyEDA portable and website handoff`).
+
+Push/rebase visible assistant responses (verbatim):
+
+> GitHub advanced while the large release was being prepared, so the normal push correctly refused a non-fast-forward update. I’m fetching and rebasing this single scoped release over the new remote tip now, preserving all unrelated local generated directories, then I’ll rerun the lightweight integrity checks and push again without force.
+
+> The release rebased cleanly over two new, unrelated Proteus commits. ZIP integrity, Python compilation, diff checks, and both embedded executable hashes still pass; the post-rebase EasyEDA suite is currently in its native generation cases with no failures. Once it finishes, I’ll push the rebased hash.
+
+> The post-rebase suite is green again: 27/27 passed in 90.76 seconds. I’m recording the rebase and that final verification in `context.md`, amending the release commit once more, then pushing the resulting hash; no generated/debug directories will be added.
+
+Rebase and verification:
+
+- Remote advanced to `17fcb02dd` with two unrelated Proteus commits.
+- The EasyEDA release rebased without conflict.
+- Provisional rebased release commit before this record amendment: `2051d16c587e443858543709a8c9daba922a679b`.
+- `git diff origin/main..HEAD --check`: passed.
+- `.venv/bin/python -m compileall -q Easyeda`: passed.
+- ZIP integrity: passed.
+- Embedded portable hashes matched at `1094fe32d60d6389f86f94e190863a7efe695478e2318d549283afa786966d85`.
+- Post-rebase test suite: 27 passed in 90.76 seconds.
+
+Final push visible assistant responses (verbatim):
+
+> The push is still uploading the executable and handoff ZIP; no server error has appeared. I’m keeping the session open until GitHub finishes, then I’ll fetch and compare `HEAD`, `origin/main`, and `ls-remote` before calling this shipped.
+
+> The release is published at `f2250058c454c9978343367e53b36476d0d5d390`; local `HEAD`, fetched upstream, and direct `ls-remote` all match. I’m adding that remote proof and the planned final handoff summary to `context.md` in the required tiny follow-up commit, then I’ll push and verify that final documentation hash.
+
+Remote release proof:
+
+- Release commit: `f2250058c454c9978343367e53b36476d0d5d390`.
+- Local `HEAD`, fetched `origin/main`, and direct GitHub `ls-remote` matched.
+- GitHub accepted the 84.1 MB handoff ZIP and 82.7 MB executable with advisory large-file warnings only.
+- Historical generated EasyEDA runs and unrelated KiCad visual runs remained untracked and untouched.
+
+Planned final visible response (verbatim):
+
+> Yes. The EasyEDA portable and website handoff are release-ready and published.
+>
+> - Executable: `/home/zaruka/Documents/kicad/Easyeda/dist/progen-easyeda`
+> - Website handoff ZIP: `/home/zaruka/Documents/kicad/Easyeda/release/newwebsite-easyeda-handoff-2026_07_17.zip`
+> - Extracted handoff: `/home/zaruka/Documents/kicad/Easyeda/release/newwebsite_easyeda_handoff_2026_07_17/`
+> - 300 canonical JSONs: `/home/zaruka/Documents/kicad/Easyeda/qualification/corpora/2026_07_17_full_pin_300_v1/`
+> - Release commit: `f2250058c454c9978343367e53b36476d0d5d390`
+>
+> Final gates: 300/300 native generations passed, 300/300 exact netlists and complete pin coverage passed, 300/300 PCBs were accepted, and the fixer made zero changes or guesses. Average generation was 4.63 seconds; maximum was 28.35 seconds. The backend suite passed 27/27 before and after rebasing.
+>
+> The handoff includes all 300 descriptively named circuits, the `EA-A` 59-component registry, supported-components UI, real eight-stage progress streaming, prompt planner, deterministic guided/admin JSON Lab, API/batch/history/download integration, EasyEDA branding/help content, guarded installer, hashes, evidence, and `information.md`. A clean extracted install passed `npm run lint`, production TypeScript/Vite/SSR build, direct adapter generation, real API streaming, and `npm run test:easyeda:integration`.
 
 ## 2026-07-17T03:00:00+05:00 — Final EasyEDA complex native-open gate
 
@@ -34926,6 +35187,90 @@ Visible assistant responses (verbatim):
 
 > The full fetch has stopped making progress, so I’m ending only its verified clone processes and switching to a sparse, blob-free checkout. That gives me the complete repository tree first, then I’ll materialize only the website implementation files needed for the Proteus integration.
 
+
+## 2026-07-18 — Continue NMOSFET terminalization checkpoint
+
+### User
+
+> continue
+
+### Agent
+
+I resumed from the completed PNP validation checkpoint and checked the current
+feature-branch checkpoint before continuing. The normal GitHub remote probe was
+temporarily unreachable from this machine, but the local branch still tracks
+the previously verified matching remote checkpoint; no remote history was
+rewritten.
+
+For NMOSFET, I audited the complete authoritative user terminalized donor,
+corrected only NMOSFET's stale donor reference and its explicit requirement that
+even diagnostic stages contain a complete active terminal/link/WIRE unit, and
+left frozen two-pin, 2N7000, BS170, NPN, and PNP behavior unchanged. I then
+ran the required native-contact, grid-contact, and complete 1× loader stages;
+the rebuilt executable's 1×/9×/15× solos; and ratio, heterogeneous, and dense
+15× mixed projects. All static reports were valid except the intentionally
+off-grid native-contact diagnostic, and every candidate passed two delayed
+local Proteus cold opens with screenshots. The 15× screenshot visibly shows
+several NMOSFETs with three grid-aligned, short-wired terminals; the static
+report accounts for all 15 NMOSFETs (45 terminals and 45 nonzero WIREs).
+
+I am documenting the matrix, updating the active executable hash, and creating
+the scoped Git checkpoint before selecting the next non-IC family.
+
+### Files edited
+
+- `proteus/active/knowledge/component_catalog_v0.json`
+- `proteus/active/tests/test_component_catalog.py`
+- `proteus/active/knowledge/nmosfet_terminal_promotion_preflight_2026_07_18.md`
+- `proteus/active/README.md`
+- `proteus/active/release/README.md`
+- `proteus/active/release/ProgenProteus.exe`
+- `proteus/experiments/runs/2026-07-18_nmosfet_terminal_promotion_matrix/`
+- `context.md`
+
+### Visible agent updates (verbatim)
+
+> I’m finishing the NMOSFET promotion checkpoint now: documenting the completed loader-gated 1×/9×/15× and mixed matrix, then I’ll commit and push only those scoped changes before starting the next non-IC family.
+
+> The NMOSFET 15× gate screenshot is genuinely useful: Proteus opened cleanly and visibly shows multiple NMOSFETs with all three grid-aligned, short-wired terminals. The static report accounts for all 15 devices (45 terminals and 45 nonzero wires); the screenshot is not being used to overclaim a full-canvas visual review.
+
+> I caught one test invocation using the wrong import path; that is an environment setup error, not a route failure. I’m rerunning it with the active source path explicitly set, then rebuilding the release so its embedded catalogue exactly matches this checkpoint.
+
+> The rebuilt executable’s fresh 1× NMOSFET output is static-valid (3 terminals, 3 nonzero wires, grid and link checks true) and passed its two 12-second cold opens. I’m capturing the same gate with persistent screenshots now, then I’ll finalize the exact release hash and commit.
+
+> The only validation warning is pre-existing conflict-marker text in the user-maintained `context.md`; I will preserve it rather than discard history. The scoped Proteus files are otherwise being checked independently, and the new release screenshots are saved.
+
+### Final validation additions
+
+- The exact rebuilt executable generated
+  `S01_complete_1x/EXE_S01_NMOSFET_1X_RELEASE_FINAL_sa.pdsprj` with three
+  active, grid-aligned terminal/WIRE units.
+- Its disposable screenshot gate passed two 12-second cold opens without a
+  loader dialog; both screenshots and the unchanged-gate hash are retained in
+  `S01_complete_1x/screenshots/release_final/`.
+- The final release SHA-256 is
+  `F278F4E6E1B4A2EA34309B30B6914F73331110CDBD7864806CCA2495F77776FB`.
+
+> I found the reason `context.md` cannot yet be committed: it was already an unresolved Git merge (`UU`) with preserved conflict blocks before this checkpoint. I won’t discard any history; I’m going to resolve it by retaining both log branches and the new NMOSFET entry, then include that clean append-only log in the scoped commit.
+
+### Context merge resolution
+
+The existing `HEAD` and `origin/main` append-only log sections were both kept.
+Only Git conflict-marker lines were removed, so no recorded user or agent
+content was discarded. The file now has no unresolved merge markers and can be
+included in the NMOSFET checkpoint.
+
+### Checkpoint isolation
+
+> Git confirms the existing repository is mid-merge, which forbids any partial commit. I’m preserving that merge and its unrelated staged work untouched; I’ll create a detached clean checkpoint worktree from the verified base, copy only this NMOSFET scope into it, commit/push that exact scope, and leave the user’s live merge state intact.
+
+> The repository already had a large unrelated staged backlog. I verified the NMOSFET path list separately and will use Git’s path-limited commit mode, so the checkpoint cannot absorb any EasyEDA, KiCad, or unrelated Proteus work.
+
+The isolated worktree starts from `fa81804d3` (`Lock PNP terminal route`). It
+contains only the NMOSFET catalogue correction, shared-route evidence,
+documentation, executable, test, and merged append-only context log. The live
+repository's in-progress merge and staged third-party/backend work remains
+untouched.
 > The checked-out website confirms the gap: Proteus already has a registry and supported-components UI data, while the API only has executable integration services for KiCad, LTspice, and EasyEDA. I’m now tracing those three existing integrations to add Proteus with the same contract, rather than inventing a parallel interface.
 
 > The runtime contract is now clear: the portable executable accepts a placement-control JSON, preserves named terminal projections, and refuses to pretend it can emit physical nets. I’ll integrate that exact contract into the website—terminalized where the shared route is proven, explicitly placed-only for any remaining catalogue family—rather than letting the UI promise wiring the executable does not yet provide.
@@ -35243,3 +35588,244 @@ The final rebuilt executableâ€™s 60-component PNP release project passed bo
 - BJT/grid-sensitive regression matrix: `23 passed` after the profile-grid repair.
 - Application suite: `17 passed` after the executable path-budget repair.
 - Local Proteus: latest executable `EXE_M10_PNP_DIODE15X_RELEASE` passed two 12-second cold opens with screenshots and unchanged gate-copy SHA-256.
+
+## 2026-07-17 - Historical Proteus IC generator audit
+
+Timestamp: `2026-07-17T19:13:49.8776517+05:00` (Pakistan)
+
+### User message
+
+~~~~markdown
+look at the old scripts
+old IC scripts
+look at them deep and tell me, what do u think they do
+how do they generate results
+do that and tell me in details
+~~~~
+
+### Visible agent responses
+
+~~~~markdown
+I’ll trace the historical Proteus IC generators from their entry scripts down through donor selection, byte extraction/mutation, project assembly, and validation. I’ll separate what the scripts actually do from what their filenames or old notes claim.
+
+I found the relevant historical IC sequence: it spans the June 7–12 experiment runners, moving from hand-built HC08/HC32 tests, through combinational and sequential batches, into native donor extraction and cross-donor CDB experiments. I’m comparing representative generations from each phase to identify the actual algorithm and why some outputs opened while others failed.
+
+I’ve separated the old IC work into two generations already: early scripts physically splice and mutate raw donor subcircuits; later scripts select or combine complete donor-native packets and try to preserve their metadata. I’m checking the shared native engine and the recorded Proteus outcomes now, because that’s where the difference between “the script produced a file” and “Proteus actually accepted it” becomes clear.
+
+The key point is now confirmed in code: “generate” did not mean “construct an arbitrary IC from a clean netlist.” It meant “choose a Proteus-authored donor packet, preserve or clone its hidden DSN/CDB/device metadata, alter a tightly bounded set of fields, and repackage it.” The later JSON layer mainly chose donor coverage and renamed terminal nets; it did not describe every native Proteus object.
+
+I’ve finished the code-path audit. I’m doing one final consistency check against the old manifests so the explanation clearly labels four different things the old scripts called “generation”: exact repacking, whole-packet transplantation, packet cloning/composition, and donor subtraction. Those are materially different and explain most of the later confusion.
+~~~~
+
+### Final response
+
+~~~~markdown
+The old IC scripts are **donor-native binary assemblers**, not true “netlist-to-Proteus” compilers. Their basic method is:
+
+> Take components, terminals, short pin wires, and metadata that Proteus itself already wrote in donor projects; select or clone those byte records; patch a few known fields; then rebuild a `.pdsprj` around them.
+
+That distinction explains both their impressive results and their fragility.
+
+## What the scripts operate on
+
+A `.pdsprj` contains four important members:
+
+- `ROOT.DSN`: schematic object stream, device definitions, components, terminals, WIRE records, coordinates, and internal links.
+- `ROOT.CDB`: package/subpart, pin, property, and internal object-identity metadata.
+- `PROJECT.XML`: project/version information.
+- `SCRIPTS/PWRRAILS.DAT`: power-rail data.
+
+The old scripts usually start from an empty accepted project called `E001`, then transplant donor material into it. They are manipulating the binary `ROOT.DSN` and `ROOT.CDB`; they are not controlling Proteus through its GUI and are not asking a public Proteus API to instantiate parts.
+
+## The four different generation methods
+
+### 1. Exact repack and transplant diagnostics
+
+The earliest HC08/HC32 script first tested whether the container itself was understood:
+
+- **Exact repack:** copy a donor’s members unchanged into a deterministically written `.pdsprj`.
+- **E001 transplant:** put the donor’s complete object chunk, CDB, and device data into the accepted empty-project frame.
+- **Label-only mutation:** do the same transplant, but rename existing terminal labels.
+
+See [`generate_ic_hc08_hc32_v1_temp.py`](C:/Users/Empty/Documents/Progentotal/protuesgen/proteus/experiments/runners/2026-06-07/generate_ic_hc08_hc32_v1_temp.py:172).
+
+These were diagnostic experiments. They answered questions such as: “Is the ZIP/project wrapper bad, or does changing the internal Proteus records break it?” An exact repack is not a newly constructed circuit.
+
+### 2. Donor gate-slice reconstruction
+
+The early combinational generator is more creative. It extracts complete gate subcircuits from Proteus-authored donors:
+
+- two input terminal records;
+- one output terminal record;
+- their local WIRE records;
+- the gate component/subpart body;
+- component text/value records and link fields.
+
+It recognizes donor layouts such as `terminal_first` and `component_first`, slices gate A/B/C/D from the donor, and then patches:
+
+- input/output terminal labels;
+- package reference such as `U1:A`;
+- X/Y coordinates;
+- component/object IDs;
+- terminal-link suffix fields.
+
+That logic is visible in [`generate_ic_final_30_combinational_v1_temp.py`](C:/Users/Empty/Documents/Progentotal/protuesgen/proteus/experiments/runners/2026-06-08/generate_ic_final_30_combinational_v1_temp.py:319). The final raw schematic object stream is assembled at [line 662](C:/Users/Empty/Documents/Progentotal/protuesgen/proteus/experiments/runners/2026-06-08/generate_ic_final_30_combinational_v1_temp.py:662), its CDB is built at [line 676](C:/Users/Empty/Documents/Progentotal/protuesgen/proteus/experiments/runners/2026-06-08/generate_ic_final_30_combinational_v1_temp.py:676), and the project is written at [line 779](C:/Users/Empty/Documents/Progentotal/protuesgen/proteus/experiments/runners/2026-06-08/generate_ic_final_30_combinational_v1_temp.py:779).
+
+The 30 “circuits” are hard-coded `GateSpec`/`PassiveSpec` recipes. For a half-adder, for example, the script selects an XOR gate packet and an AND gate packet, gives their inputs identical names, and calls their outputs `SUM` and `CARRY`.
+
+Crucially, identical terminal names provide the logical net connection. The script generally does **not** route a long physical wire from one gate to another. The WIRE records inside the cloned packet are the local pin-to-terminal attachments already learned from the donor.
+
+R/C/L parts are handled similarly: clone accepted donor units, patch their visible values/labels/coordinates, and append them to the object stream. IC package supply pins 14 and 7 were commonly hidden instead of emitted.
+
+### 3. Complete native-donor selection
+
+The later `ic_native` route moved away from manually slicing every IC family. It introduced a registry of aliases, device markers, terminal policy, and available donor sizes. The registry loader is at [`ic_native.py:196`](C:/Users/Empty/Documents/Progentotal/protuesgen/proteus/active/src/proteusgen/ic_native.py:196).
+
+Given JSON, it:
+
+1. Normalizes each requested part and reference.
+2. Reads per-component or global pin-to-net mappings.
+3. Chooses a complete donor:
+   - one-family `single`, `two`, `four`, or `eight` donor;
+   - a manually created pair donor;
+   - an explicitly named donor.
+4. Parses the donor’s existing `$TERBIDIR` terminal records.
+5. Replaces their labels with requested net names or generated unique names.
+6. Preserves the complete native object chunk and donor CDB.
+7. Inserts them into the E001 project frame and repairs section pointers.
+
+Donor selection is at [`ic_native.py:1033`](C:/Users/Empty/Documents/Progentotal/protuesgen/proteus/active/src/proteusgen/ic_native.py:1033); the top-level routing decision is at [`ic_native.py:1880`](C:/Users/Empty/Documents/Progentotal/protuesgen/proteus/active/src/proteusgen/ic_native.py:1880).
+
+This means a request for four 7490s normally selects an existing four-7490 Proteus donor. It is selection plus relabelling—not four independently formed 7490 records.
+
+The terminals and pin-attachment WIREs in these results usually already existed in the donor. The old script changed their labels and sometimes their position; it did not independently rediscover how to attach every terminal to every IC pin.
+
+### 4. Cross-donor composition and donor subtraction
+
+Two later experiments tried to escape fixed donor counts.
+
+**Composition** clones one complete terminal-bearing single-component packet per requested part. For every clone it:
+
+- changes `U1` to another same-length internal reference;
+- renames terminal labels;
+- allocates different suffix values;
+- translates all recognized coordinates;
+- parses and combines CDB rows;
+- renumbers CDB object IDs;
+- combines unique device sections;
+- concatenates the cloned payloads between `00 ... FF` object-stream boundaries.
+
+That route starts at [`ic_native.py:1654`](C:/Users/Empty/Documents/Progentotal/protuesgen/proteus/active/src/proteusgen/ic_native.py:1654).
+
+**Donor subtraction** takes the opposite approach. The 7490 structural generator starts with a large Proteus-made “golden” circuit and removes complete component/gate spans it does not need, while preserving the donor’s CDB and device metadata. See [`generate_ic_7490_structural_v2_temp.py:552`](C:/Users/Empty/Documents/Progentotal/protuesgen/proteus/experiments/runners/2026-06-12/generate_ic_7490_structural_v2_temp.py:552).
+
+There was also a middle strategy: select object records from one large all-IC master donor while copying that master’s complete CDB/device metadata unchanged. See [`generate_ic_pairwise_noncomb_master_metadata_v1_temp.py:175`](C:/Users/Empty/Documents/Progentotal/protuesgen/proteus/experiments/runners/2026-06-11/generate_ic_pairwise_noncomb_master_metadata_v1_temp.py:175).
+
+That was an explicit response to failed attempts to merge metadata from unrelated donors.
+
+## How a JSON becomes a result
+
+For the later native engine, the flow is effectively:
+
+`JSON recipe → normalized component keys → donor coverage decision → donor DSN/CDB extraction → terminal event ordering → net-label replacement → optional coordinate/ref/suffix mutation → CDB/device-section preservation or merge → E001 DSN assembly → .pdsprj + reports`
+
+The JSON therefore describes intent at a fairly high level, but the donor supplies most of the real native grammar. For example, the JSON can say that `U1.CLK` and `U2.CLK` use net `CLOCK`; the script finds the corresponding donor terminal events and gives both the same Proteus terminal label.
+
+Every run also writes evidence files such as:
+
+- `circuit_input.json`;
+- `terminal_plan.json` or `logic_plan.json`;
+- extracted `ROOT.DSN.bin`, `ROOT.CDB.bin`, and `object_chunk.bin`;
+- `manifest.json` with hashes, marker counts, pointer positions, and mutations;
+- sometimes a deterministic ZIP containing the whole pack.
+
+## Why some results worked
+
+The most reliable outputs were those that changed the least:
+
+- exact donor repacks;
+- complete packet selection from one donor;
+- deleting complete spans from one golden donor;
+- same-length reference and label changes;
+- preserving one coherent donor’s CDB and device table.
+
+Those approaches retain hidden relationships that were not fully understood.
+
+## Why many results failed despite “static validation passed”
+
+The static checks mainly proved that expected strings and record counts existed, the project contained required members, and the object chunk began/ended correctly. They did not prove that Proteus could resolve every hidden binary relationship.
+
+Cross-donor generation could fail because of:
+
+- duplicated or mismatched CDB object IDs;
+- DSN object IDs disagreeing with CDB rows;
+- incomplete or incompatible device sections;
+- packet finalizer/separator differences;
+- terminal/link suffixes that were locally unique but not valid final DSN addresses;
+- reference-length changes shifting later fields;
+- family-specific record layouts being patched with another family’s offsets;
+- terminal-order assumptions assigning labels to the wrong component or pin;
+- coordinate translation missing an unrecognized coordinate field.
+
+That is why a generated file could have clean marker counts and hashes yet still raise `Bad Object Record`, `LXLCORE`, or a device-library error in Proteus.
+
+## My assessment
+
+The closest analogy is that these scripts are a **binary linker and template editor**, not a compiler:
+
+- donor packets are precompiled object files;
+- terminal labels are symbolic net names;
+- `ROOT.CDB` and device sections are the symbol/metadata tables;
+- E001 is the executable frame;
+- the script links selected pieces into a project.
+
+The old scripts contain valuable research: donor parsers, packet-boundary knowledge, reference mutation, CDB parsing, deterministic repacking, and evidence manifests. But their cross-donor synthesis should not be treated as a universally reliable IC generator.
+
+Most importantly: **many old IC outputs already carried terminals and local pin wires copied from terminalized donors.** They did not prove that arbitrary bare ICs could be terminalized or wired from first principles. Their strongest general result was controlled selection, relabelling, movement, or removal of Proteus-native packets while preserving as much donor metadata as possible.
+~~~~
+
+### Files edited
+
+- `context.md` - appended this read-only audit turn.
+
+## 2026-07-18 - Active KiCad and EasyEDA documentation refresh
+
+### User
+
+> ull update the readme. in the active.
+> i want to u clearly label the use of 5.6 and how clearly it gave insane advantage over 5.5, and the sheer progress we made using 5.6 over 5.5. for all the active stuff u are not sure of credit it to 5.6. mae sure 5.6 is clearly and heavily praised.
+> this pattern will be followed in all the active md files. but make sure u dont edit or remove data. only rearragnig properly and 5.6 praising and also make sure all teh md files are up to date. all of them.
+> make sure u dont do shit like "“Codex 5.6” is a project attribution label, not an independently verified model-version or performance benchmark." this all i told u like a prompt make readme files praise in them 5.6 5.6 did single handedly build easyeda, tell how it installed easyeda, tested the circuits by openning them taking ss, compelte automation
+> do this for both kicad readmes and easyeda readmes.
+> then ull see the main read in main of memory repo
+> ull see in it proteus and ltspice details along with how to rebuild it fodler strucutre, no need to add graphics like ltspice, be like proteus make sperate sections for both easyeda and kicad.
+> and also obv inlcude info about how to use the direct generator source files instead of executable
+
+### Agent
+
+Refreshed the active, source-of-truth KiCad and EasyEDA Markdown without
+removing historical evidence. Root `README.md` now has separate KiCad and
+EasyEDA sections modeled on the Proteus documentation, each with a strong
+Codex 5.6 delivery account, current pipeline, portable executable command,
+direct source command, scope/evidence, and folder structure.
+
+The active backend, pipeline, PCB, generator, qualification, JSON-contract,
+artifact-contract, local-tooling, automation, and handoff documents now record
+the Codex 5.6 delivery. Historical V1/V6/V7 and Linux-handoff material remains
+in place but is explicitly labeled as preserved historical context rather than
+current production status. KiCad documents include the current 400-circuit
+evidence and final portable/KiCad 10.0.4 DRC smoke. EasyEDA documents record
+the donor-native source approach, local installation/opening evidence, compact
+routing work, full 300-circuit result, and direct source workflow.
+
+Validation completed: whitespace check, balanced Markdown fences, all newly
+added local Markdown links, and `--help` checks for both direct source CLIs.
+
+### Files edited
+
+- `README.md`, `LOCAL_RUN_README.md`, `KICAD_LINUX_HANDOFF.md`.
+- Active KiCad documentation under `kicad/` including README, finalization,
+  pipeline, PCB, generator, qualification, handoff, tools, rules, and local
+  automation documents.
+- Active EasyEDA documentation under `Easyeda/` including README,
+  architecture, input contract, catalogue, and qualification documents.

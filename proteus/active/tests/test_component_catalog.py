@@ -97,6 +97,21 @@ def test_catalog_includes_more_than_two_pin_components() -> None:
     assert catalog.profile("POT-HG").normalize_pin("WIPER").name == "2"
 
 
+def test_nmosfet_catalogue_requires_active_staged_attachment_units() -> None:
+    geometry = load_component_catalog().profile("NMOSFET").proteus["pin_geometry"]
+
+    assert geometry["staged_contact_requires_active_attachment_unit"] is True
+    assert geometry["donor_terminalized_project"] == (
+        "evidence/donors/terminalized_catalogue_evidence/three_pin_transistor/"
+        "NMOSFET/NMOSFET_user_terminalized_july04.pdsprj"
+    )
+    assert {pin: geometry["pins"][pin]["component_link_trailer"] for pin in ("D", "G", "S")} == {
+        "D": "0200",
+        "G": "0200",
+        "S": "0200",
+    }
+
+
 def test_catalog_has_no_empty_alias_tokens() -> None:
     catalog = load_component_catalog()
 

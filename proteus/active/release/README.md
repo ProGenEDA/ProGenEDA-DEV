@@ -46,6 +46,12 @@ portable executable also uses a bounded temporary work-directory prefix, so a
 descriptive output filename cannot consume the Windows path budget before
 placement and terminalization begin.
 
+`NMOSFET` is included in this build's locked non-IC terminal route. Its
+donor-proven `DRAIN`/`SOURCE` right-side and `GATE` left-side attachment units
+passed the full staged loader proof, `1x`/`9x`/`15x` solo gates, a ratio mix,
+a heterogeneous non-IC mix, and a dense 15x stress mix. Every emitted NMOSFET
+terminal has a grid-aligned contact and a nonzero short WIRE to its exact pin.
+
 For a canonical placement control, optional `terminal_label_projection`
 metadata assigns source-circuit node names to the exposed terminals before
 they are serialized. This changes labels (for example `VIN`, `G0`, `VOUT`),
@@ -54,7 +60,7 @@ requests remain rejected until the shared Wire Maker is accepted.
 
 Build: 2026-07-18
 
-SHA-256: `AA69D0B8E13F7647906BA940EAB5982F6FFEF2AA55889F88AD6C30B88D2B80B9`
+SHA-256: `F278F4E6E1B4A2EA34309B30B6914F73331110CDBD7864806CCA2495F77776FB`
 
 ## Screenshot-proven gate bridge
 

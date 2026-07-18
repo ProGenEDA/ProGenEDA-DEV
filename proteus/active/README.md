@@ -108,6 +108,15 @@ uses the `BASE`/`COLLECTOR`/`EMITTER` catalogue pin model, grid-aligned contact,
 correct left/right orientation, and a nonzero direct WIRE to its exact pin.
 Evidence is in [`../experiments/runs/2026-07-18_pnp_terminal_promotion_matrix`](../experiments/runs/2026-07-18_pnp_terminal_promotion_matrix).
 
+`NMOSFET` is now locked through the same executable-owned non-IC route. Its
+authoritative donor established Drain/Source right-side terminals and a
+Gate left-side terminal; each uses a grid-aligned contact, correct orientation,
+and a nonzero short WIRE to its exact pin. Native-contact, grid-contact, and
+complete 1x diagnostic stages plus `1x`/`9x`/`15x` solos, an asymmetric ratio
+mix, a heterogeneous non-IC mix, and a dense `15x` NMOSFET/PNP/diode/resistor/
+capacitor mix all passed the two-open, 12-second local Proteus gate. Evidence
+is in [`../experiments/runs/2026-07-18_nmosfet_terminal_promotion_matrix`](../experiments/runs/2026-07-18_nmosfet_terminal_promotion_matrix).
+
 The executable also has a deliberately bounded gate bridge for one gate family
 per project. It uses the same placement-control JSON, current locked-mega
 component placer, shared catalogue terminalizer, and
