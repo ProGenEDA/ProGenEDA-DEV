@@ -307,6 +307,37 @@ def test_executable_rejects_unproven_mixed_gate_stream(tmp_path: Path) -> None:
         )
 
 
+def test_executable_accepts_one_gate_with_resistor_mixed_stream(tmp_path: Path) -> None:
+    result = generate_proteus_project(
+        {
+            "components": {"RESISTOR": 1, "74HC08": 1},
+            "layout": {"strategy": "beautify", "terminal_grid_alignment": True},
+        },
+        tmp_path / "resistor_74hc08_mixed_terminalized.pdsprj",
+    )
+
+    assert result.valid
+    assert result.terminal_report is not None
+    assert result.terminal_report["terminalized_component_count"] == 2
+    assert result.terminal_report["terminal_count_added"] == 14
+    assert result.terminal_report["wire_count_added"] == 14
+    assert all(
+        check["wire_is_nonzero"]
+        for check in result.terminal_report["wire_path_contact_checks"]
+    )
+
+
+def test_executable_rejects_unproven_gate_plus_cap_mix(tmp_path: Path) -> None:
+    with pytest.raises(ProteusApplicationError, match="plus RESISTOR"):
+        generate_proteus_project(
+            {
+                "components": {"CAP": 1, "74HC08": 1},
+                "layout": {"strategy": "beautify"},
+            },
+            tmp_path / "cap_74hc08_mixed_stream_must_not_emit.pdsprj",
+        )
+
+
 def test_executable_rejects_gate_scale_above_screenshot_proven_limit(
     tmp_path: Path,
 ) -> None:

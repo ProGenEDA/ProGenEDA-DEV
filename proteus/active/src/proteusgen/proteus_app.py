@@ -54,11 +54,17 @@ EXECUTABLE_GATE_TERMINAL_FAMILIES = frozenset(
         "74HC266",
     }
 )
+# Mixed gate evidence is deliberately narrower than solo gate evidence.  The
+# 2026-07-18 local Proteus matrix proves the conservative shared route for one
+# gate package family plus the frozen RESISTOR route, including a 74HC08 15x
+# scale run.  Other native/catalogue combinations remain rejected until they
+# have equivalent render evidence; a loader-only result is not enough.
+EXECUTABLE_GATE_MIXED_NATIVE_FAMILIES = frozenset({"RESISTOR"})
 EXECUTABLE_GATE_PACKAGE_LIMITS = {
     "74HC00": 8,
     "74HC02": 4,
     "74HC04": 10,
-    "74HC08": 10,
+    "74HC08": 15,
     "74HC32": 10,
     "74HC86": 10,
     "74HC266": 10,
@@ -171,12 +177,12 @@ def _unsupported_terminal_families(placement: RawPlacementResult) -> tuple[str, 
 
 
 def _reject_unproven_gate_mix(placement: RawPlacementResult) -> None:
-    """Keep the executable on screenshot-proven gate stream shapes.
+    """Keep executable gate mixes within their screenshot-proven boundary.
 
-    A single gate family can scale through the shared catalogue writer.  A
-    multi-family or gate-plus-non-gate catalogue stream can currently pass
-    static checks while Proteus silently drops component packets, so it must
-    fail clearly instead of producing a misleading project.
+    One gate family is proven both alone and with the frozen RESISTOR native
+    route.  Multi-gate streams and a gate combined with any other native or
+    catalogue family can still pass static checks while Proteus drops packets,
+    so they remain explicit errors rather than misleading projects.
     """
 
     selected_families = {
@@ -185,17 +191,25 @@ def _reject_unproven_gate_mix(placement: RawPlacementResult) -> None:
         if str(group.key) not in _PLACEMENT_INFRASTRUCTURE_KEYS
     }
     selected_gates = selected_families & EXECUTABLE_GATE_TERMINAL_FAMILIES
-    if selected_gates and (
-        len(selected_gates) != 1 or selected_families != selected_gates
-    ):
+    if selected_gates and len(selected_gates) != 1:
         raise ProteusApplicationError(
             "The current executable gate bridge supports one gate family per "
-            "project. Screenshot-backed Proteus tests proved the individual "
-            "family route, but mixed gate-family and gate-plus-other-family "
-            "streams can silently hide component packets. Split this trial "
-            "request by gate family until the donor-derived mixed stream "
-            "boundary is promoted."
+            "project. Mixed gate-family streams can silently hide component "
+            "packets, so split this request by gate family."
         )
+    if selected_gates:
+        other_families = selected_families - selected_gates
+        unsupported_mixed_families = (
+            other_families - EXECUTABLE_GATE_MIXED_NATIVE_FAMILIES
+        )
+        if unsupported_mixed_families:
+            raise ProteusApplicationError(
+                "The current executable mixed-gate route is proven only for "
+                "one gate family plus RESISTOR. These additional families are "
+                "not yet screenshot-proven in the conservative mixed stream: "
+                + ", ".join(sorted(unsupported_mixed_families))
+                + "."
+            )
     if selected_gates:
         family = next(iter(selected_gates))
         package_count = sum(
