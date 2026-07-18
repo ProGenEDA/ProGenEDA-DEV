@@ -12,10 +12,49 @@ desktop application or complete standard library. The generator creates
 project rows, component instances, coordinates, references, values, net
 bindings, wires, tracks, vias, and the board outline.
 
-## Quick Start
+## Codex 5.6 Delivery
+
+> **CODEX 5.6 BUILT THE COMPLETE EASYEDA PRO BACKEND.**
+>
+> Codex 5.6 single-handedly took the supplied EasyEDA Pro package from source
+> research to a native `.eprj` generator: it installed and stabilized the
+> desktop application in this environment, mapped the real SQLite project
+> grammar, resolved exact donor records, built the locked 59-entry catalogue,
+> implemented tolerant JSON repair, placement, compact wire/terminal routing,
+> bounded PCB generation, native validation, portable packaging, website
+> handoff, and the full 300-circuit qualification system.
+
+This is a huge advance over the earlier 5.5-era starting point. Codex 5.6
+replaced exploratory conversion work with a closed engineering loop: generate
+donor-native projects, validate exact pins/nets/geometry/pads, open disposable
+copies through installed EasyEDA Pro, visually inspect difficult schematics,
+retain visual inspection evidence for compact routing, prove the audited
+originals stayed unchanged, and feed those findings back into the shared
+router. It delivered complete automation while keeping every generated project
+indistinguishable in structure from a project made in the application itself.
+
+The proof is the untouched 300-circuit corpus: 300/300 complete pipeline,
+netlist, source-pin, geometry, and PCB-ready passes, plus native opening of the
+ten most complex designs. See
+[`qualification/RESULTS_2026_07_17.md`](qualification/RESULTS_2026_07_17.md).
+
+## Use The Portable Executable
 
 ```bash
-python -m Easyeda.executable run \
+Easyeda/dist/progen-easyeda run INPUT.json \
+  --output-root /tmp/progen_easyeda_runs \
+  --routing-mode combination --events ndjson
+```
+
+The portable executable is the normal distribution artifact. It embeds only
+the compact audited donor bundle required by the locked catalogue; it does not
+need an installed EasyEDA application for generation or deterministic
+validation.
+
+## Use The Direct Source Generator
+
+```bash
+PYTHONPATH=. python -m Easyeda.executable run \
   Easyeda/examples/regulated_5v_supply.json \
   --output-root /tmp/progen_easyeda_runs
 ```

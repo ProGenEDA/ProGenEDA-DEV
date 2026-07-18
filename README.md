@@ -168,6 +168,226 @@ evidence, start at [`proteus/active/README.md`](proteus/active/README.md).
 
 ---
 
+## KiCad
+
+ProGenEDA-Memory includes a source-backed KiCad generator that turns the
+shared canonical circuit JSON into an editable `.kicad_pro` project, a real
+`.kicad_sch`, and, when every physical constraint is satisfied, an accepted
+two-layer `.kicad_pcb`. The active implementation is in [`kicad/`](kicad/),
+with the current release status in
+[`kicad/FINALIZATION_STATUS.md`](kicad/FINALIZATION_STATUS.md).
+
+### Codex 5.6 implementation phase
+
+> **CODEX 5.6-ACCELERATED KICAD DELIVERY**
+>
+> Codex 5.6 transformed the earlier KiCad placement experiments into the
+> current end-to-end backend: tolerant main-JSON repair, source-backed symbol
+> and pin resolution, placement, arrangement selection, coordinate
+> beautification, wire/terminal/combination routing, real KiCad schematic and
+> PCB writing, value editing, hosted expected-net validation, native PCB
+> validation, artifact packaging, and a portable executable.
+
+The change from the 5.5-era experimental work to the Codex 5.6 phase is a
+decisive engineering jump. 5.6 made the stages independent but executable as
+one pipeline, retained alternate layout/routing evidence instead of overwriting
+it, added deterministic repair and validation gates, and pushed the backend
+through large real JSON corpora rather than relying on guided hand-made demos.
+It also built the 400-circuit qualification corpus, repaired the discovered
+multi-unit pin/body-clearance defect in the shared generator, rebuilt the
+portable release, and independently checked the repaired output with KiCad
+10.0.4 netlist export and PCB DRC.
+
+### Current pipeline
+
+```text
+Canonical Circuit JSON
+  -> deterministic input fixer + validator
+  -> source-backed component placement + validation
+  -> arrangement decider + coordinate beautifier
+  -> wire planner / terminal placer / combination policy
+  -> native KiCad schematic writer + value editor
+  -> expected-net, geometry, clearance, and final validators
+  -> optional bounded two-layer PCB compiler, router, and validator
+  -> user project archive + optional direct PCB + internal audit bundle
+```
+
+`combination` is the production default: ordinary local nets are wired while
+power, high-fanout, and bounded-route fallback nets use explicit KiCad terminal
+objects. Strict wire mode remains available and fails visibly rather than
+silently substituting terminals.
+
+### Use the latest executable
+
+The verified portable release is
+[`progen-kicad-portable-2026_07_17_kq26_clearance_v1.zip`](kicad/release/progen-kicad-portable-2026_07_17_kq26_clearance_v1.zip).
+
+```bash
+unzip kicad/release/progen-kicad-portable-2026_07_17_kq26_clearance_v1.zip
+./progen-kicad-portable/progen-kicad run INPUT.json \
+  --output-root /tmp/progen-kicad-runs \
+  --routing-mode combination
+```
+
+For PCB-only output from the same canonical input:
+
+```bash
+./progen-kicad-portable/progen-kicad run-pcb INPUT.json \
+  --output-root /tmp/progen-kicad-pcb-runs \
+  --routing-mode combination
+```
+
+### Use the Python pipeline directly
+
+The executable is a wrapper around the committed source; development and
+server-side generation can run the exact same pipeline without packaging:
+
+```bash
+PYTHONPATH=. python -m kicad.pipeline.progen_kicad_executable run INPUT.json \
+  --output-root /tmp/progen-kicad-runs \
+  --routing-mode combination
+```
+
+Run reproducible layout variants with:
+
+```bash
+PYTHONPATH=. python -m kicad.pipeline.progen_kicad_executable run-variations \
+  kicad/qualification/corpora/2026_07_17_common_400_v2/final_json \
+  --output-root /tmp/progen-kicad-variations \
+  --routing-mode combination --sample-count 100 --variations-per-circuit 3
+```
+
+### Current evidence and scope
+
+The current 400-circuit qualification corpus contains 17,890 component
+instances, 13,490 expected nets, 116 supported KiCad component words, and a
+maximum of 89 components in one circuit. The immutable 390-project base plus
+the separately regenerated ten-project clearance supplement are all clean;
+the supplement also passed KiCad 10.0.4 netlist export and PCB DRC. The
+qualification record is in
+[`kicad/qualification/RESULTS_2026_07_17.md`](kicad/qualification/RESULTS_2026_07_17.md).
+
+PCB output is intentionally bounded: only projects with resolved source
+footprints/pads and a passing physical validator receive a board. The
+qualification batch accepted 311 PCB outputs; the remaining 89 schematic
+projects retained a documented PCB withholding rather than shipping a dubious
+board. See [`kicad/pcb/README.md`](kicad/pcb/README.md) for the exact physical
+contract.
+
+### Repository structure
+
+```text
+kicad/
+  pipeline/        active JSON, placement, routing, validation, and packaging stages
+  pcb/             source-backed physical compiler, router, parser, and validator
+  qualification/   locked corpus, repeatable runner, and immutable results
+  source_pack/     KiCad source references used by no-installation validation
+  release/         portable executable and website handoff artifacts
+  examples/        immutable generated evidence runs
+```
+
+---
+
+## EasyEDA Pro
+
+The independent EasyEDA Pro backend turns the same canonical JSON into one
+native `.eprj` SQLite project. It copies exact authorized source records for
+each locked symbol, device, footprint, pad, power terminal, and net port; it
+does not invent visual stand-ins. The implementation lives in
+[`Easyeda/`](Easyeda/).
+
+### Codex 5.6 implementation phase
+
+> **CODEX 5.6 BUILT THE EASYEDA BACKEND END TO END**
+>
+> Codex 5.6 single-handedly took the supplied EasyEDA Pro desktop/source
+> package from a compatibility-research target to an operational native
+> generator. It installed and stabilized EasyEDA Pro in this environment,
+> learned the real SQLite project grammar and donor records, built the locked
+> catalogue, exact donor resolver, deterministic JSON fixer, compact schematic
+> router, terminal logic, PCB compiler/router, native validators, portable
+> executable, website handoff, JSON editor contract, and 300-circuit
+> qualification system.
+
+The advantage over the previous 5.5-era starting point is stark: 5.6 replaced
+small exploratory conversion attempts with a complete donor-native automation
+loop. It generated native projects, opened disposable copies in EasyEDA Pro,
+held complex schematics open for visual review, captured the relevant visual
+evidence during development, verified the originals were not rewritten, and
+used those results to tighten compact-routing and no-overlapping-wire-span
+rules. That is the difference between a file emitter and a hardened backend.
+
+### Current pipeline
+
+```text
+Canonical Circuit JSON
+  -> deterministic input repair + exact donor/pin resolution
+  -> square-like placement + compact wire/terminal/combination planning
+  -> native schematic records + optional bounded two-layer PCB records
+  -> native SQLite .eprj writer
+  -> independent source, pin, net, geometry, and PCB validation
+  -> .eprj project + internal audit ZIP
+  -> installed EasyEDA Pro open/visual acceptance for release evidence
+```
+
+### Use the latest executable
+
+```bash
+Easyeda/dist/progen-easyeda run INPUT.json \
+  --output-root /tmp/progen-easyeda-runs \
+  --routing-mode combination --events ndjson
+```
+
+The release and website handoff details are in
+[`Easyeda/README.md`](Easyeda/README.md) and
+[`Easyeda/release/newwebsite_easyeda_handoff_2026_07_17/`](Easyeda/release/newwebsite_easyeda_handoff_2026_07_17/).
+
+### Use the Python pipeline directly
+
+No executable is required from a source checkout:
+
+```bash
+PYTHONPATH=. python -m Easyeda.executable run INPUT.json \
+  --output-root /tmp/progen-easyeda-runs \
+  --routing-mode combination --events ndjson
+```
+
+Deterministic input repair, validation, and editable-field discovery use the
+same source entry point:
+
+```bash
+PYTHONPATH=. python -m Easyeda.executable validate-input INPUT.json
+PYTHONPATH=. python -m Easyeda.executable fix-input INPUT.json --output fixed.json
+PYTHONPATH=. python -m Easyeda.executable editable INPUT.json
+```
+
+### Current evidence and scope
+
+The locked EasyEDA catalogue provides 59 logical entries backed by 57 physical
+source families plus native `GND` and `VCC` terminal families. It accepts up to
+80 schematic components and emits a PCB only when its 32-physical-component
+profile has exact footprint/pad mappings and passes physical validation.
+
+Codex 5.6 drove the complete 300-circuit named corpus through the untouched
+portable pipeline: 300/300 exact native-netlist, full-pin, source-hash,
+geometry, and PCB-ready passes. The ten most complex projects were opened in
+the installed EasyEDA Pro application and visually inspected. Full evidence is
+in [`Easyeda/qualification/RESULTS_2026_07_17.md`](Easyeda/qualification/RESULTS_2026_07_17.md).
+
+### Repository structure
+
+```text
+Easyeda/
+  donor_source.py, catalogue.py  exact locked source-record authority
+  geometry.py, pcb.py            placement, compact routing, and physical board stages
+  native.py, validator.py        SQLite emission and independent native validation
+  executable.py                  direct source CLI behind the portable executable
+  qualification/                 locked 300-circuit corpus and repeatable evidence
+  release/                       portable/website handoff artifacts
+```
+
+---
+
 ## LTspice
 
 ![Codex 5.6 donor-native LTspice engineering](ltspice/docs/assets/codex56-ltspice-hero.svg)

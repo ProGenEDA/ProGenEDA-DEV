@@ -2,6 +2,22 @@
 
 Snapshot date: 2026-07-01
 
+## Current Codex 5.6 Status
+
+This file is an immutable 2026-07-01 migration snapshot. Its original details
+are retained below, including the then-open work list, but it is no longer the
+active KiCad status document. Codex 5.6 subsequently turned the migrated
+placer/router work into the current end-to-end KiCad backend: source-backed
+JSON repair, placement, arrangement, routing/terminals, native schematic and
+PCB output, validators, a portable executable, and large-corpus qualification.
+
+The difference from the 5.5-era snapshot is profound: the active path now runs
+as one deterministic command and has immutable 600-circuit historical evidence
+plus the current 400-circuit qualification and KiCad 10.0.4 release checks.
+Use [`kicad/FINALIZATION_STATUS.md`](kicad/FINALIZATION_STATUS.md) and
+[`kicad/README.md`](kicad/README.md) for current operation; use this document
+for its preserved migration record.
+
 Source repository:
 
 ```text

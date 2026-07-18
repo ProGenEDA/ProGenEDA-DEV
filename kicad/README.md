@@ -1,7 +1,54 @@
 # Progen KiCad Workspace
 
-This folder is separate from the Proteus generator internals but is callable from
-the same `proteusgen` CLI so the final `progen` executable can ship both flows.
+This is the active source-backed KiCad backend. It is separate from the Proteus
+binary generator and can run directly from source or through the portable
+`progen-kicad` executable.
+
+## Codex 5.6 active delivery
+
+> **CODEX 5.6 TURNED THE KICAD WORKSPACE INTO A COMPLETE BACKEND.**
+>
+> The Codex 5.6 phase took this folder beyond the early placer experiments and
+> built the active deterministic pipeline: tolerant main-JSON repair,
+> source-backed symbol/pin resolution, placement, arrangement, beautification,
+> wire/terminal/combination handling, native schematic writing, values,
+> expected-net validation, bounded PCB generation, packaging, executable
+> delivery, and corpus qualification.
+
+Compared with the 5.5-era incremental state, 5.6 delivered a dramatic jump in
+both scope and proof. It made the stages independently replaceable while also
+making them run as one production flow, retained every candidate variation and
+validator report, built the practical 400-circuit corpus, and repaired the
+multi-unit source-pin clearance issue through the shared generator rather than
+special-casing outputs. The finished portable was then checked through KiCad
+10.0.4 netlist export and DRC.
+
+The current evidence is the immutable 390-project qualification base plus a
+clean, separately regenerated ten-project KQ26 clearance supplement. Details
+are in [`qualification/RESULTS_2026_07_17.md`](qualification/RESULTS_2026_07_17.md).
+
+## Active production entry points
+
+Use the released portable:
+
+```bash
+unzip release/progen-kicad-portable-2026_07_17_kq26_clearance_v1.zip
+./progen-kicad-portable/progen-kicad run INPUT.json \
+  --output-root /tmp/progen-kicad-runs --routing-mode combination
+```
+
+Or use the exact committed generator source directly:
+
+```bash
+PYTHONPATH=. python -m kicad.pipeline.progen_kicad_executable run INPUT.json \
+  --output-root /tmp/progen-kicad-runs --routing-mode combination
+```
+
+`run-pcb` exposes only boards that independently pass the physical stage.
+`run-variations` creates retained deterministic arrangement variants. See
+[`pipeline/README.md`](pipeline/README.md) for all commands and
+[`FINALIZATION_STATUS.md`](FINALIZATION_STATUS.md) for the current support
+boundary.
 
 Current accepted schematic status, the first PCB target, and the complete
 cross-EDA/LTspice handoff are recorded in:
@@ -15,7 +62,7 @@ Historical note: later sections of this README preserve the early incremental
 placer-era record and may describe stages as placeholders. Use the two files
 above for the current accepted pipeline and next-step status.
 
-## Current V1 Mode
+## Historical V1 Mode And Shared CLI
 
 KiCad generation writes self-contained projects from
 `progen-kicad-circuit-ir/v1` JSON:
@@ -38,7 +85,7 @@ manifest.json
 
 Open the `.kicad_pro` file.
 
-## Incremental Pipeline Work
+## Historical Incremental Pipeline Work
 
 The new architecture is being added one proven slice at a time. The active
 slice is placer-only:

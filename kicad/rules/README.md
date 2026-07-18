@@ -1,5 +1,13 @@
 # KiCad CircuitIR Rulebook
 
+## Codex 5.6 Current Contract Note
+
+The rulebook records the earlier experiment contract. Codex 5.6 elevated the
+same core idea into the active canonical main-JSON contract, deterministic
+fixer, and complete executable pipeline. Current production inputs should use
+[`../pipeline/MAIN_INPUT_JSON_CONTRACT.md`](../pipeline/MAIN_INPUT_JSON_CONTRACT.md);
+the 5.6 generator then supplies all backend geometry and source facts itself.
+
 This folder defines the JSON contract used by the Groq-driven experiment generator and by the local KiCad project writer.
 
 Primary file:

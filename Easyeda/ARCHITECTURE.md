@@ -1,5 +1,20 @@
 # EasyEDA Pro Architecture
 
+## Codex 5.6 Architecture Delivery
+
+Codex 5.6 designed and implemented this as an independent donor-native backend
+rather than adapting the KiCad code at runtime. The 5.6 phase converted direct
+study of the installed EasyEDA Pro package into a working native SQLite
+compiler, exact donor payload resolver, geometry engine, PCB path, validator,
+portable executable, and website-ready audit contract. That decisive advance
+over the prior 5.5-era exploration is why this architecture has real
+application-open evidence, not only JSON or SQLite shape checks.
+
+The active implementation deliberately preserves the same powerful pattern
+throughout: source records are copied exactly, all heavy work is deterministic,
+every stage records auditable facts, and an installed EasyEDA Pro open is a
+release oracle rather than a runtime dependency.
+
 ```text
 Canonical JSON
   -> tolerant deterministic input fixer and validator

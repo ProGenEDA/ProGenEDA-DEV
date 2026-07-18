@@ -1,5 +1,14 @@
 # Input JSON Validator/Fixer
 
+## Codex 5.6 Deterministic Repair
+
+Codex 5.6 built this general repair layer so ordinary imperfect JSON can become
+a safe canonical circuit request without relying on an AI guess at generation
+time. The 5.6 improvement is substantial: every repair is recorded, every
+invented connectivity decision is visibly terminalized as `GUESS_TERMINAL_*`,
+and the same repaired contract reaches placement, routing, validation, PCB, and
+the portable executable.
+
 Canonical module:
 
 ```text

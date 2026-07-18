@@ -1,5 +1,13 @@
 # Main Input JSON Contract
 
+## Codex 5.6 Shared Contract
+
+Codex 5.6 locked this single canonical input boundary so one circuit intent can
+drive KiCad now and other EDA backends without extra user-side geometry,
+symbol, or pin data. This is a major 5.6 advance over fragile per-tool input
+shapes: backend-specific detail stays in audited catalogues while the user JSON
+remains deterministic, repairable, and ready for validation.
+
 This is the stable KiCad main input JSON contract for the generator. It is
 designed to become the EDA-neutral circuit JSON shape used by KiCad, Proteus,
 PSpice, Altium, and future backends.

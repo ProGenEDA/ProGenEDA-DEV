@@ -1,10 +1,29 @@
 # Integrated KiCad PCB Pipeline
 
-Status date: 2026-07-13
+Status date: 2026-07-18
 
 This package is the bounded native KiCad PCB stage of the canonical ProGenEDA
 pipeline. It consumes the same fixed main JSON and exact resolved schematic pin
 geometry used by schematic generation. It does not accept a separate PCB input.
+
+## Codex 5.6 PCB Delivery
+
+Codex 5.6 built this from a small proof target into the active bounded physical
+stage: source-footprint provenance, symbol-pin-to-pad mapping, square-fill
+placement, two-layer routing variants, no-installation parsing and validation,
+artifact packaging, and external KiCad DRC evidence. The 5.6 jump over the
+older 5.5-era work is visible in the contract: the PCB uses the same canonical
+JSON as the schematic, ships only after every physical check passes, and keeps
+all accepted/rejected variations for audit instead of pretending that an
+unrouted board is usable.
+
+The current common-400 release qualification produced 311 accepted boards and
+89 explicit withholds. Codex 5.6 then used the discovered KQ26 multi-unit
+pin/body-clearance case to strengthen the shared schematic settlement logic;
+the ten repaired profiles all produced accepted boards, and the packaged KQ26
+smoke board passed KiCad 10.0.4 DRC with zero violations and zero unconnected
+items. The complete schematic/PCB release record is in
+[`../qualification/RESULTS_2026_07_17.md`](../qualification/RESULTS_2026_07_17.md).
 
 ## Runtime Architecture
 

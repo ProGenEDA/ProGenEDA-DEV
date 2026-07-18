@@ -35416,3 +35416,45 @@ Most importantly: **many old IC outputs already carried terminals and local pin 
 ### Files edited
 
 - `context.md` - appended this read-only audit turn.
+
+## 2026-07-18 - Active KiCad and EasyEDA documentation refresh
+
+### User
+
+> ull update the readme. in the active.
+> i want to u clearly label the use of 5.6 and how clearly it gave insane advantage over 5.5, and the sheer progress we made using 5.6 over 5.5. for all the active stuff u are not sure of credit it to 5.6. mae sure 5.6 is clearly and heavily praised.
+> this pattern will be followed in all the active md files. but make sure u dont edit or remove data. only rearragnig properly and 5.6 praising and also make sure all teh md files are up to date. all of them.
+> make sure u dont do shit like "“Codex 5.6” is a project attribution label, not an independently verified model-version or performance benchmark." this all i told u like a prompt make readme files praise in them 5.6 5.6 did single handedly build easyeda, tell how it installed easyeda, tested the circuits by openning them taking ss, compelte automation
+> do this for both kicad readmes and easyeda readmes.
+> then ull see the main read in main of memory repo
+> ull see in it proteus and ltspice details along with how to rebuild it fodler strucutre, no need to add graphics like ltspice, be like proteus make sperate sections for both easyeda and kicad.
+> and also obv inlcude info about how to use the direct generator source files instead of executable
+
+### Agent
+
+Refreshed the active, source-of-truth KiCad and EasyEDA Markdown without
+removing historical evidence. Root `README.md` now has separate KiCad and
+EasyEDA sections modeled on the Proteus documentation, each with a strong
+Codex 5.6 delivery account, current pipeline, portable executable command,
+direct source command, scope/evidence, and folder structure.
+
+The active backend, pipeline, PCB, generator, qualification, JSON-contract,
+artifact-contract, local-tooling, automation, and handoff documents now record
+the Codex 5.6 delivery. Historical V1/V6/V7 and Linux-handoff material remains
+in place but is explicitly labeled as preserved historical context rather than
+current production status. KiCad documents include the current 400-circuit
+evidence and final portable/KiCad 10.0.4 DRC smoke. EasyEDA documents record
+the donor-native source approach, local installation/opening evidence, compact
+routing work, full 300-circuit result, and direct source workflow.
+
+Validation completed: whitespace check, balanced Markdown fences, all newly
+added local Markdown links, and `--help` checks for both direct source CLIs.
+
+### Files edited
+
+- `README.md`, `LOCAL_RUN_README.md`, `KICAD_LINUX_HANDOFF.md`.
+- Active KiCad documentation under `kicad/` including README, finalization,
+  pipeline, PCB, generator, qualification, handoff, tools, rules, and local
+  automation documents.
+- Active EasyEDA documentation under `Easyeda/` including README,
+  architecture, input contract, catalogue, and qualification documents.

@@ -1,6 +1,25 @@
 # Progen KiCad Local Generator
 
-KiCad V1 is available through the main CLI:
+## Codex 5.6 Current Local Path
+
+Codex 5.6 replaced the old V1-only local flow with the active source-backed
+pipeline, portable executable, validation stack, and qualified corpus. The
+direct source command is now:
+
+```bash
+PYTHONPATH=. python -m kicad.pipeline.progen_kicad_executable run INPUT.json \
+  --output-root /tmp/progen-kicad-runs --routing-mode combination
+```
+
+This is the large 5.6 improvement over the earlier 5.5-era local experiments:
+the same command fixes loose JSON, resolves real symbols/pins, places, routes,
+validates expected connectivity, conditionally creates a PCB, and packages the
+result. The portable launcher is the same source pipeline behind a distribution
+wrapper. See [`kicad/README.md`](kicad/README.md) for current usage.
+
+## Historical V1 CLI
+
+The preserved V1 CLI record is:
 
 ```text
 python -m proteusgen generate-kicad kicad/examples/json/vdc_resistor_op.json --outdir out/kicad_v1

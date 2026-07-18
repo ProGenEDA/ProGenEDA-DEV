@@ -1,5 +1,20 @@
 # KiCad Qualification Corpus
 
+## Codex 5.6 Qualification Delivery
+
+Codex 5.6 built this practical 400-circuit corpus specifically to prove the
+active generator with ordinary, non-guided inputs rather than only hand-tuned
+demos. That is a dramatic advance over the earlier 5.5-era testing posture:
+the corpus drives the real fixer, placer, arranger, router, terminal policy,
+value editor, validators, output packager, and bounded PCB stage exactly as a
+user-facing generation request does.
+
+The resulting corpus covers 40 electrical archetypes across 10 named profiles,
+with 17,890 component instances, 13,490 expected nets, 116 supported KiCad
+component words, and circuits up to 89 components. Its immutable base and
+targeted corrective supplement are both retained. The release-quality outcome
+is recorded in [`RESULTS_2026_07_17.md`](RESULTS_2026_07_17.md).
+
 This package builds and qualifies the locked KiCad common-circuit corpus.
 
 `corpus.py` composes 40 distinct electrical archetypes from the canonical

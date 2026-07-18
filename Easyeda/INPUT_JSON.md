@@ -1,5 +1,15 @@
 # EasyEDA Input JSON Contract
 
+## Codex 5.6 Locked Input Contract
+
+Codex 5.6 made this contract deliberately forgiving at the boundary and strict
+at generation: a user can provide ordinary aliases, loose component forms, or
+common JSON mistakes, while the deterministic fixer resolves exact donor pins,
+reports every repair, and terminalizes every unavoidable guess explicitly.
+That 5.6 design is a major improvement over fragile 5.5-era input handling:
+the same canonical JSON now drives source-native schematic generation, bounded
+PCB generation, validation, the portable executable, and the website JSON Lab.
+
 The executable accepts one JSON object. The stable sections are `project`,
 `routing`, `components`, and optional `nets`/`expected_netlist`. Normal
 generation always passes the input through the deterministic fixer first.

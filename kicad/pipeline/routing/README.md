@@ -1,5 +1,16 @@
 # KiCad Routing V2 Refactor
 
+## Codex 5.6 Routing Delivery
+
+Codex 5.6 built the active movement-first routing architecture described here:
+topology-aware placement variants, rotation-aware pin/keepout geometry,
+compact square-fill scoring, lane-aware rectilinear planning, strict
+component-contact protection, explicit terminal fallback, and validator-led
+selection. This is an immense step beyond 5.5-era isolated wire attempts
+because routing now participates in a complete executable, retains variants,
+and is judged by electrical and geometric proof rather than by a rendered line
+count.
+
 This folder implements the routing refactor extracted from
 `kicad/pipeline/ROUTING_REFACTOR_PLAN_SOURCE.md`.
 
@@ -15,8 +26,9 @@ This folder implements the routing refactor extracted from
 - `routing/python/routing_orchestrator.py` emits the v0.2 output contract:
   `coordinate_plan`, `routing_placement`, `wire_plan`,
   `arrangement_selection`, metrics, warnings, and `validation_report`.
-- The orchestrator tries a future `progen_routing_core` Rust module first and
-  falls back to Python `LiveRoutingState` plus the proven Python wire router.
+- The orchestrator tries the optional `progen_routing_core` Rust module first
+  and falls back to Python `LiveRoutingState` plus the proven Python wire
+  router when the Rust parity core declines a full-route request.
 - The Python fallback now implements the plan's placement engine behavior:
   weighted component graph, pivot selection, cluster-growth beam search,
   rotation-aware location scoring, Pareto pruning, bounded branch pruning,

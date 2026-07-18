@@ -1,5 +1,13 @@
 # Supported Component Baseline
 
+## Codex 5.6 Catalogue Delivery
+
+Codex 5.6 expanded the original practical baseline into the active
+source-backed catalogue and connected it to the input fixer, placer, pin
+resolver, validator, corpus, and release path. The resulting support boundary
+is explicit and upgradeable: new families enter through audited catalogue and
+source evidence, not a hidden one-off generator branch.
+
 Date locked: 2026-07-01
 
 This file records the current component-placer support baseline.
