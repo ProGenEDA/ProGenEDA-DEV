@@ -2327,6 +2327,7 @@ def attach_catalogue_pin_bidir_terminals_to_project(
     suffix_start: int = 0x7300,
     use_donor_terminal_labels: bool = True,
     allow_progressive_scaling: bool = False,
+    force_grid_contact_short_wires: bool | None = None,
     attachment_stage: str = "complete",
     terminal_label_overrides: Mapping[str, Mapping[str, str]] | None = None,
 ) -> dict[str, Any]:
@@ -2851,6 +2852,20 @@ def attach_catalogue_pin_bidir_terminals_to_project(
             profile,
         )
         planning_group = replace(group, data=planning_data)
+        # The default leaves all established family profiles unchanged.  A
+        # newly audited profile may opt into an outward grid contact when its
+        # native donor uses a zero-length WIRE but the current executable
+        # contract requires a nonzero terminal-to-pin segment.  The override
+        # exists for an explicit staged experiment; production callers should
+        # normally take the catalogue-owned value.
+        profile_force_grid_contact_short_wires = bool(
+            geometry.get("force_grid_contact_short_wires", False)
+        )
+        effective_force_grid_contact_short_wires = (
+            profile_force_grid_contact_short_wires
+            if force_grid_contact_short_wires is None
+            else bool(force_grid_contact_short_wires)
+        )
         plan = plan_catalogue_pin_bidir_terminals(
             [planning_group],
             catalog=catalog,
@@ -2859,6 +2874,7 @@ def attach_catalogue_pin_bidir_terminals_to_project(
             terminal_contact_mode=(
                 active_attachment_contact_mode or "grid_contact"
             ),
+            force_grid_contact_short_wires=effective_force_grid_contact_short_wires,
         )
         if not plan["valid"]:
             raise ValueError(
@@ -3537,6 +3553,7 @@ def attach_catalogue_pin_bidir_terminals_to_project(
             )
         ),
         "progressive_scaling_enabled": allow_progressive_scaling,
+        "force_grid_contact_short_wires": force_grid_contact_short_wires,
         "runtime_circuit_donor_dependency": False,
         "component_coordinate_mutation": False,
         "terminal_record_encoder": "embedded_proteus_813_schema",
@@ -4192,6 +4209,28 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                 "Requested catalogue terminal families are absent from selected "
                 f"groups: {missing_catalogue}."
             )
+    # A profile that has been independently promoted to the nonzero grid route
+    # owns that safety requirement even in the conservative mixed writer.  The
+    # NPN/PNP donor grammar has no valid detached-terminal state: its terminal,
+    # active pin link, and short WIRE form one attachment unit.  Scope this
+    # escalation to a mix that actually contains an explicitly donor-backed
+    # profile; frozen R/C-only routes remain unchanged.
+    profile_forced_grid_families = tuple(
+        family
+        for family in requested_catalogue
+        if (
+            (profile := catalog.get_profile(family)) is not None
+            and isinstance(profile.proteus, Mapping)
+            and isinstance(profile.proteus.get("pin_geometry"), Mapping)
+            and bool(
+                profile.proteus["pin_geometry"].get(
+                    "force_grid_contact_short_wires", False
+                )
+            )
+        )
+    )
+    if profile_forced_grid_families:
+        force_grid_contact_short_wires = True
     terminal_leading_catalogue_families = {
         family
         for family in requested_catalogue
@@ -4315,6 +4354,7 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
     catalogue_attachment_records: list[bytes] = []
     catalogue_attachment_groups: list[tuple[int, int, list[bytes]]] = []
     catalogue_attachment_zone_by_group_index: dict[int, str] = {}
+    catalogue_tail_insertion_by_group_index: dict[int, str] = {}
     catalogue_local_attachment_by_group_id: dict[int, tuple[bytes, ...]] = {}
     catalogue_leading_by_group_id: dict[int, tuple[bytes, ...]] = {}
     catalogue_leading_finalizers: set[str] = set()
@@ -4978,6 +5018,18 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                         f"{family} {key}."
                     )
                 catalogue_attachment_zone_by_group_index[group_index] = zone_name
+                tail_insertion = str(
+                    geometry.get("totalmix_tail_insertion", "zone_default")
+                )
+                if tail_insertion not in {
+                    "zone_default",
+                    "after_component_stream",
+                }:
+                    raise ValueError(
+                        f"{family} {key} uses unsupported totalmix tail insertion "
+                        f"policy {tail_insertion!r}."
+                    )
+                catalogue_tail_insertion_by_group_index[group_index] = tail_insertion
             if mixed_tail_finalizer is not None:
                 mixed_tail_finalizer_overrides.add(mixed_tail_finalizer)
         if combined_parent is None:
@@ -5107,47 +5159,81 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
             entries = sorted(grouped_tail_entries[zone_name])
             if not entries:
                 continue
-            source_indices = [group_index for _rank, group_index, _units in entries]
-            preferred_boundary_families = {
-                str(item) for item in zone["insert_before_first_of"]
-            }
-            preferred_insertion_index = next(
-                (
-                    index
-                    for index, group in enumerate(ordered_groups)
-                    if _group_family(group) in preferred_boundary_families
-                ),
-                None,
-            )
-            if (
-                preferred_insertion_index is not None
-                and all(index < preferred_insertion_index for index in source_indices)
-            ):
-                insertion_index = preferred_insertion_index
-                placement = "donor_boundary"
-            else:
-                insertion_index = max(source_indices) + 1
-                placement = "after_last_source_component"
-            zone_records = [
-                record
-                for _rank, _group_index, units in entries
-                for record in units
+            end_stream_entries = [
+                entry
+                for entry in entries
+                if catalogue_tail_insertion_by_group_index.get(entry[1])
+                == "after_component_stream"
             ]
-            tail_attachment_records_before_group.setdefault(
-                insertion_index,
-                [],
-            ).extend(zone_records)
-            tail_attachment_zone_rows.append(
-                {
-                    "zone": zone_name,
-                    "source_component_indexes": source_indices,
-                    "preferred_insertion_index": preferred_insertion_index,
-                    "insertion_index": insertion_index,
-                    "placement": placement,
-                    "record_count": len(zone_records),
+            zone_entries = [entry for entry in entries if entry not in end_stream_entries]
+            if zone_entries:
+                source_indices = [
+                    group_index for _rank, group_index, _units in zone_entries
+                ]
+                preferred_boundary_families = {
+                    str(item) for item in zone["insert_before_first_of"]
                 }
-            )
-            planned_tail_record_count += len(zone_records)
+                preferred_insertion_index = next(
+                    (
+                        index
+                        for index, group in enumerate(ordered_groups)
+                        if _group_family(group) in preferred_boundary_families
+                    ),
+                    None,
+                )
+                if (
+                    preferred_insertion_index is not None
+                    and all(index < preferred_insertion_index for index in source_indices)
+                ):
+                    insertion_index = preferred_insertion_index
+                    placement = "donor_boundary"
+                else:
+                    insertion_index = max(source_indices) + 1
+                    placement = "after_last_source_component"
+                zone_records = [
+                    record
+                    for _rank, _group_index, units in zone_entries
+                    for record in units
+                ]
+                tail_attachment_records_before_group.setdefault(
+                    insertion_index,
+                    [],
+                ).extend(zone_records)
+                tail_attachment_zone_rows.append(
+                    {
+                        "zone": zone_name,
+                        "source_component_indexes": source_indices,
+                        "preferred_insertion_index": preferred_insertion_index,
+                        "insertion_index": insertion_index,
+                        "placement": placement,
+                        "record_count": len(zone_records),
+                    }
+                )
+                planned_tail_record_count += len(zone_records)
+            if end_stream_entries:
+                source_indices = [
+                    group_index for _rank, group_index, _units in end_stream_entries
+                ]
+                zone_records = [
+                    record
+                    for _rank, _group_index, units in end_stream_entries
+                    for record in units
+                ]
+                tail_attachment_records_before_group.setdefault(
+                    len(ordered_groups),
+                    [],
+                ).extend(zone_records)
+                tail_attachment_zone_rows.append(
+                    {
+                        "zone": zone_name,
+                        "source_component_indexes": source_indices,
+                        "preferred_insertion_index": None,
+                        "insertion_index": len(ordered_groups),
+                        "placement": "after_component_stream",
+                        "record_count": len(zone_records),
+                    }
+                )
+                planned_tail_record_count += len(zone_records)
         if planned_tail_record_count != len(catalogue_attachment_records):
             raise ValueError(
                 "totalmix_combined_v1 tail-zone planning did not account for "
@@ -5393,10 +5479,29 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                 "totalmix_combined_v1 did not emit every planned tail attachment "
                 "record."
             )
-        object_stream_finalizer = str(
-            combined_stream_profile.get(
-                "fallback_object_stream_finalizer",
-                "single_ff",
+        # NPN's accepted non-IC donor proves its own end-of-stream tail and
+        # one explicit final FF.  Do not let that new tail fact rewrite an
+        # established combined stream containing inline/local IC or display
+        # attachment blocks: those families retain the frozen totalmix
+        # fallback until they receive their own loader-gated evidence.
+        isolated_tail_finalizer = (
+            not catalogue_local_attachment_by_group_id
+            and not catalogue_leading_by_group_id
+        )
+        if isolated_tail_finalizer and len(mixed_tail_finalizer_overrides) > 1:
+            raise ValueError(
+                "totalmix_combined_v1 received incompatible donor-proven tail "
+                "finalizers: "
+                f"{sorted(mixed_tail_finalizer_overrides)}."
+            )
+        object_stream_finalizer = (
+            next(iter(mixed_tail_finalizer_overrides))
+            if isolated_tail_finalizer and mixed_tail_finalizer_overrides
+            else str(
+                combined_stream_profile.get(
+                    "fallback_object_stream_finalizer",
+                    "single_ff",
+                )
             )
         )
         if object_stream_finalizer == "single_ff":
@@ -5626,6 +5731,7 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
             else "accepted_mixed_donor_terminal_contact_coordinates"
         ),
         "force_grid_contact_short_wires": force_grid_contact_short_wires,
+        "profile_forced_grid_families": list(profile_forced_grid_families),
         "native_wire_path_contacts_valid": all(
             row.get("terminal_to_wire", False)
             and row.get("wire_to_pin", False)

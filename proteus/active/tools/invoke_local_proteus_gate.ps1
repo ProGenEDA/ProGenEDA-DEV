@@ -5,7 +5,8 @@ param(
     [string]$GateCopy,
     [string]$ProteusExe = "C:\Program Files (x86)\Labcenter Electronics\Proteus 8 Professional\BIN\PDS.EXE",
     [ValidateRange(12, 120)]
-    [int]$WaitSeconds = 12
+    [int]$WaitSeconds = 12,
+    [string]$ScreenshotDirectory
 )
 
 Set-StrictMode -Version Latest
@@ -27,6 +28,15 @@ if ([string]::IsNullOrWhiteSpace($GateCopy)) {
 $gate = [IO.Path]::GetFullPath($GateCopy)
 New-Item -ItemType Directory -Force -Path (Split-Path -Parent $gate) | Out-Null
 Copy-Item -LiteralPath $source -Destination $gate -Force
+
+$screenshotRoot = $null
+if (-not [string]::IsNullOrWhiteSpace($ScreenshotDirectory)) {
+    $screenshotRoot = [IO.Path]::GetFullPath($ScreenshotDirectory)
+    New-Item -ItemType Directory -Force -Path $screenshotRoot | Out-Null
+    Add-Type -AssemblyName System.Drawing
+    Add-Type -AssemblyName System.Windows.Forms
+    Add-Type -AssemblyName Microsoft.VisualBasic
+}
 
 Add-Type -TypeDefinition @'
 using System;
@@ -96,8 +106,41 @@ $beforeHash = (Get-FileHash -LiteralPath $gate -Algorithm SHA256).Hash
 $projectStem = [IO.Path]::GetFileNameWithoutExtension($gate)
 $errorPattern = "(?i)Bad Object Record|Fatal Error|LXLCORE|not in library|used but not in library"
 
+function Save-ProgenScreenshot([Diagnostics.Process]$Process, [string]$Phase) {
+    if ($null -eq $screenshotRoot) {
+        return $null
+    }
+
+    try {
+        [Microsoft.VisualBasic.Interaction]::AppActivate($Process.Id) | Out-Null
+    }
+    catch {
+        # The window audit remains authoritative when foreground activation is unavailable.
+    }
+    Start-Sleep -Milliseconds 750
+
+    $bounds = [System.Windows.Forms.SystemInformation]::VirtualScreen
+    $bitmap = New-Object System.Drawing.Bitmap $bounds.Width, $bounds.Height
+    $graphics = [System.Drawing.Graphics]::FromImage($bitmap)
+    $path = Join-Path $screenshotRoot ("{0}_{1}.png" -f $projectStem, $Phase)
+    try {
+        $graphics.CopyFromScreen($bounds.Location, [System.Drawing.Point]::Empty, $bounds.Size)
+        $bitmap.Save($path, [System.Drawing.Imaging.ImageFormat]::Png)
+    }
+    finally {
+        $graphics.Dispose()
+        $bitmap.Dispose()
+    }
+    return $path
+}
+
 function Invoke-ColdOpen([string]$Phase) {
-    $process = Start-Process -FilePath $ProteusExe -ArgumentList @($gate) -WindowStyle Hidden -PassThru
+    $process = if ($null -eq $screenshotRoot) {
+        Start-Process -FilePath $ProteusExe -ArgumentList @($gate) -WindowStyle Hidden -PassThru
+    }
+    else {
+        Start-Process -FilePath $ProteusExe -ArgumentList @($gate) -WindowStyle Normal -PassThru
+    }
     try {
         Start-Sleep -Seconds $WaitSeconds
         $alive = -not $process.HasExited
@@ -108,12 +151,14 @@ function Invoke-ColdOpen([string]$Phase) {
             @("PROCESS_EXITED")
         }
         $windowText = $windows -join "`n"
+        $screenshot = if ($alive) { Save-ProgenScreenshot $process $Phase } else { $null }
         return [PSCustomObject]@{
             phase = $Phase
             process_id = $process.Id
             alive_after_wait = $alive
             schematic_title_seen = $windowText -match [regex]::Escape($projectStem)
             error_dialog_text_seen = $windowText -match $errorPattern
+            screenshot = $screenshot
             matching_windows = @($windows | Where-Object { $_ -match [regex]::Escape($projectStem) })
             windows = $windows
         }

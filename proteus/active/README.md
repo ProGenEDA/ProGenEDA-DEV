@@ -6,7 +6,7 @@
 > validation through sub-agent-assisted workflows, added the value/properties
 > editor and portable executable, and consolidated this active documentation.
 
-Updated: 2026-07-16
+Updated: 2026-07-18
 
 This is the current entry point for the native Proteus backend. It contains
 the operational package, runtime donor closure, tests, schema, examples,
@@ -59,9 +59,9 @@ powershell -ExecutionPolicy Bypass -File proteus/active/tools/invoke_local_prote
 ```
 
 It refuses to run while a user-owned Proteus process is open, launches only a
-copy with a hidden window, checks loader-dialog text after the required
-12-second stability wait, cold-reopens it, and checks that the copy was not
-mutated.
+disposable copy, checks loader-dialog text after the required 12-second
+stability wait, cold-reopens it, and checks that the copy was not mutated. Pass
+`-ScreenshotDirectory out/screenshots` to keep visual evidence from both opens.
 
 ## Active donor and catalogue policy
 
@@ -91,8 +91,61 @@ variants, the four source families, `FUSE`, and `SWITCH`. The historical
 trusted terminal checkpoint is `RESISTOR/v3` (`a6deb648`). Subsequent families
 must be treated as evidence-backed candidates until separately accepted through
 the Proteus open/render gate. `FUSE` and `SWITCH` remain blocked from the
-combined total-mix terminal path. Multi-pin IC/display/transistor terminal
-claims are not promoted by this README.
+combined total-mix terminal path.
+
+`NPN` is now separately locked for the executable's non-IC terminal route:
+fresh `1x`, `9x`, and `15x` solos; asymmetric native mixes; a mix with the
+current non-IC catalogue routes; and a `15x` NPN/diode/resistor/capacitor
+stress mix all passed two local 12-second cold opens with screenshots. The
+route emits grid-aligned terminal contacts and nonzero short WIREs. Evidence is
+in [`../experiments/runs/2026-07-18_npn_terminal_promotion_matrix_v2`](../experiments/runs/2026-07-18_npn_terminal_promotion_matrix_v2).
+
+`PNP` is now locked through the same executable-owned non-IC route. Donor-first
+stages, `1x`/`9x`/`15x` solos, asymmetric and heterogeneous mixes, and the
+latest executable's `15x` PNP/diode/resistor/capacitor stress mix passed the
+two-open, 12-second local Proteus gate with screenshots. Every PNP terminal
+uses the `BASE`/`COLLECTOR`/`EMITTER` catalogue pin model, grid-aligned contact,
+correct left/right orientation, and a nonzero direct WIRE to its exact pin.
+Evidence is in [`../experiments/runs/2026-07-18_pnp_terminal_promotion_matrix`](../experiments/runs/2026-07-18_pnp_terminal_promotion_matrix).
+
+`NMOSFET` is now locked through the same executable-owned non-IC route. Its
+authoritative donor established Drain/Source right-side terminals and a
+Gate left-side terminal; each uses a grid-aligned contact, correct orientation,
+and a nonzero short WIRE to its exact pin. Native-contact, grid-contact, and
+complete 1x diagnostic stages plus `1x`/`9x`/`15x` solos, an asymmetric ratio
+mix, a heterogeneous non-IC mix, and a dense `15x` NMOSFET/PNP/diode/resistor/
+capacitor mix all passed the two-open, 12-second local Proteus gate. Evidence
+is in [`../experiments/runs/2026-07-18_nmosfet_terminal_promotion_matrix`](../experiments/runs/2026-07-18_nmosfet_terminal_promotion_matrix).
+
+`2N3904` is now enabled in the executable through the shared catalogue route.
+Its accepted combined donor proved that the `EMITTER`/`COLLECTOR`/`BASE`
+attachment tail must follow the full placed component stream, rather than be
+inserted directly after Q65 when later diode packets exist. Fresh staged 1x,
+9x, and 15x solos; an asymmetric native ratio mix; a heterogeneous non-IC
+mix; and a dense 15-per-family mixed project all passed the two-open,
+12-second local Proteus gate with nonzero grid-attached terminal WIREs. The
+route remains pending user visual review; evidence is in
+[`../experiments/runs/2026-07-18_2n3904_terminal_promotion_matrix`](../experiments/runs/2026-07-18_2n3904_terminal_promotion_matrix).
+
+`2N4401` is now enabled through the same shared catalogue route. Its accepted
+mixed donor independently proves the `COLLECTOR`/`EMITTER`/`BASE` tail must
+follow the full placed component stream. The staged 1x proof, 9x and 15x
+solos, five additive mixed boundaries, an asymmetric ratio, a heterogeneous
+24-component mix, and a dense 15-per-family mixed project all passed the
+two-open, 12-second local Proteus gate with grid-aligned, nonzero terminal
+WIREs. The route remains pending user visual review; evidence is in
+[`../experiments/runs/2026-07-18_2n4401_terminal_promotion_matrix`](../experiments/runs/2026-07-18_2n4401_terminal_promotion_matrix).
+
+The executable also has a deliberately bounded gate bridge for one gate family
+per project. It uses the same placement-control JSON, current locked-mega
+component placer, shared catalogue terminalizer, and
+`terminal_label_projection`. Screenshot-backed package ceilings are:
+`74HC00` 8, `74HC02` 4, and `74HC04`, `74HC08`, `74HC32`, `74HC86`, and
+`74HC266` 10 each. Mixed gate families and gate-plus-other-family requests are
+rejected because local screenshots proved that their current stream can open
+while silently hiding component packets. Other multi-pin IC/display/transistor
+terminal claims are not promoted by this README; the NPN and PNP non-IC routes
+above are the documented exceptions.
 
 Canonical PDF placement controls may supply an optional
 `terminal_label_projection`.  The current executable carries those logical node

@@ -35181,6 +35181,96 @@ Visible assistant responses (verbatim):
 
 > I’ll audit the web repository and trace every Proteus-facing path—generation API, supported-components UI, packaging, and the 200-circuit corpus—before building a self-contained executable bundle. I’ll keep the current Proteus backend as the source of truth and validate all 200 generated outputs without launching Proteus windows.
 
+> The repository is large enough that the initial checkout timed out before files arrived. I’ve resumed it as a shallow fetch so I can inspect the real implementation without pulling its full history.
+
+> The fetch continued in Git’s child process after the command window timed out; it is still actively downloading, so I’m letting that single safe checkout finish rather than creating a competing clone.
+
+> The full fetch has stopped making progress, so I’m ending only its verified clone processes and switching to a sparse, blob-free checkout. That gives me the complete repository tree first, then I’ll materialize only the website implementation files needed for the Proteus integration.
+
+
+## 2026-07-18 — Continue NMOSFET terminalization checkpoint
+
+### User
+
+> continue
+
+### Agent
+
+I resumed from the completed PNP validation checkpoint and checked the current
+feature-branch checkpoint before continuing. The normal GitHub remote probe was
+temporarily unreachable from this machine, but the local branch still tracks
+the previously verified matching remote checkpoint; no remote history was
+rewritten.
+
+For NMOSFET, I audited the complete authoritative user terminalized donor,
+corrected only NMOSFET's stale donor reference and its explicit requirement that
+even diagnostic stages contain a complete active terminal/link/WIRE unit, and
+left frozen two-pin, 2N7000, BS170, NPN, and PNP behavior unchanged. I then
+ran the required native-contact, grid-contact, and complete 1× loader stages;
+the rebuilt executable's 1×/9×/15× solos; and ratio, heterogeneous, and dense
+15× mixed projects. All static reports were valid except the intentionally
+off-grid native-contact diagnostic, and every candidate passed two delayed
+local Proteus cold opens with screenshots. The 15× screenshot visibly shows
+several NMOSFETs with three grid-aligned, short-wired terminals; the static
+report accounts for all 15 NMOSFETs (45 terminals and 45 nonzero WIREs).
+
+I am documenting the matrix, updating the active executable hash, and creating
+the scoped Git checkpoint before selecting the next non-IC family.
+
+### Files edited
+
+- `proteus/active/knowledge/component_catalog_v0.json`
+- `proteus/active/tests/test_component_catalog.py`
+- `proteus/active/knowledge/nmosfet_terminal_promotion_preflight_2026_07_18.md`
+- `proteus/active/README.md`
+- `proteus/active/release/README.md`
+- `proteus/active/release/ProgenProteus.exe`
+- `proteus/experiments/runs/2026-07-18_nmosfet_terminal_promotion_matrix/`
+- `context.md`
+
+### Visible agent updates (verbatim)
+
+> I’m finishing the NMOSFET promotion checkpoint now: documenting the completed loader-gated 1×/9×/15× and mixed matrix, then I’ll commit and push only those scoped changes before starting the next non-IC family.
+
+> The NMOSFET 15× gate screenshot is genuinely useful: Proteus opened cleanly and visibly shows multiple NMOSFETs with all three grid-aligned, short-wired terminals. The static report accounts for all 15 devices (45 terminals and 45 nonzero wires); the screenshot is not being used to overclaim a full-canvas visual review.
+
+> I caught one test invocation using the wrong import path; that is an environment setup error, not a route failure. I’m rerunning it with the active source path explicitly set, then rebuilding the release so its embedded catalogue exactly matches this checkpoint.
+
+> The rebuilt executable’s fresh 1× NMOSFET output is static-valid (3 terminals, 3 nonzero wires, grid and link checks true) and passed its two 12-second cold opens. I’m capturing the same gate with persistent screenshots now, then I’ll finalize the exact release hash and commit.
+
+> The only validation warning is pre-existing conflict-marker text in the user-maintained `context.md`; I will preserve it rather than discard history. The scoped Proteus files are otherwise being checked independently, and the new release screenshots are saved.
+
+### Final validation additions
+
+- The exact rebuilt executable generated
+  `S01_complete_1x/EXE_S01_NMOSFET_1X_RELEASE_FINAL_sa.pdsprj` with three
+  active, grid-aligned terminal/WIRE units.
+- Its disposable screenshot gate passed two 12-second cold opens without a
+  loader dialog; both screenshots and the unchanged-gate hash are retained in
+  `S01_complete_1x/screenshots/release_final/`.
+- The final release SHA-256 is
+  `F278F4E6E1B4A2EA34309B30B6914F73331110CDBD7864806CCA2495F77776FB`.
+
+> I found the reason `context.md` cannot yet be committed: it was already an unresolved Git merge (`UU`) with preserved conflict blocks before this checkpoint. I won’t discard any history; I’m going to resolve it by retaining both log branches and the new NMOSFET entry, then include that clean append-only log in the scoped commit.
+
+### Context merge resolution
+
+The existing `HEAD` and `origin/main` append-only log sections were both kept.
+Only Git conflict-marker lines were removed, so no recorded user or agent
+content was discarded. The file now has no unresolved merge markers and can be
+included in the NMOSFET checkpoint.
+
+### Checkpoint isolation
+
+> Git confirms the existing repository is mid-merge, which forbids any partial commit. I’m preserving that merge and its unrelated staged work untouched; I’ll create a detached clean checkpoint worktree from the verified base, copy only this NMOSFET scope into it, commit/push that exact scope, and leave the user’s live merge state intact.
+
+> The repository already had a large unrelated staged backlog. I verified the NMOSFET path list separately and will use Git’s path-limited commit mode, so the checkpoint cannot absorb any EasyEDA, KiCad, or unrelated Proteus work.
+
+The isolated worktree starts from `fa81804d3` (`Lock PNP terminal route`). It
+contains only the NMOSFET catalogue correction, shared-route evidence,
+documentation, executable, test, and merged append-only context log. The live
+repository's in-progress merge and staged third-party/backend work remains
+untouched.
 > The checked-out website confirms the gap: Proteus already has a registry and supported-components UI data, while the API only has executable integration services for KiCad, LTspice, and EasyEDA. I’m now tracing those three existing integrations to add Proteus with the same contract, rather than inventing a parallel interface.
 
 > The runtime contract is now clear: the portable executable accepts a placement-control JSON, preserves named terminal projections, and refuses to pretend it can emit physical nets. I’ll integrate that exact contract into the website—terminalized where the shared route is proven, explicitly placed-only for any remaining catalogue family—rather than letting the UI promise wiring the executable does not yet provide.
@@ -35189,11 +35279,123 @@ Visible assistant responses (verbatim):
 
 > The registry contract and the real executable smoke test both pass: the API adapter generated a non-empty `.pdsprj`, validated its native members, and confirmed two terminalized components—without opening Proteus. I’m starting the full 200-control static run now; it uses the same adapter and writes a hash-backed report into the shipped corpus.
 
+> The 200-run is taking longer than the small smoke test because each entry performs the full placement and shared-terminal serialization, then a separate static container inspection. I’m letting it complete rather than reducing the test set; the report must cover every named control.
+
 > All 200 named circuits have now passed the executable’s static generation and native-container checks. The shipped report records every output hash and explicitly records `open_test: not-run-by-user-direction`; no Proteus window was launched.
 
 > The website now builds and lints cleanly. The release ZIP has been created (417 tracked integration assets, including the executable, both 200-file JSON sets, the static validation report, API/UI wiring, and reproducible tests); I’m performing the final archive and Git-state audit now.
 
 > The final package has passed lint and a production frontend build. It contains 200 source JSONs, 200 controls, the portable executable, a complete static-validation report, and the actual API/UI integration—not a separate demo path.
+
+---
+
+## 2026-07-17 21:26:07 +05:00 — User
+
+continue
+
+## 2026-07-17 21:26:07 +05:00 — Agent
+
+I’m finishing the bounded gate bridge now: documenting the screenshot-verified results, updating the executable release notes, then committing and pushing the isolated change.
+
+### Files edited
+
+- `proteus/active/release/README.md`
+- `proteus/experiments/runs/2026-07-17_executable_gate_overlay_trial/README.md`
+
+---
+
+## 2026-07-17 23:17:47 +05:00 — User
+
+then go ahead prove it test it
+
+## 2026-07-17 23:17:47 +05:00 — Agent
+
+Tested the actual portable executable with a controlled combined request containing `74HC08`, `RESISTOR`, `CAP`, and `OPAMP`. It returned exit code 2, emitted no project, and explicitly rejected the gate-plus-other-family request. This is the intended current boundary, supported by the prior screenshot-backed unguarded mixed probe where a project could cold-open while silently rendering only a subset of gate packets. Individual gates therefore remain proven; arbitrary combined gate streams are not currently supported or claimed.
+
+### Files added or updated
+
+- `proteus/experiments/runs/2026-07-17_executable_gate_overlay_trial/current_app_gate_bridge/mixed_gate_non_gate_rejection_probe.json`
+- `proteus/experiments/runs/2026-07-17_executable_gate_overlay_trial/current_app_gate_bridge/mixed_gate_non_gate_rejection_probe.result.json`
+- `proteus/experiments/runs/2026-07-17_executable_gate_overlay_trial/README.md`
+- `proteus/active/src/proteusgen/proteus_app.py`
+- `proteus/active/tests/test_proteus_app.py`
+- `proteus/active/tools/invoke_local_proteus_gate.ps1`
+- `proteus/active/knowledge/catalogue_only_gate_totalmix_probe_2026_07_17.md`
+- `proteus/active/release/ProgenProteus.exe`
+
+---
+
+## 2026-07-17 21:59:26 +05:00 — User
+
+no json generated circuits
+10 most impressive circuits. move them into one folder and give em location of that folder
+
+## 2026-07-17 21:59:26 +05:00 — Agent
+
+Moved the ten highest-complexity generated Proteus projects, with their generated inspection reports, from the 200-circuit output directory into one ranked folder. These are `.pdsprj` projects, not JSON specifications.
+
+### Files moved
+
+- `proteus/experiments/runs/2026-07-17_pdf_200_circuit_placement_controls/generated_projects/circuit_{073,108,139,155,156,171,173,180,193,196}.pdsprj`
+- matching `.pdsprj.progen_report.json` files
+
+### Destination
+
+- `proteus/experiments/runs/2026-07-17_pdf_200_circuit_placement_controls/10_most_impressive_generated_circuits/`
+
+---
+
+## 2026-07-17 22:07:23 +05:00 — User
+
+bro tf what the actual fk
+y dont they have terminals?
+does the executable not make them with terminals?
+
+## 2026-07-17 22:07:23 +05:00 — Agent
+
+Confirmed the collected projects are placement-only outputs, not terminalized results. `corpus_manifest.json` explicitly records `executable_projection: placement_only_no_terminals`, and their `.progen_report.json` files contain `terminal_placer: null`. The 200-circuit runner documentation incorrectly claimed the accepted terminal route for these historic artifacts. The current executable has a terminal stage for its accepted families, but these files were emitted without entering that stage and must not be treated as terminalized proof.
+
+### Evidence inspected
+
+- `proteus/active/examples/proteus_200_circuits/corpus_manifest.json`
+- `proteus/experiments/runs/2026-07-17_pdf_200_circuit_placement_controls/10_most_impressive_generated_circuits/01_circuit_180_op_amp_led_level_indicator.pdsprj.progen_report.json`
+
+---
+
+## 2026-07-17 22:26:09 +05:00 — User
+
+then give me those ten terminalized
+
+## 2026-07-17 22:26:09 +05:00 — Agent
+
+Regenerated the same ten complex circuits through the current portable executable, using their placement controls without `--no-terminals` or `--allow-unterminalized`. Every generated report entered the shared terminal stage, had grid-attached terminal-to-pin wires, and had no skipped families. Each project then passed a 12-second Proteus cold open and cold reopen with no loader dialog; two screenshots were captured for every project.
+
+### Output
+
+- `proteus/experiments/runs/2026-07-17_pdf_200_circuit_placement_controls/10_most_impressive_terminalized_current_executable/`
+- 10 terminalized `.pdsprj` projects
+- 20 cold-open screenshots under `screenshots/`
+- generated inspection reports beside the projects, except the three long-name reports placed in `reports/` to remain within Windows path limits
+
+### Executable proof
+
+- `ProgenProteus.exe` SHA-256: `41C15EAE737E4A5617E79504C136129C3B970B376C127DDAD0454EC709086388`
+- terminalized-component / short-WIRE counts in rank order: `19/42`, `16/35`, `15/33`, `18/36`, `15/32`, `16/34`, `12/26`, `13/27`, `12/26`, `12/26`
+
+---
+
+## 2026-07-17 22:38:07 +05:00 — User
+
+continue with this
+
+## 2026-07-17 22:38:07 +05:00 — Agent
+
+Continued the current-executable, single-gate-family route from the proven 74HC08 10x release-path gate. Regenerated each safe gate ceiling through `ProgenProteus.exe`, then cold-opened and cold-reopened every output with 12-second delayed checks and screenshots. All seven passed: 74HC00 8x, 74HC02 4x, and 74HC04/74HC08/74HC32/74HC86/74HC266 at 10x. Their reports show active terminal stages and nonzero grid-attached short WIREs; 14 screenshots are preserved.
+
+### Files added or updated
+
+- `proteus/experiments/runs/2026-07-17_executable_gate_overlay_trial/current_app_gate_bridge/exact_executable_matrix/`
+- `proteus/experiments/runs/2026-07-17_executable_gate_overlay_trial/README.md`
 
 Files edited or added in `MuhammadTahaBinZaeem/ProGenEDA-WEB` (remote commits `0b5d386` and `82230b4`):
 
@@ -35217,6 +35419,175 @@ Validation completed:
 - Portable executable integration smoke test passed.
 - Full 200-circuit corpus: 200 passed, 0 failed; static generation and `.pdsprj` container inspection only, no Proteus GUI open test by user instruction.
 - Website `npm run lint` and production `npm run build` passed.
+
+---
+
+## 2026-07-18 12:00:00 +05:00 — User
+
+now ill ask u to continue with our terminalizationg support
+start building from currenlty spported families and up
+add a support for a component in terminalization then test its mix up to limits(which is 15 for normal ics with some exceptions)
+keep this on. do ics at the end first do others non ics and mind u, to lock a component in, ull generate its mix in differnt ratios and attempt at different combinations with other supported components, ull open it, for 12 secs, take pic then move on to next test when all tests are done u can safely call it locked in then move on to next component
+
+## 2026-07-18 12:00:01 +05:00 — Agent
+
+I’ve isolated the current blocker to the NPN + diode combination: NPN-only, NPN scaling, and the other non-IC mixes open cleanly, while that exact pair triggers Proteus’s malformed-device dialog. I’m comparing it against the accepted donor stream now; NPN is not being locked until that mix passes.
+
+## 2026-07-18 12:06:00 +05:00 — Agent
+
+The donor comparison has found two concrete differences—not a geometry guess: my NPN tail is being inserted between diode packets, whereas the accepted NPN+diode donor places its tail only after the normal component stream; it also ends in one explicit `FF`, while the candidate ended in `FF FF`. I’m narrowing the repair to that NPN tail/finalizer rule and will rerun the full matrix afterward.
+
+## 2026-07-18 12:12:00 +05:00 — Agent
+
+The targeted repair is now in place and static regressions pass: the NPN tail is deferred to the end of the component stream only for its donor-proven profile, and its explicit single-`FF` ending is preserved. I’m regenerating a fresh matrix—not overwriting the failed evidence—then I’ll gate every ratio/mix with 12-second cold opens and screenshots.
+
+## 2026-07-18 12:18:00 +05:00 — Agent
+
+Fresh generation is clean across the new matrix, including the previously failing NPN+diode cases: the NPN tail now reports `after_component_stream` and a single explicit finalizer. I’m opening the former failure first; if it passes twice, I’ll run the rest of the 1×/9×/15× and ratio matrix.
+
+## 2026-07-18 12:24:00 +05:00 — Agent
+
+The former failing diode case now passes both cold opens with no dialog and unchanged gate-copy hash; its screenshot shows the generated terminalized project loaded in Proteus. I’m continuing through the remaining fresh matrix one project at a time so the GUI checks cannot interfere with each other.
+
+## 2026-07-18 12:30:00 +05:00 — Agent
+
+The NPN 1× gate also passed both cold opens. The 9× and 15× scale gates are running sequentially now; I’m keeping the same 12-second delay and a separate screenshot pair for each.
+
+## 2026-07-18 12:36:00 +05:00 — Agent
+
+Both NPN scale cases passed twice with no dialogs and unchanged copies. I’m now gating the minimal mix and the asymmetric mix that contains resistor, capacitor, diode, and source families—the latter is the broadest repaired mixed-stream check.
+
+## 2026-07-18 12:42:00 +05:00 — Agent
+
+The minimal and asymmetric native mixes both pass twice now, including the original NPN+diode failure shape. I’m checking the existing catalogue-backed non-IC combination next, followed by the 15× mixed stress pack.
+
+## 2026-07-18 12:48:00 +05:00 — Agent
+
+All NPN matrix gates now pass twice: 1×, 9×, 15×, asymmetric diode/source, catalogue-backed non-IC mix, and the 15× NPN+diode+R+C stress mix. I’m doing the final evidence pass now—checking the screenshots/reports and recording the precise scope before marking NPN locked.
+
+## 2026-07-18 12:54:00 +05:00 — Agent
+
+The full component-placer regression has passed: 215 passed, 5 documented expected failures. I’m recording NPN as a non-IC terminal route locked through 15× and its mixed-ratio gate matrix, then I’ll rebuild and smoke-test the executable from this exact source before selecting the next family.
+
+## 2026-07-18 13:00:00 +05:00 — Agent
+
+The portable executable has been rebuilt from the verified source. I’m feeding its own binary—not the Python module—the 15× NPN+diode+R+C JSON now, then I’ll cold-open that exact executable output in Proteus.
+
+## 2026-07-18 13:06:00 +05:00 — Agent
+
+NPN is locked in the source and the freshly rebuilt executable: its 15× NPN+diode+R+C executable output contains 135 grid-aligned nonzero attachments and passes two 12-second cold opens. I’m checkpointing this evidence now before beginning the next non-IC donor audit.
+
+### Files edited or added during this response
+
+- `proteus/active/src/proteusgen/component_terminal_placer.py`
+- `proteus/active/src/proteusgen/proteus_app.py`
+- `proteus/active/knowledge/component_catalog_v0.json`
+- `proteus/active/knowledge/npn_executable_promotion_preflight_2026_07_18.md`
+- `proteus/active/tests/test_component_placer.py`
+- `proteus/active/tests/test_proteus_app.py`
+- `proteus/active/README.md`
+- `proteus/active/release/ProgenProteus.exe`
+- `proteus/active/release/README.md`
+- `proteus/archive/backups/component_terminal_placer/component_terminal_placer_20260718_151000_before_npn_nonzero_grid_route.py`
+- `proteus/archive/backups/component_terminal_placer/component_terminal_placer_20260718_154500_before_npn_diode_tail_finalizer_fix.py`
+- `proteus/archive/backups/component_terminal_placer/component_terminal_placer_20260718_163500_before_npn_non_ic_finalizer_scope_fix.py`
+- `proteus/experiments/runs/2026-07-18_npn_terminal_promotion_matrix_v2/`
+
+---
+
+## 2026-07-18 15:00:00 +05:00 â€” User
+
+continue
+
+## 2026-07-18 15:00:01 +05:00 â€” Agent
+
+Continuing with the PNP terminal route: Iâ€™m finishing its full regression, then Iâ€™ll verify the rebuilt executableâ€™s 15Ã— mixed output before locking it in.
+
+## 2026-07-18 15:03:00 +05:00 â€” Agent
+
+The background Git sync attempt ended cleanly but its remote fetch was interrupted; it left no merge state or lock. Iâ€™m keeping repository changes untouched while the PNP regression finishes.
+
+## 2026-07-18 15:08:00 +05:00 â€” Agent
+
+The rebuilt executable has generated a fresh PNP/diode/resistor/capacitor 15Ã— stress project with 135 terminal attachments. Iâ€™m running the required two-open Proteus gate on that exact executable output now.
+
+## 2026-07-18 15:10:00 +05:00 â€” Agent
+
+The executable gate passed twice: it opened normally, stayed open, showed no loader dialog, and its unchanged disposable copy cold-reopened cleanly. The screenshot also shows the placed terminalized components.
+
+## 2026-07-18 15:14:00 +05:00 â€” Agent
+
+Iâ€™ve also completed the PNP-focused regression: six donor/catalogue placement tests passed. Iâ€™m splitting the broader accepted-family regression into short isolated batches so the environmentâ€™s 60-second command cap doesnâ€™t cut it off.
+
+## 2026-07-18 15:18:00 +05:00 â€” Agent
+
+The first two full-regression batches are clean: 40/40 tests passed. Iâ€™m continuing the same isolated batches; no frozen family source has been altered.
+
+## 2026-07-18 15:25:00 +05:00 â€” Agent
+
+Regression batches 1â€“3 and the first half of batch 4 have passed (70 tests total). One larger batch hit the environment timeout, so I reduced the batch size rather than treating it as a test failure.
+
+## 2026-07-18 15:32:00 +05:00 â€” Agent
+
+The broader regression is still clean: 98 passed and 2 expected xfails so far. Iâ€™m continuing through the remaining isolated batches, then Iâ€™ll record and commit the PNP lock.
+
+## 2026-07-18 15:38:00 +05:00 â€” Agent
+
+Past the midpoint now: 127 passed, 3 expected xfails. The PNP changes remain isolated to its catalogue profile and executable allow-list; existing shared placement logic is unchanged.
+
+## 2026-07-18 15:42:00 +05:00 â€” Agent
+
+I found two real mixed-route regression failures before locking PNP. Iâ€™m stopping promotion here and auditing their generated reports against the PNP tail profile; I wonâ€™t mark the family accepted until those mixed cases pass.
+
+## 2026-07-18 15:45:00 +05:00 â€” Agent
+
+The cause is now fixed without altering any R/C-only route: a mix that contains a donor-proven NPN/PNP nonzero-grid profile now applies that profileâ€™s grid requirement to its combined attachment stream. The three previously failing mixed regressions now pass.
+
+## 2026-07-18 15:50:00 +05:00 â€” Agent
+
+The latest executable now produces both a 60-component 15Ã— PNP stress mix and a nine-family heterogeneous non-IC mix; both reports are valid with grid-aligned, nonzero terminal WIREs. Iâ€™m cold-opening each exact executable output twice.
+
+## 2026-07-18 15:53:00 +05:00 â€” Agent
+
+The 15Ã— stress output passed both 12-second cold opens again. The heterogeneous nine-family executable gate is still finishing its second launch; Iâ€™m waiting for its final loader result rather than assuming it passed.
+
+## 2026-07-18 15:57:00 +05:00 â€” Agent
+
+Both exact latest-executable projects passed their two-open Proteus gates. Iâ€™ve also isolated the post-fix regression set to the 23 BJT/grid-sensitive tests, so I can revalidate every affected path without needlessly retesting unrelated frozen families.
+
+## 2026-07-18 16:00:00 +05:00 â€” Agent
+
+The affected BJT/grid regression set is 20/20 clean so far. Iâ€™m running its final three mixed-tail tests now, then Iâ€™ll update the evidence/status files.
+
+## 2026-07-18 16:02:00 +05:00 â€” Agent
+
+PNPâ€™s completion record, locked catalogue status, matrix README, and executable documentation are now updated. Iâ€™m rebuilding once more so the release binary includes the final audit-report field as well as the path-budget repair.
+
+## 2026-07-18 16:04:00 +05:00 â€” Agent
+
+The final rebuilt executableâ€™s 60-component PNP release project passed both 12-second cold opens with an unchanged gate copy. Iâ€™m updating the evidence links to this final artifact, then performing the last focused checks and repository checkpoint.
+
+### Files edited or added during this response
+
+- `proteus/active/src/proteusgen/component_terminal_placer.py`
+- `proteus/active/src/proteusgen/proteus_app.py`
+- `proteus/active/knowledge/component_catalog_v0.json`
+- `proteus/active/knowledge/pnp_nonzero_grid_terminal_preflight_2026_07_18.md`
+- `proteus/active/tests/test_component_placer.py`
+- `proteus/active/tests/test_proteus_app.py`
+- `proteus/active/README.md`
+- `proteus/active/release/ProgenProteus.exe`
+- `proteus/active/release/README.md`
+- `proteus/archive/backups/component_terminal_placer/component_terminal_placer_20260718_142133_before_pnp_nonzero_grid_route.py`
+- `proteus/archive/backups/component_terminal_placer/component_terminal_placer_20260718_154121_before_profile_forced_grid_conservative_mix.py`
+- `proteus/experiments/runs/2026-07-18_pnp_terminal_promotion_matrix/`
+
+### Validation recorded
+
+- PNP focused/source regressions: `9 passed` after the final shared-place report update.
+- BJT/grid-sensitive regression matrix: `23 passed` after the profile-grid repair.
+- Application suite: `17 passed` after the executable path-budget repair.
+- Local Proteus: latest executable `EXE_M10_PNP_DIODE15X_RELEASE` passed two 12-second cold opens with screenshots and unchanged gate-copy SHA-256.
 
 ## 2026-07-17 - Historical Proteus IC generator audit
 
@@ -35458,3 +35829,29 @@ added local Markdown links, and `--help` checks for both direct source CLIs.
   automation documents.
 - Active EasyEDA documentation under `Easyeda/` including README,
   architecture, input contract, catalogue, and qualification documents.
+
+---
+
+Timestamp: 2026-07-18T15:13:49.528+00:00
+
+User message (verbatim):
+
+> <current_datetime>2026-07-18T15:13:51.074+00:00</current_datetime>
+> 
+> You have been given comments on the previous commits you made in the repository.
+> 
+> You are working on an issue in the 'MuhammadTahaBinZaeem/memory' repository.
+> 
+> <repository_context>
+> I've cloned the repository in the directory /home/runner/work/memory/memory (not in /tmp/inputs). Always use absolute paths when referring to files in the repository.
+> </repository_context>
+> 
+> <current_datetime>2026-07-18T15:13:49.528+00:00</current_datetime>
+> 
+> Consider the following problem statement:
+> ...
+> @copilot resolve the merge conflicts in this pull request
+
+Visible assistant responses (verbatim):
+
+> I checked branch/upstream state, unshallowed and fetched `origin/main`, merged it into `codex/proteus-terminalization-non-ic`, resolved the conflict in `context.md` by keeping the branch's append-only log content, and validated post-resolution state.

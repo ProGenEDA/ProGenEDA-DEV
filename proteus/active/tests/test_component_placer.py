@@ -1709,18 +1709,8 @@ def test_resistor_terminal_attachment_patches_links_and_adds_short_wires(tmp_pat
         "NPN",
         "PNP",
         "NMOSFET",
-        pytest.param(
-            "2N3904",
-            marks=pytest.mark.xfail(
-                reason="Current 2N3904 profile still emits a zero-length attachment; retained as untrusted research.",
-            ),
-        ),
-        pytest.param(
-            "2N4401",
-            marks=pytest.mark.xfail(
-                reason="Current 2N4401 profile still emits a zero-length attachment; retained as untrusted research.",
-            ),
-        ),
+        "2N3904",
+        "2N4401",
         "2N7000",
         "BS170",
     ],
@@ -1772,11 +1762,11 @@ def test_three_pin_transistor_catalogue_terminal_attachment(
         wire_rows = terminal_placer._wire_rows_from_chunk(chunk, chunk_start=0)
         if family in {"NPN", "PNP"}:
             assert all(
-                tuple(row["coordinates"][:2]) == tuple(row["coordinates"][2:4])
+                tuple(row["coordinates"][:2]) != tuple(row["coordinates"][2:4])
                 for row in wire_rows
             )
             assert all(
-                not row["wire_is_nonzero"] and row["zero_length_wire_allowed"]
+                row["wire_is_nonzero"]
                 for row in report["wire_path_contact_checks"]
             )
         else:

@@ -2670,3 +2670,31 @@ complete-package availability rather than pretending every family has fifteen
 safe packets: HC00 has eight and HC02 has twelve; the other 47 current
 totalmix families have fifteen. These are component-placer selector constraints
 with explicit evidence, not beautifier or terminal-placement limits.
+
+### 2026-07-18 2N3904 deferred-tail mixed-stream rule
+
+The 2N3904 1x/9x/15x solo route passed only after the full placement pipeline
+was used: omitting the binary beautifier left Q65 off the visible sheet and was
+not a terminal-geometry failure. Its staged evidence also proves that detached
+terminal records are not a valid 2N3904 diagnostic form; native-contact and
+grid-contact diagnostics must retain the complete active terminal/link/WIRE
+unit.
+
+The accepted mixed donor then supplied the decisive stream fact. Q65 appears
+before later ordinary component packets, while its `EMITTER`, `COLLECTOR`, and
+`BASE` attachment units are deferred to the BJT tail before the first IC. A
+generated asymmetric mix that emitted the tail immediately after Q65 and then
+continued with diode packets raised a device-library dialog despite correct
+static counts and links. The catalogue therefore declares only 2N3904's
+`totalmix_tail_insertion` as `after_component_stream`; this reuses the existing
+shared profile mechanism, does not modify frozen two-pin/diode emission, and
+keeps its single-FF terminator. Fresh asymmetric, heterogeneous, and dense
+15-per-family mixed projects passed normal open and cold reopen with unchanged
+gate copies. Treat static terminal counts as insufficient without that loader
+gate.
+
+The executable must obtain this same route through profile data, not a second
+branch: 2N3904 declares `executable_mixed_stream_mode=totalmix_combined_v1`
+and `force_grid_contact_short_wires=true`. This prevents a direct/executable
+split where static terminal counts can look correct while the executable emits
+the older conservative tail order or zero-length standalone WIREs.
