@@ -2,6 +2,17 @@
 
 Date started: 2026-07-02
 
+## Codex 5.6 Active Implementation Note
+
+This document preserves the original stage design and upgrade thinking. Codex
+5.6 converted its core ideas into the active movement-first pipeline: component
+coordinates are scored before full routing, rotations and compact square-like
+arrangements are considered, terminal fallback is explicit, and the emitted
+schematic is checked by actual pin/net/geometry validators. The 5.6 advance
+over the earlier 5.5-era plan is that these are now executable, audited stages
+with corpus and KiCad application evidence, while the later sections retain
+future research directions without weakening the shipped path.
+
 This document records the intended behavior for the next KiCad pipeline stages
 after the component placer. It captures the user requirements, the current
 implementation, and the upgrade path.

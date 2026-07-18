@@ -1,0 +1,342 @@
+{
+  "components": [
+    {
+      "block": "transformer_rectifier_supply",
+      "id": "T1",
+      "kind": "TRANSFORMER",
+      "pins": {
+        "1": "AC_PRIMARY_B",
+        "2": "AC_PRIMARY_A",
+        "3": "AC_IN_A",
+        "4": "AC_IN_B"
+      },
+      "ref": "T1",
+      "role": "functional",
+      "value": "TRANSFORMER"
+    },
+    {
+      "block": "transformer_rectifier_supply",
+      "id": "BR1",
+      "kind": "BRIDGE_RECTIFIER",
+      "pins": {
+        "1": "AC_IN_A",
+        "2": "VIN_RAW",
+        "3": "AC_IN_B",
+        "4": "GND"
+      },
+      "ref": "BR1",
+      "role": "functional",
+      "value": "BRIDGE_RECTIFIER"
+    },
+    {
+      "block": "expansion",
+      "id": "J2",
+      "kind": "HEADER_2X5_1P27",
+      "pins": {
+        "1": "AC_PRIMARY_A",
+        "10": "GND",
+        "2": "AC_PRIMARY_B",
+        "3": "FILTERED_+5V",
+        "4": "VIN_PROTECTED",
+        "5": "GND",
+        "6": "GND",
+        "7": "GND",
+        "8": "GND",
+        "9": "GND"
+      },
+      "ref": "J2",
+      "role": "full_pin_breakout",
+      "value": "HEADER_2X5_1P27"
+    },
+    {
+      "block": "transformer_rectifier_supply",
+      "id": "F1",
+      "kind": "FUSE",
+      "pins": {
+        "1": "VIN_FUSED",
+        "2": "VIN_RAW"
+      },
+      "ref": "F1",
+      "role": "functional",
+      "value": "FUSE"
+    },
+    {
+      "block": "transformer_rectifier_supply",
+      "id": "C1",
+      "kind": "CAP_ELEC",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      },
+      "ref": "C1",
+      "role": "functional",
+      "value": "47uF"
+    },
+    {
+      "block": "transformer_rectifier_supply",
+      "id": "C2",
+      "kind": "CAP_ELEC",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      },
+      "ref": "C2",
+      "role": "functional",
+      "value": "47uF"
+    },
+    {
+      "block": "transformer_rectifier_supply",
+      "id": "L1",
+      "kind": "L",
+      "pins": {
+        "1": "FILTERED_+5V",
+        "2": "+5V"
+      },
+      "ref": "L1",
+      "role": "functional",
+      "value": "100uH"
+    },
+    {
+      "block": "transformer_rectifier_supply",
+      "id": "D1",
+      "kind": "1N4007",
+      "pins": {
+        "1": "VIN_FUSED",
+        "2": "VIN_PROTECTED"
+      },
+      "ref": "D1",
+      "role": "functional",
+      "value": "1N4007"
+    },
+    {
+      "block": "transformer_rectifier_supply",
+      "id": "R1",
+      "kind": "R",
+      "pins": {
+        "1": "GND",
+        "2": "+5V"
+      },
+      "ref": "R1",
+      "role": "functional",
+      "value": "120"
+    },
+    {
+      "block": "transformer_rectifier_supply",
+      "id": "LED1",
+      "kind": "LED",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      },
+      "ref": "LED1",
+      "role": "functional",
+      "value": "LED"
+    },
+    {
+      "block": "transformer_rectifier_supply",
+      "id": "J1",
+      "kind": "TERMINAL_BLOCK",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      },
+      "ref": "J1",
+      "role": "functional",
+      "value": "TERMINAL_BLOCK"
+    },
+    {
+      "block": "mechanical",
+      "id": "H1",
+      "kind": "MOUNTING_HOLE_PTH",
+      "pins": {
+        "1": "GND"
+      },
+      "ref": "H1",
+      "role": "mechanical_ground",
+      "value": "MOUNTING_HOLE_PTH"
+    },
+    {
+      "block": "mechanical",
+      "id": "H2",
+      "kind": "MOUNTING_HOLE_NPTH",
+      "pins": {
+        "1": "NC_CHASSIS_H2"
+      },
+      "ref": "H2",
+      "role": "mechanical",
+      "value": "MOUNTING_HOLE_NPTH"
+    }
+  ],
+  "expected_netlist": {
+    "+5V": [
+      "C1.1",
+      "C2.1",
+      "J1.1",
+      "L1.2",
+      "LED1.1",
+      "R1.2"
+    ],
+    "AC_IN_A": [
+      "BR1.1",
+      "T1.3"
+    ],
+    "AC_IN_B": [
+      "BR1.3",
+      "T1.4"
+    ],
+    "AC_PRIMARY_A": [
+      "J2.1",
+      "T1.2"
+    ],
+    "AC_PRIMARY_B": [
+      "J2.2",
+      "T1.1"
+    ],
+    "FILTERED_+5V": [
+      "J2.3",
+      "L1.1"
+    ],
+    "GND": [
+      "BR1.4",
+      "C1.2",
+      "C2.2",
+      "H1.1",
+      "J1.2",
+      "J2.10",
+      "J2.5",
+      "J2.6",
+      "J2.7",
+      "J2.8",
+      "J2.9",
+      "LED1.2",
+      "R1.1"
+    ],
+    "NC_CHASSIS_H2": [
+      "H2.1"
+    ],
+    "VIN_FUSED": [
+      "D1.1",
+      "F1.1"
+    ],
+    "VIN_PROTECTED": [
+      "D1.2",
+      "J2.4"
+    ],
+    "VIN_RAW": [
+      "BR1.2",
+      "F1.2"
+    ]
+  },
+  "nets": [
+    {
+      "members": [
+        "C1.1",
+        "C2.1",
+        "J1.1",
+        "L1.2",
+        "LED1.1",
+        "R1.2"
+      ],
+      "name": "+5V"
+    },
+    {
+      "members": [
+        "BR1.1",
+        "T1.3"
+      ],
+      "name": "AC_IN_A"
+    },
+    {
+      "members": [
+        "BR1.3",
+        "T1.4"
+      ],
+      "name": "AC_IN_B"
+    },
+    {
+      "members": [
+        "J2.1",
+        "T1.2"
+      ],
+      "name": "AC_PRIMARY_A"
+    },
+    {
+      "members": [
+        "J2.2",
+        "T1.1"
+      ],
+      "name": "AC_PRIMARY_B"
+    },
+    {
+      "members": [
+        "J2.3",
+        "L1.1"
+      ],
+      "name": "FILTERED_+5V"
+    },
+    {
+      "members": [
+        "BR1.4",
+        "C1.2",
+        "C2.2",
+        "H1.1",
+        "J1.2",
+        "J2.10",
+        "J2.5",
+        "J2.6",
+        "J2.7",
+        "J2.8",
+        "J2.9",
+        "LED1.2",
+        "R1.1"
+      ],
+      "name": "GND"
+    },
+    {
+      "members": [
+        "H2.1"
+      ],
+      "name": "NC_CHASSIS_H2"
+    },
+    {
+      "members": [
+        "D1.1",
+        "F1.1"
+      ],
+      "name": "VIN_FUSED"
+    },
+    {
+      "members": [
+        "D1.2",
+        "J2.4"
+      ],
+      "name": "VIN_PROTECTED"
+    },
+    {
+      "members": [
+        "BR1.2",
+        "F1.2"
+      ],
+      "name": "VIN_RAW"
+    }
+  ],
+  "project": {
+    "name": "q28_transformer_rectifier_supply_validation_v10",
+    "target": "easyeda_pro",
+    "title": "Transformer Rectifier Supply - Validation Variant"
+  },
+  "purpose": "Isolated transformer, bridge rectifier, filtering, and protected output. Optimized for production validation fixture.",
+  "qualification": {
+    "archetype": "transformer_rectifier_supply",
+    "profile": "validation",
+    "require_complete_pin_coverage": true,
+    "require_pcb_when_routable": true,
+    "schema": "progen-easyeda-qualification-corpus/v1",
+    "source_basis": "Isolated supply reference practice",
+    "variant": 10
+  },
+  "routing": {
+    "mode": "combination"
+  },
+  "schema_version": "progen-easyeda-circuit-ir/v1"
+}

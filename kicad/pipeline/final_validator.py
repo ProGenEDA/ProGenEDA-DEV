@@ -121,6 +121,10 @@ def validate_final_project(
             "ok": bool(body_report.get("pin_coordinate_overlap_ok", True)),
             "overlap_count": int(body_report.get("pin_coordinate_overlap_count", 0)),
         },
+        "pin_foreign_body_clearance": {
+            "ok": bool(body_report.get("pin_foreign_body_clearance_ok", True)),
+            "conflict_count": int(body_report.get("pin_foreign_body_clearance_count", 0)),
+        },
         "terminal_label_layout": {
             "ok": bool(label_layout.get("ok", True)),
             "overlap_count": int(label_layout.get("overlap_count", 0)),

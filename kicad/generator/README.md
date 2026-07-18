@@ -1,8 +1,31 @@
 # KiCad Generator Workspace
 
-This folder contains the persistent Python generator code for the KiCad backend.
+This folder retains the persistent source-writing research and component
+catalogue work that feeds the active KiCad backend.
 
-## Current locked milestone
+## Codex 5.6 Active Generator Delivery
+
+Codex 5.6 took the early source-writing milestones recorded below and connected
+them to the complete `kicad/pipeline/` generator: canonical JSON repair,
+source-backed symbol/pin use, arrangement, routing, terminals, values,
+validators, packaging, and optional PCB output. This is a substantial advance
+over the prior 5.5-era isolated writer experiments: the source writer is now
+one proven stage in an executable pipeline with expected-net and geometry
+acceptance rather than a stand-alone file emitter.
+
+Run the active source generator from the repository root:
+
+```bash
+PYTHONPATH=. python -m kicad.pipeline.progen_kicad_executable run INPUT.json \
+  --output-root /tmp/progen-kicad-runs --routing-mode combination
+```
+
+The final release/qualification details are in
+[`../FINALIZATION_STATUS.md`](../FINALIZATION_STATUS.md). The V6/V7 notes below
+are preserved because they document the donor/source discovery that Codex 5.6
+expanded into the current backend.
+
+## Historical Locked Milestone
 
 V6 is the first source-driven KiCad generator milestone that the user opened successfully in KiCad:
 
@@ -18,7 +41,7 @@ The correct writer order is still:
 header -> uuid -> paper -> lib_symbols -> schematic items -> sheet_instances
 ```
 
-## V7 component catalog
+## Historical V7 Component Catalog
 
 V7 adds a broad component catalog in:
 

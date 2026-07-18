@@ -1,0 +1,824 @@
+{
+  "schema_version": "progen-kicad-circuit-ir/v1",
+  "compatible_schema": "progen-kicad-placer-ir/v0.2",
+  "progeneda_circuit_version": "v1",
+  "main_json_contract": {
+    "schema": "progeneda-main-json-contract/v1",
+    "single_generator_input": true,
+    "backend": "kicad",
+    "backend_cli_required": false,
+    "stable_sections": [
+      "project",
+      "routing",
+      "layout_intent",
+      "components",
+      "nets",
+      "expected_netlist",
+      "stage_contracts",
+      "validation"
+    ]
+  },
+  "compiler": {
+    "name": "final_circuit_builder",
+    "version": "progeneda-final-circuit-builder/v0.1",
+    "trusted_final_json_rule": "AI may produce intent/block suggestions only; deterministic code compiles and validates final JSON."
+  },
+  "project": {
+    "name": "kq17_arduino_control_power_board_field_v03",
+    "title": "Arduino Control and 5V Power Board - Field Service",
+    "purpose": "A regulated Arduino control board with local buttons, indicators, and expansion. Configured for field wiring, diagnosis, and service access.",
+    "target": "kicad_schematic_and_supported_pcb",
+    "schematic_only": true
+  },
+  "circuit_id": "KQ17V03",
+  "circuit_name": "Arduino Control and 5V Power Board - Field Service",
+  "purpose": "A regulated Arduino control board with local buttons, indicators, and expansion. Configured for field wiring, diagnosis, and service access.",
+  "routing": {
+    "mode": "combination",
+    "allowed_modes": [
+      "wire",
+      "terminal",
+      "combination"
+    ],
+    "decision_source": "qualification_combination_default",
+    "wire_mode_contract": "Every compiled net endpoint must be connected by physical wire/junction/pin graph; local labels are terminal-stage behavior.",
+    "terminal_policy": {
+      "power_and_ground_terminal": true,
+      "high_fanout_threshold": 6,
+      "fallback_unroutable_or_invalid_wires_to_terminal": true,
+      "terminal_stage_runs_after_wiring": true
+    }
+  },
+  "layout_intent": {
+    "arrangement_style": "clustered_blocks_square_fill",
+    "square_fill_preferred": true,
+    "allow_component_rotation": true,
+    "block_order_source": "components[].block and blocks[]",
+    "keep_related_blocks_close": true
+  },
+  "components": [
+    {
+      "id": "B1_U1",
+      "ref": "B1_U1",
+      "kind": "ARDUINO_NANO",
+      "type": "ARDUINO_NANO",
+      "value": "Arduino Nano",
+      "role": "controller",
+      "block": "b1",
+      "pins": {
+        "5V": "+5V",
+        "D10": "B1_IO_D10",
+        "D11": "B1_IO_D11",
+        "D12": "B1_IO_D12",
+        "D13": "B1_IO_D13",
+        "D2": "B1_LED1_NET",
+        "D3": "B1_LED2_NET",
+        "D4": "B1_LED3_NET",
+        "D5": "B1_BTN1_NET",
+        "D6": "B1_BTN2_NET",
+        "D7": "B1_IO_D7",
+        "D8": "B1_IO_D8",
+        "D9": "B1_IO_D9",
+        "GND": "GND"
+      }
+    },
+    {
+      "id": "B1_D1",
+      "ref": "B1_D1",
+      "kind": "LED_INDICATOR",
+      "type": "LED_INDICATOR",
+      "value": "LED",
+      "role": "indicator",
+      "block": "b1",
+      "pins": {
+        "A": "B1_LED1_A",
+        "K": "GND"
+      }
+    },
+    {
+      "id": "B1_D2",
+      "ref": "B1_D2",
+      "kind": "LED_INDICATOR",
+      "type": "LED_INDICATOR",
+      "value": "LED",
+      "role": "indicator",
+      "block": "b1",
+      "pins": {
+        "A": "B1_LED2_A",
+        "K": "GND"
+      }
+    },
+    {
+      "id": "B1_D3",
+      "ref": "B1_D3",
+      "kind": "LED_INDICATOR",
+      "type": "LED_INDICATOR",
+      "value": "LED",
+      "role": "indicator",
+      "block": "b1",
+      "pins": {
+        "A": "B1_LED3_A",
+        "K": "GND"
+      }
+    },
+    {
+      "id": "B1_R1",
+      "ref": "B1_R1",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "series_resistor",
+      "block": "b1",
+      "pins": {
+        "1": "B1_LED1_NET",
+        "2": "B1_LED1_A"
+      }
+    },
+    {
+      "id": "B1_R2",
+      "ref": "B1_R2",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "series_resistor",
+      "block": "b1",
+      "pins": {
+        "1": "B1_LED2_NET",
+        "2": "B1_LED2_A"
+      }
+    },
+    {
+      "id": "B1_R3",
+      "ref": "B1_R3",
+      "kind": "R_220",
+      "type": "R_220",
+      "value": "220 ohm",
+      "role": "series_resistor",
+      "block": "b1",
+      "pins": {
+        "1": "B1_LED3_NET",
+        "2": "B1_LED3_A"
+      }
+    },
+    {
+      "id": "B1_SW1",
+      "ref": "B1_SW1",
+      "kind": "PUSH_BUTTON",
+      "type": "PUSH_BUTTON",
+      "value": "Push Button",
+      "role": "switch",
+      "block": "b1",
+      "pins": {
+        "1": "+5V",
+        "2": "B1_BTN1_NET"
+      }
+    },
+    {
+      "id": "B1_SW2",
+      "ref": "B1_SW2",
+      "kind": "PUSH_BUTTON",
+      "type": "PUSH_BUTTON",
+      "value": "Push Button",
+      "role": "switch",
+      "block": "b1",
+      "pins": {
+        "1": "+5V",
+        "2": "B1_BTN2_NET"
+      }
+    },
+    {
+      "id": "B1_R4",
+      "ref": "B1_R4",
+      "kind": "R_10K_PULLUP",
+      "type": "R_10K_PULLUP",
+      "value": "10k pulldown",
+      "role": "pulldown",
+      "block": "b1",
+      "pins": {
+        "1": "B1_BTN1_NET",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_R5",
+      "ref": "B1_R5",
+      "kind": "R_10K_PULLUP",
+      "type": "R_10K_PULLUP",
+      "value": "10k pulldown",
+      "role": "pulldown",
+      "block": "b1",
+      "pins": {
+        "1": "B1_BTN2_NET",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B1_J1",
+      "ref": "B1_J1",
+      "kind": "PIN_HEADER",
+      "type": "PIN_HEADER",
+      "value": "Power/IO Header 1x6",
+      "role": "connector",
+      "block": "b1",
+      "pins": {
+        "1": "+5V",
+        "2": "GND",
+        "3": "B1_BTN1_NET",
+        "4": "B1_BTN2_NET",
+        "5": "B1_IO_D7",
+        "6": "B1_IO_D8"
+      }
+    },
+    {
+      "id": "B1_J2",
+      "ref": "B1_J2",
+      "kind": "PIN_HEADER",
+      "type": "PIN_HEADER",
+      "value": "Extra IO Header 1x6",
+      "role": "connector",
+      "block": "b1",
+      "pins": {
+        "1": "B1_IO_D9",
+        "2": "B1_IO_D10",
+        "3": "B1_IO_D11",
+        "4": "B1_IO_D12",
+        "5": "B1_IO_D13",
+        "6": "GND"
+      }
+    },
+    {
+      "id": "B2_J1",
+      "ref": "B2_J1",
+      "kind": "DC_BARREL_JACK",
+      "type": "DC_BARREL_JACK",
+      "value": "DC Barrel Jack",
+      "role": "input_connector",
+      "block": "b2",
+      "pins": {
+        "NEG": "GND",
+        "POS": "B2_VIN_RAW"
+      }
+    },
+    {
+      "id": "B2_F1",
+      "ref": "B2_F1",
+      "kind": "FUSE",
+      "type": "FUSE",
+      "value": "Fuse",
+      "role": "protection",
+      "block": "b2",
+      "pins": {
+        "1": "B2_VIN_RAW",
+        "2": "B2_VIN_FUSED"
+      }
+    },
+    {
+      "id": "B2_D1",
+      "ref": "B2_D1",
+      "kind": "D_1N4007",
+      "type": "D_1N4007",
+      "value": "1N4007",
+      "role": "reverse_protection",
+      "block": "b2",
+      "pins": {
+        "A": "B2_VIN_FUSED",
+        "K": "B2_VIN_PROTECTED"
+      }
+    },
+    {
+      "id": "B2_U1",
+      "ref": "B2_U1",
+      "kind": "LM7805",
+      "type": "LM7805",
+      "value": "LM7805",
+      "role": "regulator",
+      "block": "b2",
+      "pins": {
+        "GND": "GND",
+        "IN": "B2_VIN_PROTECTED",
+        "OUT": "+5V"
+      }
+    },
+    {
+      "id": "B2_C1",
+      "ref": "B2_C1",
+      "kind": "CP_100UF",
+      "type": "CP_100UF",
+      "value": "100uF",
+      "role": "input_capacitor",
+      "block": "b2",
+      "pins": {
+        "NEG": "GND",
+        "POS": "B2_VIN_PROTECTED"
+      }
+    },
+    {
+      "id": "B2_C2",
+      "ref": "B2_C2",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "input_capacitor",
+      "block": "b2",
+      "pins": {
+        "1": "B2_VIN_PROTECTED",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B2_C3",
+      "ref": "B2_C3",
+      "kind": "CP_100UF",
+      "type": "CP_100UF",
+      "value": "100uF",
+      "role": "output_capacitor",
+      "block": "b2",
+      "pins": {
+        "NEG": "GND",
+        "POS": "+5V"
+      }
+    },
+    {
+      "id": "B2_C4",
+      "ref": "B2_C4",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "output_capacitor",
+      "block": "b2",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B2_C5",
+      "ref": "B2_C5",
+      "kind": "C_100NF_CERAMIC",
+      "type": "C_100NF_CERAMIC",
+      "value": "100nF",
+      "role": "bypass_capacitor",
+      "block": "b2",
+      "pins": {
+        "1": "B2_VIN_PROTECTED",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "B2_D2",
+      "ref": "B2_D2",
+      "kind": "POWER_LED",
+      "type": "POWER_LED",
+      "value": "Power LED",
+      "role": "indicator",
+      "block": "b2",
+      "pins": {
+        "A": "B2_PWR_LED_A",
+        "K": "GND"
+      }
+    },
+    {
+      "id": "B2_R1",
+      "ref": "B2_R1",
+      "kind": "RESISTOR",
+      "type": "RESISTOR",
+      "value": "1k",
+      "role": "series_resistor",
+      "block": "b2",
+      "pins": {
+        "1": "+5V",
+        "2": "B2_PWR_LED_A"
+      }
+    },
+    {
+      "id": "B2_J2",
+      "ref": "B2_J2",
+      "kind": "SCREW_TERMINAL_2",
+      "type": "SCREW_TERMINAL_2",
+      "value": "5V Output",
+      "role": "output_connector",
+      "block": "b2",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      }
+    }
+  ],
+  "nets": {
+    "+5V": [
+      "B1_U1.5V",
+      "B1_J1.1",
+      "B1_SW1.1",
+      "B1_SW2.1",
+      "B2_U1.OUT",
+      "B2_C3.POS",
+      "B2_C4.1",
+      "B2_R1.1",
+      "B2_J2.1"
+    ],
+    "GND": [
+      "B1_U1.GND",
+      "B1_J1.2",
+      "B1_J2.6",
+      "B1_D1.K",
+      "B1_D2.K",
+      "B1_D3.K",
+      "B1_R4.2",
+      "B1_R5.2",
+      "B2_J1.NEG",
+      "B2_U1.GND",
+      "B2_C1.NEG",
+      "B2_C2.2",
+      "B2_C3.NEG",
+      "B2_C4.2",
+      "B2_C5.2",
+      "B2_D2.K",
+      "B2_J2.2"
+    ],
+    "B1_LED1_NET": [
+      "B1_U1.D2",
+      "B1_R1.1"
+    ],
+    "B1_LED1_A": [
+      "B1_R1.2",
+      "B1_D1.A"
+    ],
+    "B1_LED2_NET": [
+      "B1_U1.D3",
+      "B1_R2.1"
+    ],
+    "B1_LED2_A": [
+      "B1_R2.2",
+      "B1_D2.A"
+    ],
+    "B1_LED3_NET": [
+      "B1_U1.D4",
+      "B1_R3.1"
+    ],
+    "B1_LED3_A": [
+      "B1_R3.2",
+      "B1_D3.A"
+    ],
+    "B1_BTN1_NET": [
+      "B1_U1.D5",
+      "B1_SW1.2",
+      "B1_R4.1",
+      "B1_J1.3"
+    ],
+    "B1_BTN2_NET": [
+      "B1_U1.D6",
+      "B1_SW2.2",
+      "B1_R5.1",
+      "B1_J1.4"
+    ],
+    "B1_IO_D7": [
+      "B1_U1.D7",
+      "B1_J1.5"
+    ],
+    "B1_IO_D8": [
+      "B1_U1.D8",
+      "B1_J1.6"
+    ],
+    "B1_IO_D9": [
+      "B1_U1.D9",
+      "B1_J2.1"
+    ],
+    "B1_IO_D10": [
+      "B1_U1.D10",
+      "B1_J2.2"
+    ],
+    "B1_IO_D11": [
+      "B1_U1.D11",
+      "B1_J2.3"
+    ],
+    "B1_IO_D12": [
+      "B1_U1.D12",
+      "B1_J2.4"
+    ],
+    "B1_IO_D13": [
+      "B1_U1.D13",
+      "B1_J2.5"
+    ],
+    "B2_VIN_RAW": [
+      "B2_J1.POS",
+      "B2_F1.1"
+    ],
+    "B2_VIN_FUSED": [
+      "B2_F1.2",
+      "B2_D1.A"
+    ],
+    "B2_VIN_PROTECTED": [
+      "B2_D1.K",
+      "B2_U1.IN",
+      "B2_C1.POS",
+      "B2_C2.1",
+      "B2_C5.1"
+    ],
+    "B2_PWR_LED_A": [
+      "B2_R1.2",
+      "B2_D2.A"
+    ]
+  },
+  "expected_netlist": {
+    "schema": "progeneda-expected-netlist/v1",
+    "source": "compiled_main_json_nets",
+    "nets": [
+      {
+        "name": "+5V",
+        "members": [
+          "B1_U1.5V",
+          "B1_J1.1",
+          "B1_SW1.1",
+          "B1_SW2.1",
+          "B2_U1.OUT",
+          "B2_C3.POS",
+          "B2_C4.1",
+          "B2_R1.1",
+          "B2_J2.1"
+        ],
+        "member_count": 9
+      },
+      {
+        "name": "GND",
+        "members": [
+          "B1_U1.GND",
+          "B1_J1.2",
+          "B1_J2.6",
+          "B1_D1.K",
+          "B1_D2.K",
+          "B1_D3.K",
+          "B1_R4.2",
+          "B1_R5.2",
+          "B2_J1.NEG",
+          "B2_U1.GND",
+          "B2_C1.NEG",
+          "B2_C2.2",
+          "B2_C3.NEG",
+          "B2_C4.2",
+          "B2_C5.2",
+          "B2_D2.K",
+          "B2_J2.2"
+        ],
+        "member_count": 17
+      },
+      {
+        "name": "B1_LED1_NET",
+        "members": [
+          "B1_U1.D2",
+          "B1_R1.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_LED1_A",
+        "members": [
+          "B1_R1.2",
+          "B1_D1.A"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_LED2_NET",
+        "members": [
+          "B1_U1.D3",
+          "B1_R2.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_LED2_A",
+        "members": [
+          "B1_R2.2",
+          "B1_D2.A"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_LED3_NET",
+        "members": [
+          "B1_U1.D4",
+          "B1_R3.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_LED3_A",
+        "members": [
+          "B1_R3.2",
+          "B1_D3.A"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_BTN1_NET",
+        "members": [
+          "B1_U1.D5",
+          "B1_SW1.2",
+          "B1_R4.1",
+          "B1_J1.3"
+        ],
+        "member_count": 4
+      },
+      {
+        "name": "B1_BTN2_NET",
+        "members": [
+          "B1_U1.D6",
+          "B1_SW2.2",
+          "B1_R5.1",
+          "B1_J1.4"
+        ],
+        "member_count": 4
+      },
+      {
+        "name": "B1_IO_D7",
+        "members": [
+          "B1_U1.D7",
+          "B1_J1.5"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_IO_D8",
+        "members": [
+          "B1_U1.D8",
+          "B1_J1.6"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_IO_D9",
+        "members": [
+          "B1_U1.D9",
+          "B1_J2.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_IO_D10",
+        "members": [
+          "B1_U1.D10",
+          "B1_J2.2"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_IO_D11",
+        "members": [
+          "B1_U1.D11",
+          "B1_J2.3"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_IO_D12",
+        "members": [
+          "B1_U1.D12",
+          "B1_J2.4"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B1_IO_D13",
+        "members": [
+          "B1_U1.D13",
+          "B1_J2.5"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_VIN_RAW",
+        "members": [
+          "B2_J1.POS",
+          "B2_F1.1"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_VIN_FUSED",
+        "members": [
+          "B2_F1.2",
+          "B2_D1.A"
+        ],
+        "member_count": 2
+      },
+      {
+        "name": "B2_VIN_PROTECTED",
+        "members": [
+          "B2_D1.K",
+          "B2_U1.IN",
+          "B2_C1.POS",
+          "B2_C2.1",
+          "B2_C5.1"
+        ],
+        "member_count": 5
+      },
+      {
+        "name": "B2_PWR_LED_A",
+        "members": [
+          "B2_R1.2",
+          "B2_D2.A"
+        ],
+        "member_count": 2
+      }
+    ],
+    "important_nets": [
+      "+5V",
+      "GND"
+    ]
+  },
+  "stage_contracts": {
+    "component_placer": {
+      "input": "components[].id/ref/kind/value/role/block plus layout_intent",
+      "output": "placed-design contract with component bounds and resolved pin descriptors"
+    },
+    "arrangement_decider": {
+      "input": "components, blocks, nets, layout_intent",
+      "output": "coordinate edit JSON; may rotate components"
+    },
+    "beautifier": {
+      "input": "placed-design contract plus coordinate edits",
+      "output": "same components with revised coordinates/rotations"
+    },
+    "wire_planner": {
+      "input": "placed-design contract plus expected_netlist",
+      "output": "wire route plan and terminal fallback plan"
+    },
+    "terminal_placer": {
+      "input": "placed-design contract plus terminal nets",
+      "output": "terminal/local-label endpoint plan"
+    },
+    "validators": {
+      "input": "generated schematic plus expected_netlist",
+      "output": "validation_report.json"
+    }
+  },
+  "blocks": [
+    {
+      "id": "B1",
+      "name": "Arduino LED/Button Demo",
+      "source_circuit_id": "T01",
+      "component_count": 13,
+      "net_count": 17
+    },
+    {
+      "id": "B2",
+      "name": "5V LM7805 Power Supply",
+      "source_circuit_id": "T02",
+      "component_count": 12,
+      "net_count": 6
+    }
+  ],
+  "generation_notes": {
+    "source": "locked_kicad_common_400_qualification_corpus",
+    "compiler_repairs": [],
+    "repair_policy": "expand endpoint assignments, merge explicit net aliases, and merge nets sharing the same endpoint before validation.",
+    "source_format": "canonical_connected_block_composition",
+    "source_line_count": null
+  },
+  "validation": {
+    "status": "pass",
+    "errors": [],
+    "warnings": [],
+    "component_count": 25,
+    "net_count": 21,
+    "endpoint_count": 71,
+    "validator": "universal_circuit_validator_v0.1",
+    "checked_rules": [
+      "json object shape",
+      "component ref/kind/value presence",
+      "unique component refs",
+      "supported placement kinds",
+      "routing mode contract",
+      "REF.PIN endpoint syntax",
+      "known endpoint component refs",
+      "net has at least two endpoints",
+      "no endpoint on multiple final nets"
+    ]
+  },
+  "qualification": {
+    "schema": "progen-kicad-common-circuit-corpus/v1",
+    "archetype_index": 17,
+    "archetype": "arduino_control_power_board",
+    "category": "embedded",
+    "profile_index": 3,
+    "profile": "field",
+    "source_blocks": [
+      "T01",
+      "T02"
+    ],
+    "electrical_archetype_count": 40,
+    "profiles_per_archetype": 10,
+    "routing_mode": "combination"
+  },
+  "generation_variation": {
+    "enabled": true,
+    "schema": "progen-kicad-generation-variation/v0.1",
+    "source_circuit_id": "KQ17V03",
+    "variation_index": 3,
+    "variation_total": 10,
+    "profile": "loose_channels",
+    "application_profile": "field",
+    "seed": 20262420,
+    "disable_adaptive_cap": true
+  }
+}

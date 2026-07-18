@@ -1,6 +1,21 @@
 # Local KiCad Experiment Generation
 
-Preferred V1 path:
+## Codex 5.6 Current Note
+
+These utilities preserve the earlier local experiment workflow. Codex 5.6
+superseded them for normal generation with the active complete source command:
+
+```bash
+PYTHONPATH=. python -m kicad.pipeline.progen_kicad_executable run INPUT.json \
+  --output-root /tmp/progen-kicad-runs --routing-mode combination
+```
+
+The 5.6 path carries the same discipline into production: deterministic repair,
+source-backed symbols/pins, routing, final validation, optional PCB, immutable
+artifacts, and the portable release. Keep the V1 automation below for its
+historical regression purpose.
+
+Historical V1 path:
 
 ```text
 python kicad/automation/local_generate_experiments_with_groq.py --offline-json path/to/json_folder

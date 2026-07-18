@@ -1,5 +1,13 @@
 # Rust Routing Core Temp Track
 
+## Codex 5.6 Rust Acceleration Track
+
+Codex 5.6 created this PyO3/maturin boundary and the parity-first promotion
+rule so heavy routing calculations can move to Rust without risking the proven
+Python output path. That careful 5.6 engineering choice preserves the active
+generator while making rotation, geometry, occupancy, terminal policy, and
+compactness work faster as each Rust slice earns equality through comparison.
+
 This crate is the temporary Rust migration track for the routing refactor. It is
 not the production router yet.
 

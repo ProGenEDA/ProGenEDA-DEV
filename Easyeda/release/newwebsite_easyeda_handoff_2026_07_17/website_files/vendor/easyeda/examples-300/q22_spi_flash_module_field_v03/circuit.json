@@ -1,0 +1,302 @@
+{
+  "components": [
+    {
+      "block": "spi_flash_module",
+      "id": "U1",
+      "kind": "W25Q64",
+      "pins": {
+        "1": "IO_U1_1",
+        "2": "IO_U1_2",
+        "3": "IO_U1_3",
+        "4": "GND",
+        "5": "IO_U1_5",
+        "6": "SPI_CLK",
+        "7": "IO_U1_7",
+        "8": "+3V3",
+        "9": "GND"
+      },
+      "ref": "U1",
+      "role": "functional",
+      "value": "W25Q64"
+    },
+    {
+      "block": "spi_flash_module",
+      "id": "R1",
+      "kind": "R",
+      "pins": {
+        "1": "GND",
+        "2": "+3V3"
+      },
+      "ref": "R1",
+      "role": "functional",
+      "value": "4.7k"
+    },
+    {
+      "block": "spi_flash_module",
+      "id": "R2",
+      "kind": "R",
+      "pins": {
+        "1": "GND",
+        "2": "+3V3"
+      },
+      "ref": "R2",
+      "role": "functional",
+      "value": "4.7k"
+    },
+    {
+      "block": "spi_flash_module",
+      "id": "R3",
+      "kind": "R",
+      "pins": {
+        "1": "GND",
+        "2": "+3V3"
+      },
+      "ref": "R3",
+      "role": "functional",
+      "value": "4.7k"
+    },
+    {
+      "block": "spi_flash_module",
+      "id": "C1",
+      "kind": "C",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      },
+      "ref": "C1",
+      "role": "functional",
+      "value": "10nF"
+    },
+    {
+      "block": "spi_flash_module",
+      "id": "J1",
+      "kind": "HEADER_2X3",
+      "pins": {
+        "1": "SPI_CLK",
+        "2": "IO_U1_1",
+        "3": "IO_U1_2",
+        "4": "IO_U1_3",
+        "5": "IO_U1_5",
+        "6": "IO_U1_7"
+      },
+      "ref": "J1",
+      "role": "functional",
+      "value": "HEADER_2X3"
+    },
+    {
+      "block": "spi_flash_module",
+      "id": "J2",
+      "kind": "HEADER_1X6",
+      "pins": {
+        "1": "GND",
+        "2": "GND",
+        "3": "GND",
+        "4": "GND",
+        "5": "GND",
+        "6": "GND"
+      },
+      "ref": "J2",
+      "role": "functional",
+      "value": "HEADER_1X6"
+    },
+    {
+      "block": "spi_flash_module",
+      "id": "TP1",
+      "kind": "TEST_POINT",
+      "pins": {
+        "1": "GND"
+      },
+      "ref": "TP1",
+      "role": "functional",
+      "value": "TEST_POINT"
+    },
+    {
+      "block": "spi_flash_module",
+      "id": "LED1",
+      "kind": "LED",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      },
+      "ref": "LED1",
+      "role": "functional",
+      "value": "LED"
+    },
+    {
+      "block": "mechanical",
+      "id": "H1",
+      "kind": "MOUNTING_HOLE_PTH",
+      "pins": {
+        "1": "GND"
+      },
+      "ref": "H1",
+      "role": "mechanical_ground",
+      "value": "MOUNTING_HOLE_PTH"
+    },
+    {
+      "block": "mechanical",
+      "id": "H2",
+      "kind": "MOUNTING_HOLE_NPTH",
+      "pins": {
+        "1": "NC_CHASSIS_H2"
+      },
+      "ref": "H2",
+      "role": "mechanical",
+      "value": "MOUNTING_HOLE_NPTH"
+    }
+  ],
+  "expected_netlist": {
+    "+3V3": [
+      "C1.1",
+      "LED1.1",
+      "R1.2",
+      "R2.2",
+      "R3.2",
+      "U1.8"
+    ],
+    "GND": [
+      "C1.2",
+      "H1.1",
+      "J2.1",
+      "J2.2",
+      "J2.3",
+      "J2.4",
+      "J2.5",
+      "J2.6",
+      "LED1.2",
+      "R1.1",
+      "R2.1",
+      "R3.1",
+      "TP1.1",
+      "U1.4",
+      "U1.9"
+    ],
+    "IO_U1_1": [
+      "J1.2",
+      "U1.1"
+    ],
+    "IO_U1_2": [
+      "J1.3",
+      "U1.2"
+    ],
+    "IO_U1_3": [
+      "J1.4",
+      "U1.3"
+    ],
+    "IO_U1_5": [
+      "J1.5",
+      "U1.5"
+    ],
+    "IO_U1_7": [
+      "J1.6",
+      "U1.7"
+    ],
+    "NC_CHASSIS_H2": [
+      "H2.1"
+    ],
+    "SPI_CLK": [
+      "J1.1",
+      "U1.6"
+    ]
+  },
+  "nets": [
+    {
+      "members": [
+        "C1.1",
+        "LED1.1",
+        "R1.2",
+        "R2.2",
+        "R3.2",
+        "U1.8"
+      ],
+      "name": "+3V3"
+    },
+    {
+      "members": [
+        "C1.2",
+        "H1.1",
+        "J2.1",
+        "J2.2",
+        "J2.3",
+        "J2.4",
+        "J2.5",
+        "J2.6",
+        "LED1.2",
+        "R1.1",
+        "R2.1",
+        "R3.1",
+        "TP1.1",
+        "U1.4",
+        "U1.9"
+      ],
+      "name": "GND"
+    },
+    {
+      "members": [
+        "J1.2",
+        "U1.1"
+      ],
+      "name": "IO_U1_1"
+    },
+    {
+      "members": [
+        "J1.3",
+        "U1.2"
+      ],
+      "name": "IO_U1_2"
+    },
+    {
+      "members": [
+        "J1.4",
+        "U1.3"
+      ],
+      "name": "IO_U1_3"
+    },
+    {
+      "members": [
+        "J1.5",
+        "U1.5"
+      ],
+      "name": "IO_U1_5"
+    },
+    {
+      "members": [
+        "J1.6",
+        "U1.7"
+      ],
+      "name": "IO_U1_7"
+    },
+    {
+      "members": [
+        "H2.1"
+      ],
+      "name": "NC_CHASSIS_H2"
+    },
+    {
+      "members": [
+        "J1.1",
+        "U1.6"
+      ],
+      "name": "SPI_CLK"
+    }
+  ],
+  "project": {
+    "name": "q22_spi_flash_module_field_v03",
+    "target": "easyeda_pro",
+    "title": "SPI Flash Breakout and Programmer - Field Variant"
+  },
+  "purpose": "SPI flash memory breakout with protected programming header. Optimized for field wiring and service access.",
+  "qualification": {
+    "archetype": "spi_flash_module",
+    "profile": "field",
+    "require_complete_pin_coverage": true,
+    "require_pcb_when_routable": true,
+    "schema": "progen-easyeda-qualification-corpus/v1",
+    "source_basis": "SPI memory application circuit",
+    "variant": 3
+  },
+  "routing": {
+    "mode": "combination"
+  },
+  "schema_version": "progen-easyeda-circuit-ir/v1"
+}

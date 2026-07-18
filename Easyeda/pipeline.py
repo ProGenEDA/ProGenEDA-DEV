@@ -7,7 +7,7 @@ from dataclasses import asdict
 from datetime import datetime
 import json
 from pathlib import Path
-from typing import Any, Mapping
+from typing import Any, Callable, Mapping
 import zipfile
 
 from .catalogue import CATALOGUE_VERSION, get_entry
@@ -21,6 +21,7 @@ from .value_editor import normalize_circuit_values
 
 
 PIPELINE_SCHEMA = "progen-easyeda-pipeline/v1"
+ProgressCallback = Callable[[dict[str, Any]], None]
 
 
 class PipelineError(RuntimeError):
@@ -136,15 +137,29 @@ def generate_project(
     source_pack: Path | str | None = None,
     output_root: Path | str,
     routing_mode: str | None = None,
+    on_progress: ProgressCallback | None = None,
 ) -> dict[str, Any]:
     """Generate, validate, and package one immutable EasyEDA project run."""
+
+    def progress(stage: str, message: str, percent: int) -> None:
+        if on_progress is not None:
+            on_progress(
+                {
+                    "event": "stage",
+                    "stage": stage,
+                    "message": message,
+                    "percent": percent,
+                }
+            )
 
     source = EasyedaDonorSource(
         Path(source_pack) if source_pack is not None else bundled_source_pack()
     )
     fixed = repair_circuit_input(input_value, source)
+    progress("fix_and_validate_input", "Input JSON repaired and validated", 10)
     circuit = load_circuit(fixed.fixed, routing_mode=routing_mode)
     circuit, value_report = normalize_circuit_values(circuit)
+    progress("normalize_values", "Component references and values normalized", 18)
     run_directory = _new_run_directory(Path(output_root).expanduser().resolve(), circuit.name)
     normalized_path = run_directory / "normalized_input.json"
     normalized = circuit.normalized_json()
@@ -159,8 +174,11 @@ def generate_project(
     _json(run_directory / "source_provenance.json", source.provenance())
 
     packets = _resolve_packets(source, circuit)
+    progress("resolve_donor_catalogue", "Exact donor-native components resolved", 30)
     placed = place_components(circuit, packets)
+    progress("place_components", "Schematic components placed", 42)
     routed = route_nets(circuit, placed)
+    progress("route_schematic", "Physical wires and native terminals planned", 58)
     _json(run_directory / "placement.json", _placement_report(placed))
     _json(run_directory / "routing.json", _routing_report(routed))
     wire_failures = [
@@ -181,9 +199,11 @@ def generate_project(
 
     project_path = run_directory / f"{circuit.name}.eprj"
     native = write_project(project_path, source, circuit, placed, routed, packets)
+    progress("write_native_eprj", "Native EasyEDA schematic and PCB records written", 74)
     _json(run_directory / "donor_manifest.json", native.donor_manifest)
     _json(run_directory / "pcb_report.json", _pcb_report(native))
     validation = validate_native_project(project_path, circuit, native, packets)
+    progress("validate_native_eprj", "Native project, netlist, geometry, and PCB validated", 90)
     _json(run_directory / "validation_report.json", validation.report)
     pipeline_report = {
         "schema": PIPELINE_SCHEMA,
@@ -203,6 +223,7 @@ def generate_project(
     }
     _json(run_directory / "pipeline_report.json", pipeline_report)
     internal_zip = _zip_internal(run_directory, project_path)
+    progress("package_artifacts", "Project and private audit artifacts packaged", 98)
     result = {
         **pipeline_report,
         "run_directory": str(run_directory),

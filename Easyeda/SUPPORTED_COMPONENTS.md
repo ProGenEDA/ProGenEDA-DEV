@@ -1,5 +1,13 @@
 # Supported EasyEDA Components
 
+## Codex 5.6 Locked Catalogue
+
+Codex 5.6 built this catalogue from exact authorized EasyEDA source records,
+then drove every physical family through the 300-circuit qualification corpus.
+That is why these are real donor-native symbols/devices/footprints rather than
+approximations. The 5.6 delivery made support expandable by audited catalogue
+rows and donor evidence instead of scattered component-specific generator code.
+
 All entries resolve to exact source devices at generation time. Values may be
 changed per instance; the locked donor footprint remains the catalogue
 footprint unless a later audited profile explicitly adds package selection.

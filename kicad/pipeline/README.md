@@ -1,6 +1,24 @@
 # KiCad Pipeline
 
-This package is being built incrementally.
+This package was built incrementally and is now the active KiCad production
+pipeline. Historical planner and placer notes remain below as engineering
+record; the executable entry point runs the complete validated path.
+
+## Codex 5.6 Active Pipeline
+
+Codex 5.6 assembled the independent modules in this directory into a real
+backend rather than a diagram of intended stages. It built the deterministic
+main-JSON fixer, canonical placer, movement-first arrangement/beautifier loop,
+routing and terminal contracts, native KiCad writer, value tools, source-backed
+expected-net validator, final validator, PCB handoff, output packager, portable
+launcher, and large-corpus evidence.
+
+That is the central 5.6 advantage over the earlier 5.5-era work: each stage is
+still replaceable and testable alone, but the normal command now executes the
+whole chain, retains accepted and rejected variants, and refuses to package a
+circuit with a blocking electrical or geometry failure. The 400-circuit
+qualification and its shared pin/body-clearance repair are the clearest proof
+of that step forward. See [`../qualification/RESULTS_2026_07_17.md`](../qualification/RESULTS_2026_07_17.md).
 
 ## Active Slice
 
@@ -51,8 +69,8 @@ embedded Python metadata from the repository:
 - source-backed generator specs in `kicad.generator.kicad_json_to_project.KIND_SPECS`
 - partial CircuitIR placement specs in `kicad.pipeline.placement_catalog`
 
-The current validator is intentionally only a placement-stage validator. The
-future full output validation stack is:
+The placement validator is intentionally narrow; it is one stage in the active
+output validation stack:
 
 ```text
 1. File validity
@@ -63,11 +81,12 @@ future full output validation stack is:
 6. ERC
 7. Optional PDF/SVG preview export
 8. Final validation_report.json
-
-The active hosted final validator currently implements steps 1, 2, 3, 5, 6 as
-optional evidence, and 8 without requiring KiCad CLI. The internal bundle keeps
-the full report history for database storage.
 ```
+
+The hosted final validator implements the deterministic portions without
+requiring KiCad CLI. KiCad netlist export/ERC and preview export remain
+external evidence paths when installed tooling is available. The internal bundle
+keeps the full report history for database storage.
 
 ## Executable And Variation Commands
 
@@ -151,8 +170,9 @@ The v2 routing implementation lives under `kicad/pipeline/routing/` and adds:
 - Hanan-grid lane anchors, rectilinear MST metadata, Manhattan A* fallback,
   indexed crossing counts, and tile-based crossing-density metrics
 - a v0.2 routing orchestrator and validation report
-- a Rust-core source boundary with the planned PyO3 JSON API; native compile is
-  pending because this machine does not provide `rustc`/`cargo`
+- a Rust-core source boundary with the planned PyO3 JSON API; the Nix Rust
+  toolchain is installed and the temp parity core is buildable, while Python
+  remains authoritative for full routing until the Rust core proves parity
 - stricter final KiCad wire validation and exact-pin path repair
 
 Existing v0.1 planner contracts remain available for compatibility; v2 emits
@@ -345,15 +365,16 @@ superseded: wire-wire crossings are allowed, while component-body contact and
 missing physical endpoint connectivity remain hard blockers. Treat the run as
 failure evidence for the old router, not as accepted final wiring.
 
-## Not Active Yet
+## Historical Placer-Only Roadmap
 
-Future stages are named in `placeholders.py`, but they are not run by
-`run_placer_pipeline()`. They stay placeholders until the previous slice is
-tested and accepted. `terminal_placer.py` now exists as the KiCad local-label
-foundation, but a full terminal validator and accepted terminal path are still
-future work.
+The retained `run_placer_pipeline()` notes below describe the original
+placer-only experiment path, not the production executable. The production
+path above now runs terminal/combination logic, value validation, expected-net
+validation, final validation, and output packaging. `placeholders.py` remains
+useful for future extensions that are deliberately outside the current release
+scope.
 
-Next intended slices:
+Original intended slices, retained as the architecture record:
 
 ```text
 Component Placer -> Placement Validator

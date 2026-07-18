@@ -1,0 +1,463 @@
+{
+  "components": [
+    {
+      "block": "ch340_usb_uart",
+      "id": "J1",
+      "kind": "USB_C_RECEPTACLE",
+      "pins": {
+        "0": "GND",
+        "A1": "GND",
+        "A12": "GND",
+        "A4": "USB_VBUS",
+        "A5": "USB_CC1",
+        "A6": "USB_DP",
+        "A7": "USB_DM",
+        "A8": "NC_J1_A8",
+        "A9": "USB_VBUS",
+        "B1": "GND",
+        "B12": "GND",
+        "B4": "USB_VBUS",
+        "B5": "USB_CC2",
+        "B6": "USB_DP",
+        "B7": "USB_DM",
+        "B8": "NC_J1_B8",
+        "B9": "USB_VBUS"
+      },
+      "ref": "J1",
+      "role": "functional",
+      "value": "USB_C_RECEPTACLE"
+    },
+    {
+      "block": "expansion",
+      "id": "J3",
+      "kind": "HEADER_2X5_1P27",
+      "pins": {
+        "1": "IO_U2_2",
+        "10": "GND",
+        "2": "IO_U2_4",
+        "3": "IO_U2_5",
+        "4": "IO_U2_6",
+        "5": "IO_U2_10",
+        "6": "GND",
+        "7": "GND",
+        "8": "GND",
+        "9": "GND"
+      },
+      "ref": "J3",
+      "role": "full_pin_breakout",
+      "value": "HEADER_2X5_1P27"
+    },
+    {
+      "block": "ch340_usb_uart",
+      "id": "U1",
+      "kind": "USBLC6_2SC6",
+      "pins": {
+        "1": "USB_DP",
+        "2": "GND",
+        "3": "USB_DM",
+        "4": "USB_DM",
+        "5": "USB_VBUS",
+        "6": "USB_DP"
+      },
+      "ref": "U1",
+      "role": "functional",
+      "value": "USBLC6_2SC6"
+    },
+    {
+      "block": "ch340_usb_uart",
+      "id": "F1",
+      "kind": "PTC_FUSE",
+      "pins": {
+        "1": "+5V_FUSED",
+        "2": "USB_VBUS"
+      },
+      "ref": "F1",
+      "role": "functional",
+      "value": "750mA"
+    },
+    {
+      "block": "ch340_usb_uart",
+      "id": "U2",
+      "kind": "CH340",
+      "pins": {
+        "1": "IO_U2_1",
+        "10": "IO_U2_10",
+        "2": "IO_U2_2",
+        "3": "GND",
+        "4": "IO_U2_4",
+        "5": "IO_U2_5",
+        "6": "IO_U2_6",
+        "7": "+5V",
+        "8": "UART_TX",
+        "9": "UART_RX"
+      },
+      "ref": "U2",
+      "role": "functional",
+      "value": "CH340"
+    },
+    {
+      "block": "ch340_usb_uart",
+      "id": "C1",
+      "kind": "C",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      },
+      "ref": "C1",
+      "role": "functional",
+      "value": "1uF"
+    },
+    {
+      "block": "ch340_usb_uart",
+      "id": "C2",
+      "kind": "C",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      },
+      "ref": "C2",
+      "role": "functional",
+      "value": "1uF"
+    },
+    {
+      "block": "ch340_usb_uart",
+      "id": "R1",
+      "kind": "R",
+      "pins": {
+        "1": "GND",
+        "2": "+5V"
+      },
+      "ref": "R1",
+      "role": "functional",
+      "value": "1k"
+    },
+    {
+      "block": "ch340_usb_uart",
+      "id": "LED1",
+      "kind": "LED",
+      "pins": {
+        "1": "+5V",
+        "2": "GND"
+      },
+      "ref": "LED1",
+      "role": "functional",
+      "value": "LED"
+    },
+    {
+      "block": "ch340_usb_uart",
+      "id": "J2",
+      "kind": "HEADER_1X6",
+      "pins": {
+        "1": "USB_CC2",
+        "2": "USB_CC1",
+        "3": "+5V_FUSED",
+        "4": "UART_TX",
+        "5": "UART_RX",
+        "6": "IO_U2_1"
+      },
+      "ref": "J2",
+      "role": "functional",
+      "value": "HEADER_1X6"
+    },
+    {
+      "block": "mechanical",
+      "id": "H1",
+      "kind": "MOUNTING_HOLE_PTH",
+      "pins": {
+        "1": "GND"
+      },
+      "ref": "H1",
+      "role": "mechanical_ground",
+      "value": "MOUNTING_HOLE_PTH"
+    },
+    {
+      "block": "mechanical",
+      "id": "H2",
+      "kind": "MOUNTING_HOLE_NPTH",
+      "pins": {
+        "1": "NC_CHASSIS_H2"
+      },
+      "ref": "H2",
+      "role": "mechanical",
+      "value": "MOUNTING_HOLE_NPTH"
+    }
+  ],
+  "expected_netlist": {
+    "+5V": [
+      "C1.1",
+      "C2.1",
+      "LED1.1",
+      "R1.2",
+      "U2.7"
+    ],
+    "+5V_FUSED": [
+      "F1.1",
+      "J2.3"
+    ],
+    "GND": [
+      "C1.2",
+      "C2.2",
+      "H1.1",
+      "J1.0",
+      "J1.A1",
+      "J1.A12",
+      "J1.B1",
+      "J1.B12",
+      "J3.10",
+      "J3.6",
+      "J3.7",
+      "J3.8",
+      "J3.9",
+      "LED1.2",
+      "R1.1",
+      "U1.2",
+      "U2.3"
+    ],
+    "IO_U2_1": [
+      "J2.6",
+      "U2.1"
+    ],
+    "IO_U2_10": [
+      "J3.5",
+      "U2.10"
+    ],
+    "IO_U2_2": [
+      "J3.1",
+      "U2.2"
+    ],
+    "IO_U2_4": [
+      "J3.2",
+      "U2.4"
+    ],
+    "IO_U2_5": [
+      "J3.3",
+      "U2.5"
+    ],
+    "IO_U2_6": [
+      "J3.4",
+      "U2.6"
+    ],
+    "NC_CHASSIS_H2": [
+      "H2.1"
+    ],
+    "NC_J1_A8": [
+      "J1.A8"
+    ],
+    "NC_J1_B8": [
+      "J1.B8"
+    ],
+    "UART_RX": [
+      "J2.5",
+      "U2.9"
+    ],
+    "UART_TX": [
+      "J2.4",
+      "U2.8"
+    ],
+    "USB_CC1": [
+      "J1.A5",
+      "J2.2"
+    ],
+    "USB_CC2": [
+      "J1.B5",
+      "J2.1"
+    ],
+    "USB_DM": [
+      "J1.A7",
+      "J1.B7",
+      "U1.3",
+      "U1.4"
+    ],
+    "USB_DP": [
+      "J1.A6",
+      "J1.B6",
+      "U1.1",
+      "U1.6"
+    ],
+    "USB_VBUS": [
+      "F1.2",
+      "J1.A4",
+      "J1.A9",
+      "J1.B4",
+      "J1.B9",
+      "U1.5"
+    ]
+  },
+  "nets": [
+    {
+      "members": [
+        "C1.1",
+        "C2.1",
+        "LED1.1",
+        "R1.2",
+        "U2.7"
+      ],
+      "name": "+5V"
+    },
+    {
+      "members": [
+        "F1.1",
+        "J2.3"
+      ],
+      "name": "+5V_FUSED"
+    },
+    {
+      "members": [
+        "C1.2",
+        "C2.2",
+        "H1.1",
+        "J1.0",
+        "J1.A1",
+        "J1.A12",
+        "J1.B1",
+        "J1.B12",
+        "J3.10",
+        "J3.6",
+        "J3.7",
+        "J3.8",
+        "J3.9",
+        "LED1.2",
+        "R1.1",
+        "U1.2",
+        "U2.3"
+      ],
+      "name": "GND"
+    },
+    {
+      "members": [
+        "J2.6",
+        "U2.1"
+      ],
+      "name": "IO_U2_1"
+    },
+    {
+      "members": [
+        "J3.5",
+        "U2.10"
+      ],
+      "name": "IO_U2_10"
+    },
+    {
+      "members": [
+        "J3.1",
+        "U2.2"
+      ],
+      "name": "IO_U2_2"
+    },
+    {
+      "members": [
+        "J3.2",
+        "U2.4"
+      ],
+      "name": "IO_U2_4"
+    },
+    {
+      "members": [
+        "J3.3",
+        "U2.5"
+      ],
+      "name": "IO_U2_5"
+    },
+    {
+      "members": [
+        "J3.4",
+        "U2.6"
+      ],
+      "name": "IO_U2_6"
+    },
+    {
+      "members": [
+        "H2.1"
+      ],
+      "name": "NC_CHASSIS_H2"
+    },
+    {
+      "members": [
+        "J1.A8"
+      ],
+      "name": "NC_J1_A8"
+    },
+    {
+      "members": [
+        "J1.B8"
+      ],
+      "name": "NC_J1_B8"
+    },
+    {
+      "members": [
+        "J2.5",
+        "U2.9"
+      ],
+      "name": "UART_RX"
+    },
+    {
+      "members": [
+        "J2.4",
+        "U2.8"
+      ],
+      "name": "UART_TX"
+    },
+    {
+      "members": [
+        "J1.A5",
+        "J2.2"
+      ],
+      "name": "USB_CC1"
+    },
+    {
+      "members": [
+        "J1.B5",
+        "J2.1"
+      ],
+      "name": "USB_CC2"
+    },
+    {
+      "members": [
+        "J1.A7",
+        "J1.B7",
+        "U1.3",
+        "U1.4"
+      ],
+      "name": "USB_DM"
+    },
+    {
+      "members": [
+        "J1.A6",
+        "J1.B6",
+        "U1.1",
+        "U1.6"
+      ],
+      "name": "USB_DP"
+    },
+    {
+      "members": [
+        "F1.2",
+        "J1.A4",
+        "J1.A9",
+        "J1.B4",
+        "J1.B9",
+        "U1.5"
+      ],
+      "name": "USB_VBUS"
+    }
+  ],
+  "project": {
+    "name": "q14_ch340_usb_uart_prototype_v02",
+    "target": "easyeda_pro",
+    "title": "CH340 USB UART Adapter - Prototype Variant"
+  },
+  "purpose": "5 V USB-C serial adapter with protected data lines. Optimized for rapid firmware and hardware prototyping.",
+  "qualification": {
+    "archetype": "ch340_usb_uart",
+    "profile": "prototype",
+    "require_complete_pin_coverage": true,
+    "require_pcb_when_routable": true,
+    "schema": "progen-easyeda-qualification-corpus/v1",
+    "source_basis": "USB-UART adapter reference practice",
+    "variant": 2
+  },
+  "routing": {
+    "mode": "combination"
+  },
+  "schema_version": "progen-easyeda-circuit-ir/v1"
+}

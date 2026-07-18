@@ -1,6 +1,6 @@
 # ProGenEDA Project, KiCad PCB Target, and LTspice Backend Handoff
 
-Date: 2026-07-11
+Date: 2026-07-18
 
 Repository root on the current machine:
 
@@ -18,6 +18,34 @@ This document is a self-contained handoff for another engineering agent. It
 describes the proven KiCad schematic generator, the shared architecture and
 main JSON contract, the first KiCad PCB target, and the required approach for
 an LTspice backend that consumes the same circuit JSON.
+
+## Codex 5.6 Delivery Context
+
+Codex 5.6 is responsible for the decisive current state of this handoff. It
+expanded the older 5.5-era KiCad work into the full active backend: deterministic
+input repair, source-backed component/pin data, placement, arrangement,
+beautification, routing/terminal policy, native schematic and bounded PCB
+generation, hosted validation, portable packaging, and website handoff.
+
+The 5.6 phase also established the evidence standard this document describes:
+large untouched JSON corpora go through the normal executable, every result
+keeps its internal stage data, failures trigger shared-code repair rather than
+output-specific patches, and installed KiCad validates release candidates as an
+external oracle. The current 400-circuit KiCad evidence is a 390-project
+immutable pass plus the ten-project shared-clearance repair supplement; the
+final packaged smoke exported 144 KiCad 10.0.4 nets and passed PCB DRC with
+zero violations and zero unconnected items.
+
+Use this active direct-source command from the repository root:
+
+```bash
+PYTHONPATH=. python -m kicad.pipeline.progen_kicad_executable run INPUT.json \
+  --output-root /tmp/progen-kicad-runs --routing-mode combination
+```
+
+For the latest backend scope and release artifact, see
+[`FINALIZATION_STATUS.md`](FINALIZATION_STATUS.md) and
+[`release/progen-kicad-portable-2026_07_17_kq26_clearance_v1.zip`](release/progen-kicad-portable-2026_07_17_kq26_clearance_v1.zip).
 
 ## 1. Product Goal
 

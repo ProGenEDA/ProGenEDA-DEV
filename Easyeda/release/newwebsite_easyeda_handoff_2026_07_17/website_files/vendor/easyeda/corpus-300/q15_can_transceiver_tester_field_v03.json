@@ -1,0 +1,364 @@
+{
+  "components": [
+    {
+      "block": "can_transceiver_tester",
+      "id": "U1",
+      "kind": "SN65HVD230",
+      "pins": {
+        "1": "CAN_TX",
+        "2": "GND",
+        "3": "+3V3",
+        "4": "CAN_RX",
+        "5": "CAN_VREF",
+        "6": "CAN_L",
+        "7": "CAN_H",
+        "8": "CAN_SLOPE"
+      },
+      "ref": "U1",
+      "role": "functional",
+      "value": "SN65HVD230"
+    },
+    {
+      "block": "expansion",
+      "id": "J3",
+      "kind": "HEADER_2X5_1P27",
+      "pins": {
+        "1": "IO_D1_1",
+        "10": "GND",
+        "2": "GND",
+        "3": "GND",
+        "4": "GND",
+        "5": "GND",
+        "6": "GND",
+        "7": "GND",
+        "8": "GND",
+        "9": "GND"
+      },
+      "ref": "J3",
+      "role": "full_pin_breakout",
+      "value": "HEADER_2X5_1P27"
+    },
+    {
+      "block": "can_transceiver_tester",
+      "id": "D1",
+      "kind": "SM24CANB",
+      "pins": {
+        "1": "IO_D1_1",
+        "2": "IO_D1_2",
+        "3": "IO_D1_3"
+      },
+      "ref": "D1",
+      "role": "functional",
+      "value": "SM24CANB"
+    },
+    {
+      "block": "can_transceiver_tester",
+      "id": "R1",
+      "kind": "R",
+      "pins": {
+        "1": "GND",
+        "2": "+3V3"
+      },
+      "ref": "R1",
+      "role": "functional",
+      "value": "4.7k"
+    },
+    {
+      "block": "can_transceiver_tester",
+      "id": "R2",
+      "kind": "R",
+      "pins": {
+        "1": "GND",
+        "2": "+3V3"
+      },
+      "ref": "R2",
+      "role": "functional",
+      "value": "4.7k"
+    },
+    {
+      "block": "can_transceiver_tester",
+      "id": "C1",
+      "kind": "C",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      },
+      "ref": "C1",
+      "role": "functional",
+      "value": "10nF"
+    },
+    {
+      "block": "can_transceiver_tester",
+      "id": "J1",
+      "kind": "TERMINAL_BLOCK",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      },
+      "ref": "J1",
+      "role": "functional",
+      "value": "TERMINAL_BLOCK"
+    },
+    {
+      "block": "can_transceiver_tester",
+      "id": "J2",
+      "kind": "HEADER_1X6",
+      "pins": {
+        "1": "CAN_TX",
+        "2": "CAN_RX",
+        "3": "CAN_VREF",
+        "4": "CAN_L",
+        "5": "CAN_H",
+        "6": "CAN_SLOPE"
+      },
+      "ref": "J2",
+      "role": "functional",
+      "value": "HEADER_1X6"
+    },
+    {
+      "block": "can_transceiver_tester",
+      "id": "TP1",
+      "kind": "TEST_POINT",
+      "pins": {
+        "1": "IO_D1_2"
+      },
+      "ref": "TP1",
+      "role": "functional",
+      "value": "TEST_POINT"
+    },
+    {
+      "block": "can_transceiver_tester",
+      "id": "TP2",
+      "kind": "TEST_POINT",
+      "pins": {
+        "1": "IO_D1_3"
+      },
+      "ref": "TP2",
+      "role": "functional",
+      "value": "TEST_POINT"
+    },
+    {
+      "block": "can_transceiver_tester",
+      "id": "LED1",
+      "kind": "LED",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      },
+      "ref": "LED1",
+      "role": "functional",
+      "value": "LED"
+    },
+    {
+      "block": "mechanical",
+      "id": "H1",
+      "kind": "MOUNTING_HOLE_PTH",
+      "pins": {
+        "1": "GND"
+      },
+      "ref": "H1",
+      "role": "mechanical_ground",
+      "value": "MOUNTING_HOLE_PTH"
+    },
+    {
+      "block": "mechanical",
+      "id": "H2",
+      "kind": "MOUNTING_HOLE_NPTH",
+      "pins": {
+        "1": "NC_CHASSIS_H2"
+      },
+      "ref": "H2",
+      "role": "mechanical",
+      "value": "MOUNTING_HOLE_NPTH"
+    }
+  ],
+  "expected_netlist": {
+    "+3V3": [
+      "C1.1",
+      "J1.1",
+      "LED1.1",
+      "R1.2",
+      "R2.2",
+      "U1.3"
+    ],
+    "CAN_H": [
+      "J2.5",
+      "U1.7"
+    ],
+    "CAN_L": [
+      "J2.4",
+      "U1.6"
+    ],
+    "CAN_RX": [
+      "J2.2",
+      "U1.4"
+    ],
+    "CAN_SLOPE": [
+      "J2.6",
+      "U1.8"
+    ],
+    "CAN_TX": [
+      "J2.1",
+      "U1.1"
+    ],
+    "CAN_VREF": [
+      "J2.3",
+      "U1.5"
+    ],
+    "GND": [
+      "C1.2",
+      "H1.1",
+      "J1.2",
+      "J3.10",
+      "J3.2",
+      "J3.3",
+      "J3.4",
+      "J3.5",
+      "J3.6",
+      "J3.7",
+      "J3.8",
+      "J3.9",
+      "LED1.2",
+      "R1.1",
+      "R2.1",
+      "U1.2"
+    ],
+    "IO_D1_1": [
+      "D1.1",
+      "J3.1"
+    ],
+    "IO_D1_2": [
+      "D1.2",
+      "TP1.1"
+    ],
+    "IO_D1_3": [
+      "D1.3",
+      "TP2.1"
+    ],
+    "NC_CHASSIS_H2": [
+      "H2.1"
+    ]
+  },
+  "nets": [
+    {
+      "members": [
+        "C1.1",
+        "J1.1",
+        "LED1.1",
+        "R1.2",
+        "R2.2",
+        "U1.3"
+      ],
+      "name": "+3V3"
+    },
+    {
+      "members": [
+        "J2.5",
+        "U1.7"
+      ],
+      "name": "CAN_H"
+    },
+    {
+      "members": [
+        "J2.4",
+        "U1.6"
+      ],
+      "name": "CAN_L"
+    },
+    {
+      "members": [
+        "J2.2",
+        "U1.4"
+      ],
+      "name": "CAN_RX"
+    },
+    {
+      "members": [
+        "J2.6",
+        "U1.8"
+      ],
+      "name": "CAN_SLOPE"
+    },
+    {
+      "members": [
+        "J2.1",
+        "U1.1"
+      ],
+      "name": "CAN_TX"
+    },
+    {
+      "members": [
+        "J2.3",
+        "U1.5"
+      ],
+      "name": "CAN_VREF"
+    },
+    {
+      "members": [
+        "C1.2",
+        "H1.1",
+        "J1.2",
+        "J3.10",
+        "J3.2",
+        "J3.3",
+        "J3.4",
+        "J3.5",
+        "J3.6",
+        "J3.7",
+        "J3.8",
+        "J3.9",
+        "LED1.2",
+        "R1.1",
+        "R2.1",
+        "U1.2"
+      ],
+      "name": "GND"
+    },
+    {
+      "members": [
+        "D1.1",
+        "J3.1"
+      ],
+      "name": "IO_D1_1"
+    },
+    {
+      "members": [
+        "D1.2",
+        "TP1.1"
+      ],
+      "name": "IO_D1_2"
+    },
+    {
+      "members": [
+        "D1.3",
+        "TP2.1"
+      ],
+      "name": "IO_D1_3"
+    },
+    {
+      "members": [
+        "H2.1"
+      ],
+      "name": "NC_CHASSIS_H2"
+    }
+  ],
+  "project": {
+    "name": "q15_can_transceiver_tester_field_v03",
+    "target": "easyeda_pro",
+    "title": "CAN Physical Layer Tester - Field Variant"
+  },
+  "purpose": "Protected CAN transceiver test fixture with termination and breakout. Optimized for field wiring and service access.",
+  "qualification": {
+    "archetype": "can_transceiver_tester",
+    "profile": "field",
+    "require_complete_pin_coverage": true,
+    "require_pcb_when_routable": true,
+    "schema": "progen-easyeda-qualification-corpus/v1",
+    "source_basis": "TI CAN interface practice",
+    "variant": 3
+  },
+  "routing": {
+    "mode": "combination"
+  },
+  "schema_version": "progen-easyeda-circuit-ir/v1"
+}

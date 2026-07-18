@@ -1,0 +1,49 @@
+{
+  "name": "progeneda-web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "dev:api": "node apps/api/src/server.mjs",
+    "dev:worker": "node apps/worker/src/worker.mjs",
+    "build": "tsc -b && vite build && vite build --ssr src/ssr.tsx --outDir .tmp-ssr && node scripts/prerender-public-pages.mjs",
+    "preview": "vite preview --host 0.0.0.0",
+    "lint": "eslint .",
+    "test:ui": "playwright test",
+    "test:kicad:corpus": "node scripts/test-kicad-website-corpus.mjs",
+    "test:ltspice:corpus": "node scripts/test-ltspice-website-corpus.mjs",
+    "test:ltspice:json-entry": "node scripts/test-ltspice-json-entry.mjs",
+    "test:easyeda:corpus": "node scripts/test-easyeda-website-corpus.mjs",
+    "test:easyeda:integration": "node scripts/test-easyeda-integration.mjs",
+    "test:proteus:registry": "node scripts/test-proteus-registry.mjs",
+    "test:seo": "node scripts/test-seo.mjs",
+    "test:json-lab": "node scripts/test-json-lab.mjs",
+    "test:ai:fixture": "node scripts/test-ai-fixture.mjs",
+    "test:provider-defaults": "node scripts/test-provider-defaults.mjs",
+    "docs:structure": "node scripts/generate-folder-structure.mjs"
+  },
+  "dependencies": {
+    "@fontsource-variable/inter": "^5.2.8",
+    "@fontsource-variable/manrope": "^5.2.8",
+    "@vitejs/plugin-react": "^4.3.4",
+    "iconsax-react": "^0.0.8",
+    "lucide-react": "^0.468.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "three": "^0.185.0",
+    "vite": "^6.0.5"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "@playwright/test": "^1.49.1",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "eslint": "^9.17.0",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "eslint-plugin-react-refresh": "^0.4.16",
+    "globals": "^15.14.0",
+    "typescript": "~5.7.2",
+    "typescript-eslint": "^8.62.0"
+  }
+}

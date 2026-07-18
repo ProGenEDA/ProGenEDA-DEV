@@ -1,5 +1,13 @@
 # KiCad Tools
 
+## Codex 5.6 Local Tooling Delivery
+
+Codex 5.6 made local KiCad 10.0.4 a dependable release oracle in this
+environment: it installed the portable application, hardened the launcher
+against the NixOS/XWayland instability, registered project opening support,
+and used the CLI for external netlist and DRC evidence. Generation itself
+remains fully source-backed and does not require this local application.
+
 ## open_local_kicad.sh
 
 Launches the local KiCad 10.0.4 AppImage unpacked under `kicad/.local/`.

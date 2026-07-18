@@ -27,6 +27,12 @@ def _parser() -> argparse.ArgumentParser:
     )
     run.add_argument("--output-root", type=Path, required=True)
     run.add_argument("--routing-mode", choices=("wire", "terminal", "combination"))
+    run.add_argument(
+        "--events",
+        choices=("summary", "ndjson"),
+        default="summary",
+        help="Emit one final JSON summary or streamed NDJSON stage events.",
+    )
     subparsers.add_parser("catalogue", help="Print the locked donor-only component catalogue.")
     editable = subparsers.add_parser(
         "editable", help="Print normal-mode editable fields for one circuit."
@@ -98,17 +104,33 @@ def main(argv: list[str] | None = None) -> int:
             )
         print(json.dumps(result.report, ensure_ascii=False, indent=2, sort_keys=True))
         return 0
+    def emit_progress(event: dict[str, object]) -> None:
+        if args.events == "ndjson":
+            print(json.dumps(event, ensure_ascii=False, sort_keys=True), flush=True)
+
     try:
         result = generate_project(
             args.input,
             source_pack=args.source_pack,
             output_root=args.output_root,
             routing_mode=args.routing_mode,
+            on_progress=emit_progress if args.events == "ndjson" else None,
         )
     except (PipelineError, RuntimeError, ValueError, OSError) as exc:
-        print(json.dumps({"passed": False, "error": str(exc)}, ensure_ascii=False), file=sys.stderr)
+        failure = {"event": "error", "passed": False, "error": str(exc)}
+        print(json.dumps(failure, ensure_ascii=False), file=sys.stderr)
         return 2
-    print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
+    if args.events == "ndjson":
+        print(
+            json.dumps(
+                {"event": "complete", "summary": result},
+                ensure_ascii=False,
+                sort_keys=True,
+            ),
+            flush=True,
+        )
+    else:
+        print(json.dumps(result, ensure_ascii=False, indent=2, sort_keys=True))
     return 0
 
 

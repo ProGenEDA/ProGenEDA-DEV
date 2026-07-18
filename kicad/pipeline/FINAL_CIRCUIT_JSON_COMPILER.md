@@ -2,6 +2,15 @@
 
 Date started: 2026-07-02
 
+## Codex 5.6 Compiler Delivery
+
+Codex 5.6 turned this compiler architecture into the active deterministic
+boundary before native generation. Its clear advantage over the 5.5-era
+approach is that prompt-derived or loose JSON is never trusted directly:
+structured repair, catalogue resolution, net normalization, pin accounting,
+and validation create one canonical input that the KiCad executable can replay
+without depending on an AI model at runtime.
+
 ## Core Rule
 
 Do not trust one giant AI prompt to produce final circuit JSON.

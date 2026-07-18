@@ -1,5 +1,13 @@
 # Output Artifact Contract
 
+## Codex 5.6 Release Boundary
+
+Codex 5.6 created this output split so the user receives a clean native KiCad
+project while the generator retains the full proof trail: normalized input,
+all stage JSON, source provenance, validators, and accepted/rejected layout or
+routing variants. This turns the backend into a reproducible production flow,
+not a disposable file export.
+
 This contract defines the final output boundary for KiCad generation.
 
 Every complete generated circuit produces two archive classes and may produce

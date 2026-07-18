@@ -1,6 +1,7 @@
 from pathlib import Path
 import json
 import sqlite3
+import subprocess
 
 import pytest
 
@@ -106,3 +107,53 @@ def test_all_40_source_symbols_generate_in_one_project(tmp_path: Path) -> None:
     assert result["component_count"] == 40
     assert result["pcb_ready"] is False
     assert result["pcb_reason"] == "basic_pcb_component_limit_32"
+
+
+def test_executable_ndjson_reports_real_pipeline_stages(tmp_path: Path) -> None:
+    process = subprocess.run(
+        [
+            str(Path(__file__).parents[1] / "dist" / "progen-easyeda"),
+            "run",
+            str(EXAMPLE),
+            "--output-root",
+            str(tmp_path),
+            "--events",
+            "ndjson",
+        ],
+        capture_output=True,
+        check=False,
+        text=True,
+        timeout=90,
+    )
+    assert process.returncode == 0, process.stderr
+    events = [json.loads(line) for line in process.stdout.splitlines() if line.strip()]
+    stages = [event["stage"] for event in events if event.get("event") == "stage"]
+    assert stages == [
+        "fix_and_validate_input",
+        "normalize_values",
+        "resolve_donor_catalogue",
+        "place_components",
+        "route_schematic",
+        "write_native_eprj",
+        "validate_native_eprj",
+        "package_artifacts",
+    ]
+    assert events[-1]["event"] == "complete"
+    assert events[-1]["summary"]["passed"] is True
+
+
+def test_rtc_logger_native_terminal_stays_within_compact_bounds(tmp_path: Path) -> None:
+    source = (
+        Path(__file__).parents[1]
+        / "qualification"
+        / "corpora"
+        / "2026_07_17_full_pin_300_v1"
+        / "q21_rtc_logger_module_automation_v08.json"
+    )
+    result = generate_project(source, source_pack=SOURCE, output_root=tmp_path)
+
+    assert result["passed"] is True
+    report = json.loads(
+        Path(result["validation_report"]).read_text(encoding="utf-8")
+    )
+    assert report["checks"]["geometry_errors"] == []

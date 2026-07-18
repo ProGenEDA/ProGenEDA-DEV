@@ -1,0 +1,566 @@
+# Get Help with Progen EDA
+
+Find help for generating circuits, writing better prompts, understanding supported components, managing API keys, fixing generation errors, and working with validated Proteus, KiCad, LTspice, and EasyEDA Pro outputs.
+
+Progen EDA helps turn natural-language circuit descriptions into structured electronic design outputs. Whether you are generating a simple resistor circuit, a power supply, an op-amp amplifier, a logic circuit, or a Proteus-ready schematic flow, this help center is designed to guide you from prompt to validated output.
+
+Search help topics, components, errors, prompts, or native EDA output.
+
+Quick help topics:
+
+Prompt Guide
+Supported Components
+Generation Errors
+API Key Safety
+Proteus Output
+Validation
+Quota and Usage
+Request Component
+Contact Support
+
+---
+
+# What is Progen EDA?
+
+Progen EDA is an AI-powered circuit generation platform that converts natural-language prompts into structured circuit outputs. It is designed to help users describe a circuit in plain English and receive a more organized schematic or netlist generation result.
+
+Instead of manually planning every component, placement, wire, and validation step, Progen follows an intelligent workflow that interprets your prompt, improves it, selects supported components, plans the arrangement, places components, generates wiring, validates the design, and prepares the final output.
+
+Progen is built around a simple idea:
+
+Prompt. Plan. Place. Wire. Validate. Output.
+
+---
+
+# How Progen EDA works
+
+Progen EDA uses a multi-step circuit generation pipeline. This process helps the system move from a rough natural-language idea to a more structured, validated circuit output.
+
+The workflow includes:
+
+1. Prompt
+   The user describes the circuit in natural language.
+
+2. Prompt Enhancer
+   The system improves and clarifies the user’s original prompt.
+
+3. Enhanced Prompt to Script-Understandable Code
+   The prompt is converted into a more structured format that the system can process.
+
+4. Code Enhancer
+   The internal circuit-generation instructions are improved for better accuracy.
+
+5. Code Validator
+   The system checks whether the generated instructions are complete and usable.
+
+6. File Name Decider
+   The system decides a suitable output file name for the generated circuit.
+
+7. Arrangement Decider
+   The system decides how the circuit should be organized visually.
+
+8. Component Selector
+   The system selects supported components based on the prompt.
+
+9. Validator
+   The selected components and structure are checked for correctness.
+
+10. Component Placer
+    The system places the selected components into the circuit layout.
+
+11. Placement Validator
+    The component placement is checked for spacing, logic, and output quality.
+
+12. User Specification Validator
+    The design is checked against the user’s original requirements.
+
+13. Beautifier
+    The circuit layout is cleaned and improved visually.
+
+14. Beautifier Validator
+    The beautified layout is checked again for quality.
+
+15. Decision: Wire / Terminal / Combination
+    The system decides whether the circuit should use wiring, terminals, or a combination of both.
+
+16. Wiring Planner
+    The system plans how the circuit connections should be routed.
+
+17. Terminal Placer
+    The system places terminals where needed.
+
+18. Wiring Maker
+    The system creates the actual wiring logic.
+
+19. Value Editor
+    The system adjusts or confirms component values.
+
+20. Value Validator
+    The component values are checked for correctness and consistency.
+
+21. Final Validator
+    The final circuit output is checked before completion.
+
+22. Output
+    The validated circuit result is produced for the user.
+
+This workflow helps Progen EDA act like an intelligent circuit-generation assistant instead of a basic text-to-output tool.
+
+---
+
+# Writing better prompts
+
+A good circuit prompt gives Progen enough information to understand what you want to build. The more specific your prompt is, the better the generated circuit output can be.
+
+A strong prompt should include:
+
+Circuit purpose
+Input voltage
+Output voltage
+Required components
+Preferred topology
+Current requirement
+Load type
+Protection needs
+Simulator or output target
+Any special constraints
+
+Weak prompt example:
+
+Make a power supply.
+
+Better prompt example:
+
+Design a 24V to 5V isolated DC-DC converter with input protection, output filtering, and a regulated 5V output for a small embedded system.
+
+Another strong prompt example:
+
+Create a low-noise instrumentation amplifier for a small sensor signal using an op-amp. The circuit should include gain-setting components, input filtering, and a stable output stage.
+
+Another strong prompt example:
+
+Generate an active PFC power supply stage with protection components, validation checks, and a clean schematic arrangement.
+
+Prompt formula:
+
+Design a [circuit type] that takes [input condition] and produces [output condition] using [preferred components or topology]. Include [protection/filtering/validation requirements] and prepare the output for [target simulator or use case].
+
+---
+
+# Supported components
+
+Progen EDA currently supports common schematic and netlist generation components used in basic and intermediate circuit design workflows.
+
+Supported component categories include:
+
+Sources and power components
+Passive components
+Diodes and LEDs
+Transistors and MOSFETs
+Analog and control ICs
+Display and logic components
+Protection and utility components
+
+Current supported components include:
+
+Sources & Power:
+GROUND, VDC, VSOURCE, CSOURCE, VSIN, VPULSE
+
+Passive Components:
+RES, POT-HG, CAP, CAP-ELEC, REALIND
+
+Diodes & LEDs:
+DIODE, 1N4007, 1N4148, 1N60, BZX55C5, BZX79C5, LED
+
+Transistors & MOSFETs:
+NPN, PNP, NMOS, 2N7000, BS170
+
+Analog & Control ICs:
+OPAMP, LM741, NE555, CD4007, LM317
+
+Protection / Utility:
+TRANSFORMER, BRIDGE RECTIFIER, FUSE, SWITCH, TERMINAL
+
+Display & Logic:
+7SEGCOMA, 7SEGCOMK, 4027, 4511, 7447, 7490, 74HC00, 74HC02, 74HC04, 74HC08, 74HC32, 74HC74, 74HC76, 74HC85, 74HC86, 74HC151, 74HC157, 74HC160, 74HC174, 74HC192, 74HC266, 74HC283
+
+If a component is not available, the generated output may fail, simplify the circuit, or suggest an alternative. You can use the Request Component option to ask for additional component support.
+
+---
+
+# Understanding generation results
+
+After you submit a prompt, Progen EDA may return different types of results depending on the prompt quality, component support, and validation status.
+
+Validated output means the circuit passed the core generation and validation checks.
+
+Warning output means the circuit was generated, but some values, components, or assumptions may need manual review.
+
+Failed generation means the system could not confidently create a valid circuit from the prompt.
+
+Unsupported component means the prompt requested a component that is not currently available in the supported component library.
+
+Validation failed means the generated design may have missing values, missing connections, unsupported topology, incorrect placement, unclear specifications, or design logic issues.
+
+Proteus-ready output means the result has been prepared for a Proteus-oriented schematic or netlist workflow.
+
+Always review important circuit outputs before using them in real hardware, assignments, simulations, or production work.
+
+---
+
+# Common generation problems
+
+## Why did my circuit fail to generate?
+
+Your prompt may be missing important information. Add the circuit purpose, input voltage, output voltage, required components, load requirement, and output target.
+
+Instead of writing:
+
+Create an amplifier.
+
+Write:
+
+Create a non-inverting op-amp amplifier using LM741 with a gain of 10, powered by a dual supply, with input and output labels.
+
+---
+
+## Why is my output not accurate?
+
+AI-generated circuit outputs depend heavily on the prompt. If your prompt is vague, the system may make assumptions. Try adding exact component values, voltage levels, circuit type, and constraints.
+
+---
+
+## Why is a component missing?
+
+The component may not be supported yet. Check the Supported Components page. If the component is not listed, request additional component support.
+
+---
+
+## Why did validation fail?
+
+Validation may fail because of missing connections, unsupported topology, incomplete values, unclear requirements, or incompatible component choices.
+
+Try simplifying the prompt or adding more exact information.
+
+---
+
+## Why did the circuit use a different component?
+
+If the requested component is unsupported, Progen may use a supported alternative. For best results, use components from the supported component list.
+
+---
+
+## Can I use Progen EDA with Proteus?
+
+Yes. Progen EDA is designed around schematic and netlist generation workflows that can support Proteus-based circuit creation.
+
+---
+
+## Are AI-generated circuit outputs always correct?
+
+No. AI outputs may contain mistakes. Always verify critical results, electrical safety, component ratings, values, and connections before using the circuit practically.
+
+---
+
+# API key safety
+
+Progen EDA may allow users to connect or manage API keys depending on the selected workflow. API keys should always be handled carefully.
+
+Important API key safety rules:
+
+Never share your API key publicly.
+Never paste API keys into screenshots.
+Never expose API keys in frontend code.
+Use environment variables where possible.
+Rotate keys if you think they were exposed.
+Delete unused keys.
+Use restricted permissions where available.
+Do not store keys in plain text.
+Do not share keys with other users.
+
+If you believe your API key was exposed, revoke it immediately and create a new one.
+
+---
+
+# Quota and usage help
+
+The Usage panel shows how many generations you have used from your available quota.
+
+Example:
+
+1 / 160 generations used
+
+If you reach your quota, you may need to wait for a reset, upgrade your quota, or request additional access.
+
+Generation usage may increase when you submit prompts, regenerate outputs, validate circuits, or run advanced workflows.
+
+---
+
+# Requesting component support
+
+If you need a component that is not currently supported, use the Request Component option.
+
+When requesting a component, include:
+
+Component name
+Component type
+Common symbol name
+Package or model if needed
+Use case
+Why the component is required
+Example circuit where it will be used
+
+Example request:
+
+Please add support for the IRF540N MOSFET. I need it for DC motor driver and switching power supply circuits.
+
+---
+
+# Help topics
+
+## Prompt Guide
+
+Learn how to write better natural-language circuit prompts.
+
+Best for:
+New users
+Students
+Users getting failed generations
+Users trying to improve accuracy
+
+---
+
+## Supported Components
+
+Check which components are currently available for schematic and netlist generation.
+
+Best for:
+Finding supported parts
+Avoiding unsupported component errors
+Planning circuits before generation
+
+---
+
+## Generation Errors
+
+Understand why a circuit failed to generate and how to fix it.
+
+Best for:
+Failed outputs
+Validation errors
+Unsupported topology
+Missing values
+
+---
+
+## Proteus Output
+
+Learn how Progen prepares circuit outputs for Proteus-oriented workflows.
+
+Best for:
+Proteus users
+Simulation preparation
+Schematic export workflows
+
+---
+
+## EasyEDA Pro Output
+
+Generate one donor-native `.eprj` containing the validated schematic and, when
+the bounded PCB contract passes, a basic two-layer PCB in the same project.
+
+Best for:
+EasyEDA Pro users
+Native schematic and PCB workflows
+Deterministic component, pin, netlist, and geometry validation
+Combination, wire, or terminal routing
+
+Current limits:
+59 logical supported component names
+80 schematic input components
+32 physical PCB components
+
+---
+
+## API Key Safety
+
+Learn how to safely manage user-provided API keys.
+
+Best for:
+Users connecting external services
+Security-conscious workflows
+Preventing exposed keys
+
+---
+
+## Billing and Quota
+
+Understand generation limits, quota usage, upgrades, and request options.
+
+Best for:
+Users who reached limits
+Plus users
+Heavy generation workflows
+
+---
+
+# Contact support
+
+Need more help?
+
+Contact Progen support if:
+
+Your generation repeatedly fails
+A supported component is not working
+You need a new component added
+Your quota is not updating
+Your output file is incorrect
+Your validation result seems wrong
+You found a bug
+You need help with native Proteus, KiCad, LTspice, or EasyEDA Pro output
+
+When contacting support, include:
+
+Your prompt
+The selected output type
+The component list
+The error message
+A screenshot if possible
+What you expected
+What actually happened
+
+Example support message:
+
+I tried to generate a 24V to 5V DC-DC converter using VDC, transformer, bridge rectifier, capacitor, and LM317. The generation failed during validation. I expected a regulated 5V output schematic, but the system returned a missing connection error.
+
+---
+
+# SEO section: AI circuit generator help
+
+Progen EDA helps users generate circuit designs from natural-language prompts. It is useful for students, engineers, makers, and electronics learners who want to create structured schematic outputs faster.
+
+The platform supports AI-assisted prompt interpretation, component selection, circuit arrangement, placement planning, wiring logic, validation checks, and final output generation.
+
+Users can describe circuits such as power supplies, amplifiers, LED circuits, logic circuits, transistor circuits, op-amp circuits, and Proteus-oriented schematics.
+
+---
+
+# SEO section: Natural-language circuit design
+
+Natural-language circuit design allows users to describe an electronic circuit using plain English instead of manually selecting every part from the beginning.
+
+A clear prompt can include the circuit type, input voltage, output voltage, current requirement, load, component preferences, and output target.
+
+Progen EDA uses this information to plan the circuit structure, select supported components, arrange the schematic, validate the design, and prepare the final output.
+
+---
+
+# SEO section: Proteus schematic generation support
+
+Progen EDA can support Proteus-based circuit workflows by helping users organize component selection, circuit structure, schematic logic, and validated output preparation.
+
+Users working with Proteus can use Progen to speed up the early design process, reduce manual planning time, and create a more organized circuit generation workflow.
+
+---
+
+# SEO section: Supported electronic components
+
+Progen EDA supports commonly used electronic components including voltage sources, current sources, resistors, capacitors, inductors, diodes, LEDs, transistors, MOSFETs, op-amps, timer ICs, logic ICs, protection components, transformers, switches, terminals, and display components.
+
+Supported components are updated regularly. If a required component is missing, users can request additional component support.
+
+---
+
+# FAQ
+
+## What is Progen EDA?
+
+Progen EDA is an AI-powered electronic design automation platform that helps turn natural-language prompts into structured, validated circuit outputs.
+
+## How do I write a good prompt?
+
+A good prompt should include circuit purpose, input voltage, output voltage, required components, load requirement, design constraints, and output target.
+
+## What components are supported?
+
+Progen supports sources, passives, diodes, LEDs, transistors, MOSFETs, analog ICs, logic ICs, protection components, utility components, and display components.
+
+## Can Progen generate Proteus-ready circuits?
+
+Progen is designed to support schematic and netlist generation workflows that can be used with Proteus-oriented circuit design processes.
+
+## Why did my circuit fail?
+
+Your circuit may fail if the prompt is unclear, values are missing, requested components are unsupported, or validation detects incomplete design logic.
+
+## Can I request a new component?
+
+Yes. Use the Request Component option and include the component name, type, use case, and reason for needing it.
+
+## Are Progen outputs always correct?
+
+No. AI-generated outputs can contain errors. Always verify important circuit results before using them in real hardware or serious simulations.
+
+## What does validation mean?
+
+Validation means the system checks the generated circuit for completeness, supported components, placement quality, wiring logic, values, and user requirements.
+
+## What should I do if validation fails?
+
+Review the error, improve your prompt, use supported components, add missing values, and regenerate the circuit.
+
+## Is Progen useful for students?
+
+Yes. Progen can help students understand circuit structure, component selection, schematic planning, and validation workflows.
+
+---
+
+# Suggested page microcopy
+
+Search placeholder:
+Search help topics, components, errors, prompts, or Proteus output...
+
+Empty search result:
+No help articles found. Try searching for prompts, components, validation, API keys, or Proteus output.
+
+Request support button:
+Request Help
+
+Component request button:
+Request Component
+
+Prompt guide button:
+Open Prompt Guide
+
+Supported components button:
+View Supported Components
+
+Generation troubleshooting button:
+Fix Generation Error
+
+Status text:
+All systems operational
+
+Footer warning:
+AI outputs may contain errors. Verify critical results before use.
+
+---
+
+# Suggested hidden-free SEO keywords to naturally include on the page
+
+Progen EDA help
+AI circuit generator
+natural-language circuit generator
+Proteus schematic generator
+validated circuit output
+schematic generation support
+netlist generation help
+electronic design automation
+AI EDA tool
+circuit prompt guide
+supported electronic components
+circuit validation
+component placement
+wiring validation
+Proteus output support
+AI-powered circuit design

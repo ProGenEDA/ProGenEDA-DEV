@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import hashlib
 import json
+import math
 from pathlib import Path
 import sqlite3
 from typing import Any, Iterable
@@ -442,7 +443,12 @@ def _geometry_errors(
             component_bounds[2] - component_bounds[0],
             component_bounds[3] - component_bounds[1],
         )
-        margin = max(120.0, min(280.0, span * 0.18))
+        # Native geometry is grid-aligned while donor body bounds can be
+        # fractional. Round the adaptive allowance outward to the next
+        # EasyEDA grid line so a valid terminal contact is not rejected by a
+        # sub-grid fraction; retain the existing 280-unit anti-sprawl cap.
+        adaptive_margin = max(120.0, min(280.0, span * 0.18))
+        margin = min(280.0, math.ceil(adaptive_margin / 12.0) * 12.0)
         wire_bounds = inflate(component_bounds, margin)
         for net, start, end in wires:
             start_inside = (

@@ -1,0 +1,337 @@
+{
+  "components": [
+    {
+      "block": "i2c_eeprom_module",
+      "id": "U1",
+      "kind": "AT24C256",
+      "pins": {
+        "1": "IO_U1_1",
+        "2": "IO_U1_2",
+        "3": "IO_U1_3",
+        "4": "GND",
+        "5": "I2C_SDA",
+        "6": "I2C_SCL",
+        "7": "IO_U1_7",
+        "8": "+3V3"
+      },
+      "ref": "U1",
+      "role": "functional",
+      "value": "AT24C256"
+    },
+    {
+      "block": "i2c_eeprom_module",
+      "id": "R1",
+      "kind": "R",
+      "pins": {
+        "1": "GND",
+        "2": "+3V3"
+      },
+      "ref": "R1",
+      "role": "functional",
+      "value": "120"
+    },
+    {
+      "block": "i2c_eeprom_module",
+      "id": "R2",
+      "kind": "R",
+      "pins": {
+        "1": "GND",
+        "2": "+3V3"
+      },
+      "ref": "R2",
+      "role": "functional",
+      "value": "120"
+    },
+    {
+      "block": "i2c_eeprom_module",
+      "id": "R3",
+      "kind": "R",
+      "pins": {
+        "1": "GND",
+        "2": "+3V3"
+      },
+      "ref": "R3",
+      "role": "functional",
+      "value": "120"
+    },
+    {
+      "block": "i2c_eeprom_module",
+      "id": "R4",
+      "kind": "R",
+      "pins": {
+        "1": "GND",
+        "2": "+3V3"
+      },
+      "ref": "R4",
+      "role": "functional",
+      "value": "120"
+    },
+    {
+      "block": "i2c_eeprom_module",
+      "id": "C1",
+      "kind": "C",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      },
+      "ref": "C1",
+      "role": "functional",
+      "value": "100nF"
+    },
+    {
+      "block": "i2c_eeprom_module",
+      "id": "J1",
+      "kind": "HEADER_1X6",
+      "pins": {
+        "1": "I2C_SDA",
+        "2": "I2C_SCL",
+        "3": "IO_U1_1",
+        "4": "IO_U1_2",
+        "5": "IO_U1_3",
+        "6": "IO_U1_7"
+      },
+      "ref": "J1",
+      "role": "functional",
+      "value": "HEADER_1X6"
+    },
+    {
+      "block": "i2c_eeprom_module",
+      "id": "SW1",
+      "kind": "SPST_SWITCH",
+      "pins": {
+        "A": "SWITCH_SW1",
+        "B": "GND"
+      },
+      "ref": "SW1",
+      "role": "functional",
+      "value": "SPST_SWITCH"
+    },
+    {
+      "block": "expansion",
+      "id": "J2",
+      "kind": "HEADER_2X5_1P27",
+      "pins": {
+        "1": "SWITCH_SW1",
+        "10": "GND",
+        "2": "GND",
+        "3": "GND",
+        "4": "GND",
+        "5": "GND",
+        "6": "GND",
+        "7": "GND",
+        "8": "GND",
+        "9": "GND"
+      },
+      "ref": "J2",
+      "role": "full_pin_breakout",
+      "value": "HEADER_2X5_1P27"
+    },
+    {
+      "block": "i2c_eeprom_module",
+      "id": "LED1",
+      "kind": "LED",
+      "pins": {
+        "1": "+3V3",
+        "2": "GND"
+      },
+      "ref": "LED1",
+      "role": "functional",
+      "value": "LED"
+    },
+    {
+      "block": "mechanical",
+      "id": "H1",
+      "kind": "MOUNTING_HOLE_PTH",
+      "pins": {
+        "1": "GND"
+      },
+      "ref": "H1",
+      "role": "mechanical_ground",
+      "value": "MOUNTING_HOLE_PTH"
+    },
+    {
+      "block": "mechanical",
+      "id": "H2",
+      "kind": "MOUNTING_HOLE_NPTH",
+      "pins": {
+        "1": "NC_CHASSIS_H2"
+      },
+      "ref": "H2",
+      "role": "mechanical",
+      "value": "MOUNTING_HOLE_NPTH"
+    }
+  ],
+  "expected_netlist": {
+    "+3V3": [
+      "C1.1",
+      "LED1.1",
+      "R1.2",
+      "R2.2",
+      "R3.2",
+      "R4.2",
+      "U1.8"
+    ],
+    "GND": [
+      "C1.2",
+      "H1.1",
+      "J2.10",
+      "J2.2",
+      "J2.3",
+      "J2.4",
+      "J2.5",
+      "J2.6",
+      "J2.7",
+      "J2.8",
+      "J2.9",
+      "LED1.2",
+      "R1.1",
+      "R2.1",
+      "R3.1",
+      "R4.1",
+      "SW1.B",
+      "U1.4"
+    ],
+    "I2C_SCL": [
+      "J1.2",
+      "U1.6"
+    ],
+    "I2C_SDA": [
+      "J1.1",
+      "U1.5"
+    ],
+    "IO_U1_1": [
+      "J1.3",
+      "U1.1"
+    ],
+    "IO_U1_2": [
+      "J1.4",
+      "U1.2"
+    ],
+    "IO_U1_3": [
+      "J1.5",
+      "U1.3"
+    ],
+    "IO_U1_7": [
+      "J1.6",
+      "U1.7"
+    ],
+    "NC_CHASSIS_H2": [
+      "H2.1"
+    ],
+    "SWITCH_SW1": [
+      "J2.1",
+      "SW1.A"
+    ]
+  },
+  "nets": [
+    {
+      "members": [
+        "C1.1",
+        "LED1.1",
+        "R1.2",
+        "R2.2",
+        "R3.2",
+        "R4.2",
+        "U1.8"
+      ],
+      "name": "+3V3"
+    },
+    {
+      "members": [
+        "C1.2",
+        "H1.1",
+        "J2.10",
+        "J2.2",
+        "J2.3",
+        "J2.4",
+        "J2.5",
+        "J2.6",
+        "J2.7",
+        "J2.8",
+        "J2.9",
+        "LED1.2",
+        "R1.1",
+        "R2.1",
+        "R3.1",
+        "R4.1",
+        "SW1.B",
+        "U1.4"
+      ],
+      "name": "GND"
+    },
+    {
+      "members": [
+        "J1.2",
+        "U1.6"
+      ],
+      "name": "I2C_SCL"
+    },
+    {
+      "members": [
+        "J1.1",
+        "U1.5"
+      ],
+      "name": "I2C_SDA"
+    },
+    {
+      "members": [
+        "J1.3",
+        "U1.1"
+      ],
+      "name": "IO_U1_1"
+    },
+    {
+      "members": [
+        "J1.4",
+        "U1.2"
+      ],
+      "name": "IO_U1_2"
+    },
+    {
+      "members": [
+        "J1.5",
+        "U1.3"
+      ],
+      "name": "IO_U1_3"
+    },
+    {
+      "members": [
+        "J1.6",
+        "U1.7"
+      ],
+      "name": "IO_U1_7"
+    },
+    {
+      "members": [
+        "H2.1"
+      ],
+      "name": "NC_CHASSIS_H2"
+    },
+    {
+      "members": [
+        "J2.1",
+        "SW1.A"
+      ],
+      "name": "SWITCH_SW1"
+    }
+  ],
+  "project": {
+    "name": "q17_i2c_eeprom_module_diagnostic_v05",
+    "target": "easyeda_pro",
+    "title": "I2C EEPROM Memory Module - Diagnostic Variant"
+  },
+  "purpose": "Address-selectable I2C EEPROM module with write protection. Optimized for diagnostic test points and status indication.",
+  "qualification": {
+    "archetype": "i2c_eeprom_module",
+    "profile": "diagnostic",
+    "require_complete_pin_coverage": true,
+    "require_pcb_when_routable": true,
+    "schema": "progen-easyeda-qualification-corpus/v1",
+    "source_basis": "I2C EEPROM application circuit",
+    "variant": 5
+  },
+  "routing": {
+    "mode": "combination"
+  },
+  "schema_version": "progen-easyeda-circuit-ir/v1"
+}

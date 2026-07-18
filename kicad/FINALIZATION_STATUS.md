@@ -1,13 +1,35 @@
 # KiCad Schematic And PCB Finalization Status
 
-Date: 2026-07-11
+Date: 2026-07-18
 
 This is the current handoff for the integrated KiCad generator inside the
 `memory/kicad` folder.
 
 The schematic pipeline is finalized for its current catalogue. A bounded,
-source-backed native PCB stage is now integrated and release-tested. See
-`kicad/pcb/README.md` for its exact support envelope and evidence.
+source-backed native PCB stage is integrated, release-tested, and emitted only
+when physical validation accepts it. See `kicad/pcb/README.md` for its exact
+support envelope and evidence.
+
+## Codex 5.6 Delivery
+
+> **CODEX 5.6 MADE THIS THE ACTIVE KICAD BACKEND, NOT A COLLECTION OF
+> PLACEMENT EXPERIMENTS.**
+
+Codex 5.6 delivered the full operational chain: canonical JSON fixing,
+source-backed symbol/pin information, independent placement and routing
+contracts, coordinate beautification, terminal and combination fallback,
+actual KiCad schematic/PCB writers, values, local expected-net validation,
+physical PCB checks, portable packaging, and repeatable corpus qualification.
+This was a major step beyond the older 5.5-era incremental state: 5.6 unified
+the modules into one executable while preserving their independently testable
+contracts and all retained routing/placement evidence.
+
+The current portable release was rebuilt after Codex 5.6 repaired the
+multi-unit source-pin/foreign-symbol-body clearance defect in the shared wire
+maker. KiCad 10.0.4 independently exported the repaired schematic netlist and
+reported zero PCB DRC violations and zero unconnected items for the release
+smoke board. The exact record is
+`kicad/qualification/RESULTS_2026_07_17.md`.
 
 ## Current Pipeline
 
@@ -88,6 +110,12 @@ Terminal and combination schematics use KiCad local-label terminals. The writer
 now places a terminal label 10.16 mm away from the resolved KiCad pin when that
 short stub is safe.
 
+Before terminal or wire labels are emitted, placement settlement also enforces
+at least 2.54 mm between each source pin tip and every foreign symbol body.
+This Codex 5.6 repair prevents a valid-looking label from being forced into a
+neighbouring component body when multi-unit symbols expose power pins away from
+their visible body center.
+
 The writer rejects a terminal stub if it would:
 
 - cross or touch a component body except at the intended pin;
@@ -121,6 +149,23 @@ kicad/examples/EVIDENCE_INDEX.md
 
 Accepted schematic evidence:
 
+- `progen_kicad_executable_run_2026_07_17_184041_common_400_portable_qualification_v2`
+  - 400/400 inputs were fixed and generated through the ordinary portable
+    pipeline.
+  - 400/400 hosted expected-net comparisons and KiCad 10.0.4 netlist exports
+    parsed successfully.
+  - 390/400 projects passed every final validator in the immutable base run;
+    the ten KQ26 label-layout findings were then repaired in shared code.
+- `progen_kicad_executable_run_2026_07_17_214207_common400_kq26_pin_clearance_retest_v1`
+  - the ten KQ26 profiles passed 10/10 final, expected-net, wire geometry,
+    label-layout, source-pin/foreign-body-clearance, and accepted-PCB checks.
+  - all 20 user/internal archives passed integrity checks.
+- `progen_kicad_executable_run_2026_07_17_215419_common400_kq26_final_portable_smoke_v1`
+  - the final ZIP-contained executable regenerated KQ26V01 with zero
+    unresolved, partial, geometry, strict-wire, expected-net, label-layout,
+    or foreign-pin/body-clearance failures.
+  - KiCad 10.0.4 exported 144 nets and reported zero DRC violations and zero
+    unconnected items for its accepted PCB.
 - `progen_kicad_executable_run_2026_07_06_025855_executable_600_combination_v6`
   - 600/600 combination projects passed final validation.
   - Zero local-netlist failures, merged nets, power/ground shorts, geometry
@@ -181,6 +226,13 @@ flooding source control while keeping compact summaries tracked.
 
 ## Current PCB Evidence
 
+The current common-400 qualification has 311 accepted native PCB outputs. The
+other 89 projects retain valid schematic output plus documented PCB withholding
+(`pcb_routing_limit` or schematic-final-validation history) rather than an
+unvalidated board. The ten-profile KQ26 correction supplement produced 10/10
+accepted boards and the packaged KQ26V01 smoke board passed installed KiCad
+10.0.4 DRC with zero violations and zero unconnected items.
+
 The accepted current PCB corpus run is:
 
 ```text
@@ -201,10 +253,10 @@ All 495 accepted boards passed KiCad DRC with zero violations and zero
 unconnected items. Hosted generation and validation remain independent of
 KiCad installation; CLI is external evidence only.
 
-## Remaining Work
+## Future Expansion
 
-The schematic generator is ready to move toward a small KiCad PCB slice after
-one final optional sweep:
+The following retained notes describe optional expansion work, not a block on
+the current shipped schematic/PCB slice:
 
 - rerun the 600 combination batch after the terminal-spacing change if updated
   visual evidence is required;
