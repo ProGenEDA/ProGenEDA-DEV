@@ -32,15 +32,22 @@ terminal-to-pin wires and, by default, any request that would silently leave a
 family unterminated. Use `--allow-unterminalized` only for an intentional
 mixed control project.
 
+`NPN` is included in this build's locked non-IC terminal route. Its fresh
+executable evidence covers solo `1x`, `9x`, and `15x`, asymmetric native mixes,
+existing catalogue-backed non-IC mixes, and a `15x` NPN/diode/resistor/capacitor
+stress mix. Each emitted NPN terminal has a grid-aligned, nonzero short WIRE
+to its exact pin. IC/display mixtures remain on their independently verified
+routes and are not widened by this NPN promotion.
+
 For a canonical placement control, optional `terminal_label_projection`
 metadata assigns source-circuit node names to the exposed terminals before
 they are serialized. This changes labels (for example `VIN`, `G0`, `VOUT`),
 not physical routing: arbitrary `nets`, `wires`, `connections`, and `netlist`
 requests remain rejected until the shared Wire Maker is accepted.
 
-Build: 2026-07-17
+Build: 2026-07-18
 
-SHA-256: `41C15EAE737E4A5617E79504C136129C3B970B376C127DDAD0454EC709086388`
+SHA-256: `02E2E24B7ABBAAB025C46D5493823293321B535C2E1F4790676F8E509B2F4FD5`
 
 ## Screenshot-proven gate bridge
 

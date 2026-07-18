@@ -6,7 +6,7 @@
 > validation through sub-agent-assisted workflows, added the value/properties
 > editor and portable executable, and consolidated this active documentation.
 
-Updated: 2026-07-16
+Updated: 2026-07-18
 
 This is the current entry point for the native Proteus backend. It contains
 the operational package, runtime donor closure, tests, schema, examples,
@@ -93,6 +93,13 @@ must be treated as evidence-backed candidates until separately accepted through
 the Proteus open/render gate. `FUSE` and `SWITCH` remain blocked from the
 combined total-mix terminal path.
 
+`NPN` is now separately locked for the executable's non-IC terminal route:
+fresh `1x`, `9x`, and `15x` solos; asymmetric native mixes; a mix with the
+current non-IC catalogue routes; and a `15x` NPN/diode/resistor/capacitor
+stress mix all passed two local 12-second cold opens with screenshots. The
+route emits grid-aligned terminal contacts and nonzero short WIREs. Evidence is
+in [`../experiments/runs/2026-07-18_npn_terminal_promotion_matrix_v2`](../experiments/runs/2026-07-18_npn_terminal_promotion_matrix_v2).
+
 The executable also has a deliberately bounded gate bridge for one gate family
 per project. It uses the same placement-control JSON, current locked-mega
 component placer, shared catalogue terminalizer, and
@@ -101,7 +108,8 @@ component placer, shared catalogue terminalizer, and
 `74HC266` 10 each. Mixed gate families and gate-plus-other-family requests are
 rejected because local screenshots proved that their current stream can open
 while silently hiding component packets. Other multi-pin IC/display/transistor
-terminal claims are not promoted by this README.
+terminal claims are not promoted by this README; the NPN non-IC route above is
+the single documented exception.
 
 Canonical PDF placement controls may supply an optional
 `terminal_label_projection`.  The current executable carries those logical node

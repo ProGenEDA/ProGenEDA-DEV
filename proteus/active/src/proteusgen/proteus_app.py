@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Any, Mapping
 
 from .component_placer import ComponentPlacerBlocked, RawPlacementResult, generate_component_placement_project
+from .component_catalog import load_component_catalog
 from .component_terminal_placer import (
     ACCEPTED_TERMINAL_FAMILY_ORDER,
     TOTALMIX_BLOCKED_FAMILIES,
@@ -66,6 +67,7 @@ EXECUTABLE_CATALOGUE_TERMINAL_FAMILIES = frozenset(
     {
         "LM317T",
         "NMOSFET",
+        "NPN",
         "OPAMP",
         "POT-HG",
     }
@@ -302,6 +304,37 @@ def _require_nonzero_terminal_wires(report: Mapping[str, Any]) -> None:
         )
 
 
+def _catalogue_mixed_stream_mode(
+    catalogue_terminal_families: tuple[str, ...],
+) -> str:
+    """Resolve a mixed-stream selection from catalogue-owned evidence.
+
+    A family can require a combined stream because its clean solo packet uses
+    a different terminal-leading grammar.  Keep that fact in the component
+    catalogue so adding later families does not create a new terminal route or
+    hard-coded donor dependency in the executable.
+    """
+
+    modes: set[str] = set()
+    catalog = load_component_catalog()
+    for family in catalogue_terminal_families:
+        profile = catalog.get_profile(family)
+        geometry = profile.proteus.get("pin_geometry", {}) if profile else {}
+        if not isinstance(geometry, Mapping):
+            continue
+        raw_mode = geometry.get("executable_mixed_stream_mode")
+        if raw_mode is not None:
+            modes.add(str(raw_mode))
+    if not modes:
+        return "conservative"
+    if len(modes) != 1:
+        raise ProteusApplicationError(
+            "The selected catalogue families require conflicting mixed terminal "
+            f"stream modes: {sorted(modes)}."
+        )
+    return next(iter(modes))
+
+
 def _write_application_report(
     output: Path,
     *,
@@ -425,6 +458,9 @@ def generate_proteus_project(
                                 placement.selected_groups,
                                 native_terminal_families=native_terminal_families,
                                 catalogue_terminal_families=catalogue_terminal_families,
+                                stream_mode=_catalogue_mixed_stream_mode(
+                                    catalogue_terminal_families
+                                ),
                                 force_grid_contact_short_wires=True,
                                 terminal_label_overrides=terminal_label_overrides,
                             )

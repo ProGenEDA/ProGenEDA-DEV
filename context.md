@@ -35074,3 +35074,76 @@ Validation completed:
 - Portable executable integration smoke test passed.
 - Full 200-circuit corpus: 200 passed, 0 failed; static generation and `.pdsprj` container inspection only, no Proteus GUI open test by user instruction.
 - Website `npm run lint` and production `npm run build` passed.
+
+---
+
+## 2026-07-18 12:00:00 +05:00 — User
+
+now ill ask u to continue with our terminalizationg support
+start building from currenlty spported families and up
+add a support for a component in terminalization then test its mix up to limits(which is 15 for normal ics with some exceptions)
+keep this on. do ics at the end first do others non ics and mind u, to lock a component in, ull generate its mix in differnt ratios and attempt at different combinations with other supported components, ull open it, for 12 secs, take pic then move on to next test when all tests are done u can safely call it locked in then move on to next component
+
+## 2026-07-18 12:00:01 +05:00 — Agent
+
+I’ve isolated the current blocker to the NPN + diode combination: NPN-only, NPN scaling, and the other non-IC mixes open cleanly, while that exact pair triggers Proteus’s malformed-device dialog. I’m comparing it against the accepted donor stream now; NPN is not being locked until that mix passes.
+
+## 2026-07-18 12:06:00 +05:00 — Agent
+
+The donor comparison has found two concrete differences—not a geometry guess: my NPN tail is being inserted between diode packets, whereas the accepted NPN+diode donor places its tail only after the normal component stream; it also ends in one explicit `FF`, while the candidate ended in `FF FF`. I’m narrowing the repair to that NPN tail/finalizer rule and will rerun the full matrix afterward.
+
+## 2026-07-18 12:12:00 +05:00 — Agent
+
+The targeted repair is now in place and static regressions pass: the NPN tail is deferred to the end of the component stream only for its donor-proven profile, and its explicit single-`FF` ending is preserved. I’m regenerating a fresh matrix—not overwriting the failed evidence—then I’ll gate every ratio/mix with 12-second cold opens and screenshots.
+
+## 2026-07-18 12:18:00 +05:00 — Agent
+
+Fresh generation is clean across the new matrix, including the previously failing NPN+diode cases: the NPN tail now reports `after_component_stream` and a single explicit finalizer. I’m opening the former failure first; if it passes twice, I’ll run the rest of the 1×/9×/15× and ratio matrix.
+
+## 2026-07-18 12:24:00 +05:00 — Agent
+
+The former failing diode case now passes both cold opens with no dialog and unchanged gate-copy hash; its screenshot shows the generated terminalized project loaded in Proteus. I’m continuing through the remaining fresh matrix one project at a time so the GUI checks cannot interfere with each other.
+
+## 2026-07-18 12:30:00 +05:00 — Agent
+
+The NPN 1× gate also passed both cold opens. The 9× and 15× scale gates are running sequentially now; I’m keeping the same 12-second delay and a separate screenshot pair for each.
+
+## 2026-07-18 12:36:00 +05:00 — Agent
+
+Both NPN scale cases passed twice with no dialogs and unchanged copies. I’m now gating the minimal mix and the asymmetric mix that contains resistor, capacitor, diode, and source families—the latter is the broadest repaired mixed-stream check.
+
+## 2026-07-18 12:42:00 +05:00 — Agent
+
+The minimal and asymmetric native mixes both pass twice now, including the original NPN+diode failure shape. I’m checking the existing catalogue-backed non-IC combination next, followed by the 15× mixed stress pack.
+
+## 2026-07-18 12:48:00 +05:00 — Agent
+
+All NPN matrix gates now pass twice: 1×, 9×, 15×, asymmetric diode/source, catalogue-backed non-IC mix, and the 15× NPN+diode+R+C stress mix. I’m doing the final evidence pass now—checking the screenshots/reports and recording the precise scope before marking NPN locked.
+
+## 2026-07-18 12:54:00 +05:00 — Agent
+
+The full component-placer regression has passed: 215 passed, 5 documented expected failures. I’m recording NPN as a non-IC terminal route locked through 15× and its mixed-ratio gate matrix, then I’ll rebuild and smoke-test the executable from this exact source before selecting the next family.
+
+## 2026-07-18 13:00:00 +05:00 — Agent
+
+The portable executable has been rebuilt from the verified source. I’m feeding its own binary—not the Python module—the 15× NPN+diode+R+C JSON now, then I’ll cold-open that exact executable output in Proteus.
+
+## 2026-07-18 13:06:00 +05:00 — Agent
+
+NPN is locked in the source and the freshly rebuilt executable: its 15× NPN+diode+R+C executable output contains 135 grid-aligned nonzero attachments and passes two 12-second cold opens. I’m checkpointing this evidence now before beginning the next non-IC donor audit.
+
+### Files edited or added during this response
+
+- `proteus/active/src/proteusgen/component_terminal_placer.py`
+- `proteus/active/src/proteusgen/proteus_app.py`
+- `proteus/active/knowledge/component_catalog_v0.json`
+- `proteus/active/knowledge/npn_executable_promotion_preflight_2026_07_18.md`
+- `proteus/active/tests/test_component_placer.py`
+- `proteus/active/tests/test_proteus_app.py`
+- `proteus/active/README.md`
+- `proteus/active/release/ProgenProteus.exe`
+- `proteus/active/release/README.md`
+- `proteus/archive/backups/component_terminal_placer/component_terminal_placer_20260718_151000_before_npn_nonzero_grid_route.py`
+- `proteus/archive/backups/component_terminal_placer/component_terminal_placer_20260718_154500_before_npn_diode_tail_finalizer_fix.py`
+- `proteus/archive/backups/component_terminal_placer/component_terminal_placer_20260718_163500_before_npn_non_ic_finalizer_scope_fix.py`
+- `proteus/experiments/runs/2026-07-18_npn_terminal_promotion_matrix_v2/`

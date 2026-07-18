@@ -100,6 +100,87 @@ def test_executable_terminalizes_catalogue_backed_pdf_families(tmp_path: Path) -
     assert EXECUTABLE_CATALOGUE_TERMINAL_FAMILIES <= EXECUTABLE_TERMINAL_FAMILIES
 
 
+def test_executable_terminalizes_npn_with_nonzero_grid_short_wires(
+    tmp_path: Path,
+) -> None:
+    result = generate_proteus_project(
+        {
+            "components": {"NPN": 1},
+            "layout": {"strategy": "beautify"},
+        },
+        tmp_path / "npn_nonzero_grid_short_wires.pdsprj",
+    )
+
+    assert result.valid
+    assert result.terminal_report is not None
+    assert result.terminal_report["terminalized_component_count"] == 1
+    assert result.terminal_report["terminal_count_added"] == 3
+    assert result.terminal_report["wire_count_added"] == 3
+    assert all(
+        check["terminal_contact_grid_aligned"]
+        and check["wire_is_nonzero"]
+        for check in result.terminal_report["wire_path_contact_checks"]
+    )
+
+
+def test_executable_terminalizes_npn_with_native_non_ic_mix(
+    tmp_path: Path,
+) -> None:
+    result = generate_proteus_project(
+        {
+            "components": {"NPN": 1, "RESISTOR": 1, "CAP": 1},
+            "layout": {"strategy": "beautify"},
+        },
+        tmp_path / "npn_native_non_ic_mix.pdsprj",
+    )
+
+    assert result.valid
+    assert result.terminal_report is not None
+    assert result.terminal_report["terminalized_component_count"] == 3
+    assert result.terminal_report["terminal_count_added"] == 7
+    assert result.terminal_report["wire_count_added"] == 7
+    assert all(
+        check["terminal_contact_grid_aligned"]
+        and check["wire_is_nonzero"]
+        for check in result.terminal_report["wire_path_contact_checks"]
+    )
+
+
+def test_executable_places_npn_tail_after_later_diode_packets(
+    tmp_path: Path,
+) -> None:
+    """Avoid the rejected NPN-tail -> later-diode terminal boundary.
+
+    The accepted NPN+diode mixed donor ends the NPN tail only after the
+    ordinary component stream.  This asymmetric request intentionally places
+    later diode packets after the NPN packets in the locked mega order.
+    """
+
+    result = generate_proteus_project(
+        {
+            "components": {"NPN": 3, "RESISTOR": 9, "CAP": 3, "DIODE": 5},
+            "layout": {"strategy": "beautify"},
+        },
+        tmp_path / "npn_diode_tail_after_component_stream.pdsprj",
+    )
+
+    assert result.valid
+    assert result.terminal_report is not None
+    zones = {
+        row["placement"]: row
+        for row in result.terminal_report["tail_attachment_zones"]
+    }
+    assert zones["after_component_stream"]["zone"] == "current_control_bjt_tail"
+    assert zones["after_component_stream"]["source_component_indexes"] == [14, 15, 16]
+    assert zones["after_component_stream"]["insertion_index"] == 20
+    assert result.terminal_report["object_stream_finalizer"] == "append_explicit_single_ff"
+    assert all(
+        check["terminal_contact_grid_aligned"]
+        and check["wire_is_nonzero"]
+        for check in result.terminal_report["wire_path_contact_checks"]
+    )
+
+
 def test_executable_uses_canonical_node_names_for_native_and_catalogue_terminals(
     tmp_path: Path,
 ) -> None:
