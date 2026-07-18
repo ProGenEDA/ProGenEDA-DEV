@@ -100,15 +100,17 @@ def test_executable_terminalizes_catalogue_backed_pdf_families(tmp_path: Path) -
     assert EXECUTABLE_CATALOGUE_TERMINAL_FAMILIES <= EXECUTABLE_TERMINAL_FAMILIES
 
 
-def test_executable_terminalizes_npn_with_nonzero_grid_short_wires(
+@pytest.mark.parametrize("family", ["NPN", "PNP"])
+def test_executable_terminalizes_bjt_with_nonzero_grid_short_wires(
     tmp_path: Path,
+    family: str,
 ) -> None:
     result = generate_proteus_project(
         {
-            "components": {"NPN": 1},
+            "components": {family: 1},
             "layout": {"strategy": "beautify"},
         },
-        tmp_path / "npn_nonzero_grid_short_wires.pdsprj",
+        tmp_path / f"{family.lower()}_nonzero_grid_short_wires.pdsprj",
     )
 
     assert result.valid
@@ -123,15 +125,17 @@ def test_executable_terminalizes_npn_with_nonzero_grid_short_wires(
     )
 
 
-def test_executable_terminalizes_npn_with_native_non_ic_mix(
+@pytest.mark.parametrize("family", ["NPN", "PNP"])
+def test_executable_terminalizes_bjt_with_native_non_ic_mix(
     tmp_path: Path,
+    family: str,
 ) -> None:
     result = generate_proteus_project(
         {
-            "components": {"NPN": 1, "RESISTOR": 1, "CAP": 1},
+            "components": {family: 1, "RESISTOR": 1, "CAP": 1},
             "layout": {"strategy": "beautify"},
         },
-        tmp_path / "npn_native_non_ic_mix.pdsprj",
+        tmp_path / f"{family.lower()}_native_non_ic_mix.pdsprj",
     )
 
     assert result.valid
@@ -146,22 +150,24 @@ def test_executable_terminalizes_npn_with_native_non_ic_mix(
     )
 
 
-def test_executable_places_npn_tail_after_later_diode_packets(
+@pytest.mark.parametrize("family", ["NPN", "PNP"])
+def test_executable_places_bjt_tail_after_later_diode_packets(
     tmp_path: Path,
+    family: str,
 ) -> None:
-    """Avoid the rejected NPN-tail -> later-diode terminal boundary.
+    """Avoid a BJT-tail -> later-diode terminal boundary.
 
-    The accepted NPN+diode mixed donor ends the NPN tail only after the
+    The accepted BJT+diode mixed route ends the BJT tail only after the
     ordinary component stream.  This asymmetric request intentionally places
-    later diode packets after the NPN packets in the locked mega order.
+    later diode packets after the BJT packets in the locked mega order.
     """
 
     result = generate_proteus_project(
         {
-            "components": {"NPN": 3, "RESISTOR": 9, "CAP": 3, "DIODE": 5},
+            "components": {family: 3, "RESISTOR": 9, "CAP": 3, "DIODE": 5},
             "layout": {"strategy": "beautify"},
         },
-        tmp_path / "npn_diode_tail_after_component_stream.pdsprj",
+        tmp_path / f"{family.lower()}_diode_tail_after_component_stream.pdsprj",
     )
 
     assert result.valid
@@ -171,7 +177,11 @@ def test_executable_places_npn_tail_after_later_diode_packets(
         for row in result.terminal_report["tail_attachment_zones"]
     }
     assert zones["after_component_stream"]["zone"] == "current_control_bjt_tail"
-    assert zones["after_component_stream"]["source_component_indexes"] == [14, 15, 16]
+    assert zones["after_component_stream"]["source_component_indexes"] == [
+        index
+        for index, group in enumerate(result.placement.selected_groups)
+        if group.family == family
+    ]
     assert zones["after_component_stream"]["insertion_index"] == 20
     assert result.terminal_report["object_stream_finalizer"] == "append_explicit_single_ff"
     assert all(

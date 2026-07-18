@@ -39,6 +39,13 @@ stress mix. Each emitted NPN terminal has a grid-aligned, nonzero short WIRE
 to its exact pin. IC/display mixtures remain on their independently verified
 routes and are not widened by this NPN promotion.
 
+`PNP` is included in this build's locked non-IC terminal route too. Its
+`BASE`/`COLLECTOR`/`EMITTER` pin attachments passed fresh `1x`, `9x`, `15x`,
+asymmetric, heterogeneous, and latest-executable `15x` stress gates. The
+portable executable also uses a bounded temporary work-directory prefix, so a
+descriptive output filename cannot consume the Windows path budget before
+placement and terminalization begin.
+
 For a canonical placement control, optional `terminal_label_projection`
 metadata assigns source-circuit node names to the exposed terminals before
 they are serialized. This changes labels (for example `VIN`, `G0`, `VOUT`),
@@ -47,7 +54,7 @@ requests remain rejected until the shared Wire Maker is accepted.
 
 Build: 2026-07-18
 
-SHA-256: `02E2E24B7ABBAAB025C46D5493823293321B535C2E1F4790676F8E509B2F4FD5`
+SHA-256: `AA69D0B8E13F7647906BA940EAB5982F6FFEF2AA55889F88AD6C30B88D2B80B9`
 
 ## Screenshot-proven gate bridge
 

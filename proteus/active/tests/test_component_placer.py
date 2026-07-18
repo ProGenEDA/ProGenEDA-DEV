@@ -1770,22 +1770,13 @@ def test_three_pin_transistor_catalogue_terminal_attachment(
         assert chunk[-1:] == b"\xff"
         assert terminal_placer._wire_record_spans(chunk)[-1][1] == len(chunk) - 1
         wire_rows = terminal_placer._wire_rows_from_chunk(chunk, chunk_start=0)
-        if family == "NPN":
+        if family in {"NPN", "PNP"}:
             assert all(
                 tuple(row["coordinates"][:2]) != tuple(row["coordinates"][2:4])
                 for row in wire_rows
             )
             assert all(
                 row["wire_is_nonzero"]
-                for row in report["wire_path_contact_checks"]
-            )
-        elif family == "PNP":
-            assert all(
-                tuple(row["coordinates"][:2]) == tuple(row["coordinates"][2:4])
-                for row in wire_rows
-            )
-            assert all(
-                not row["wire_is_nonzero"] and row["zero_length_wire_allowed"]
                 for row in report["wire_path_contact_checks"]
             )
         else:

@@ -68,6 +68,7 @@ EXECUTABLE_CATALOGUE_TERMINAL_FAMILIES = frozenset(
         "LM317T",
         "NMOSFET",
         "NPN",
+        "PNP",
         "OPAMP",
         "POT-HG",
     }
@@ -81,6 +82,12 @@ POST_TERMINAL_EDIT_KEYS = (
     "terminalized_edits",
     "value_properties",
 )
+
+# The generated project may intentionally have a descriptive filename and be
+# stored under a dated evidence directory.  Never repeat that whole stem in a
+# temporary work directory: Windows' legacy path ceiling otherwise prevents
+# the component placer from writing its manifest before terminalization starts.
+TEMPORARY_WORK_PREFIX = ".progen_"
 WIRING_REQUEST_KEYS = ("connections", "wires", "nets", "netlist")
 TERMINAL_LABEL_PROJECTION_KEY = "terminal_label_projection"
 _PLACEMENT_INFRASTRUCTURE_KEYS = frozenset({"D20", "DISPLAY_ANODE_SENTINEL"})
@@ -383,7 +390,7 @@ def generate_proteus_project(
         )
 
     with tempfile.TemporaryDirectory(
-        prefix=f".{destination.stem}_progen_",
+        prefix=TEMPORARY_WORK_PREFIX,
         dir=destination.parent,
     ) as temporary_directory:
         work = Path(temporary_directory)

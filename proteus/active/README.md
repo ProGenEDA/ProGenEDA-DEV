@@ -100,6 +100,14 @@ stress mix all passed two local 12-second cold opens with screenshots. The
 route emits grid-aligned terminal contacts and nonzero short WIREs. Evidence is
 in [`../experiments/runs/2026-07-18_npn_terminal_promotion_matrix_v2`](../experiments/runs/2026-07-18_npn_terminal_promotion_matrix_v2).
 
+`PNP` is now locked through the same executable-owned non-IC route. Donor-first
+stages, `1x`/`9x`/`15x` solos, asymmetric and heterogeneous mixes, and the
+latest executable's `15x` PNP/diode/resistor/capacitor stress mix passed the
+two-open, 12-second local Proteus gate with screenshots. Every PNP terminal
+uses the `BASE`/`COLLECTOR`/`EMITTER` catalogue pin model, grid-aligned contact,
+correct left/right orientation, and a nonzero direct WIRE to its exact pin.
+Evidence is in [`../experiments/runs/2026-07-18_pnp_terminal_promotion_matrix`](../experiments/runs/2026-07-18_pnp_terminal_promotion_matrix).
+
 The executable also has a deliberately bounded gate bridge for one gate family
 per project. It uses the same placement-control JSON, current locked-mega
 component placer, shared catalogue terminalizer, and
@@ -108,8 +116,8 @@ component placer, shared catalogue terminalizer, and
 `74HC266` 10 each. Mixed gate families and gate-plus-other-family requests are
 rejected because local screenshots proved that their current stream can open
 while silently hiding component packets. Other multi-pin IC/display/transistor
-terminal claims are not promoted by this README; the NPN non-IC route above is
-the single documented exception.
+terminal claims are not promoted by this README; the NPN and PNP non-IC routes
+above are the documented exceptions.
 
 Canonical PDF placement controls may supply an optional
 `terminal_label_projection`.  The current executable carries those logical node

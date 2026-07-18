@@ -4209,6 +4209,28 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
                 "Requested catalogue terminal families are absent from selected "
                 f"groups: {missing_catalogue}."
             )
+    # A profile that has been independently promoted to the nonzero grid route
+    # owns that safety requirement even in the conservative mixed writer.  The
+    # NPN/PNP donor grammar has no valid detached-terminal state: its terminal,
+    # active pin link, and short WIRE form one attachment unit.  Scope this
+    # escalation to a mix that actually contains an explicitly donor-backed
+    # profile; frozen R/C-only routes remain unchanged.
+    profile_forced_grid_families = tuple(
+        family
+        for family in requested_catalogue
+        if (
+            (profile := catalog.get_profile(family)) is not None
+            and isinstance(profile.proteus, Mapping)
+            and isinstance(profile.proteus.get("pin_geometry"), Mapping)
+            and bool(
+                profile.proteus["pin_geometry"].get(
+                    "force_grid_contact_short_wires", False
+                )
+            )
+        )
+    )
+    if profile_forced_grid_families:
+        force_grid_contact_short_wires = True
     terminal_leading_catalogue_families = {
         family
         for family in requested_catalogue
@@ -5709,6 +5731,7 @@ def attach_mixed_component_and_catalogue_bidir_terminals_to_project(
             else "accepted_mixed_donor_terminal_contact_coordinates"
         ),
         "force_grid_contact_short_wires": force_grid_contact_short_wires,
+        "profile_forced_grid_families": list(profile_forced_grid_families),
         "native_wire_path_contacts_valid": all(
             row.get("terminal_to_wire", False)
             and row.get("wire_to_pin", False)

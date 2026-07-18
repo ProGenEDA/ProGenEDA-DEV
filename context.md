@@ -35147,3 +35147,99 @@ NPN is locked in the source and the freshly rebuilt executable: its 15× NPN+dio
 - `proteus/archive/backups/component_terminal_placer/component_terminal_placer_20260718_154500_before_npn_diode_tail_finalizer_fix.py`
 - `proteus/archive/backups/component_terminal_placer/component_terminal_placer_20260718_163500_before_npn_non_ic_finalizer_scope_fix.py`
 - `proteus/experiments/runs/2026-07-18_npn_terminal_promotion_matrix_v2/`
+
+---
+
+## 2026-07-18 15:00:00 +05:00 â€” User
+
+continue
+
+## 2026-07-18 15:00:01 +05:00 â€” Agent
+
+Continuing with the PNP terminal route: Iâ€™m finishing its full regression, then Iâ€™ll verify the rebuilt executableâ€™s 15Ã— mixed output before locking it in.
+
+## 2026-07-18 15:03:00 +05:00 â€” Agent
+
+The background Git sync attempt ended cleanly but its remote fetch was interrupted; it left no merge state or lock. Iâ€™m keeping repository changes untouched while the PNP regression finishes.
+
+## 2026-07-18 15:08:00 +05:00 â€” Agent
+
+The rebuilt executable has generated a fresh PNP/diode/resistor/capacitor 15Ã— stress project with 135 terminal attachments. Iâ€™m running the required two-open Proteus gate on that exact executable output now.
+
+## 2026-07-18 15:10:00 +05:00 â€” Agent
+
+The executable gate passed twice: it opened normally, stayed open, showed no loader dialog, and its unchanged disposable copy cold-reopened cleanly. The screenshot also shows the placed terminalized components.
+
+## 2026-07-18 15:14:00 +05:00 â€” Agent
+
+Iâ€™ve also completed the PNP-focused regression: six donor/catalogue placement tests passed. Iâ€™m splitting the broader accepted-family regression into short isolated batches so the environmentâ€™s 60-second command cap doesnâ€™t cut it off.
+
+## 2026-07-18 15:18:00 +05:00 â€” Agent
+
+The first two full-regression batches are clean: 40/40 tests passed. Iâ€™m continuing the same isolated batches; no frozen family source has been altered.
+
+## 2026-07-18 15:25:00 +05:00 â€” Agent
+
+Regression batches 1â€“3 and the first half of batch 4 have passed (70 tests total). One larger batch hit the environment timeout, so I reduced the batch size rather than treating it as a test failure.
+
+## 2026-07-18 15:32:00 +05:00 â€” Agent
+
+The broader regression is still clean: 98 passed and 2 expected xfails so far. Iâ€™m continuing through the remaining isolated batches, then Iâ€™ll record and commit the PNP lock.
+
+## 2026-07-18 15:38:00 +05:00 â€” Agent
+
+Past the midpoint now: 127 passed, 3 expected xfails. The PNP changes remain isolated to its catalogue profile and executable allow-list; existing shared placement logic is unchanged.
+
+## 2026-07-18 15:42:00 +05:00 â€” Agent
+
+I found two real mixed-route regression failures before locking PNP. Iâ€™m stopping promotion here and auditing their generated reports against the PNP tail profile; I wonâ€™t mark the family accepted until those mixed cases pass.
+
+## 2026-07-18 15:45:00 +05:00 â€” Agent
+
+The cause is now fixed without altering any R/C-only route: a mix that contains a donor-proven NPN/PNP nonzero-grid profile now applies that profileâ€™s grid requirement to its combined attachment stream. The three previously failing mixed regressions now pass.
+
+## 2026-07-18 15:50:00 +05:00 â€” Agent
+
+The latest executable now produces both a 60-component 15Ã— PNP stress mix and a nine-family heterogeneous non-IC mix; both reports are valid with grid-aligned, nonzero terminal WIREs. Iâ€™m cold-opening each exact executable output twice.
+
+## 2026-07-18 15:53:00 +05:00 â€” Agent
+
+The 15Ã— stress output passed both 12-second cold opens again. The heterogeneous nine-family executable gate is still finishing its second launch; Iâ€™m waiting for its final loader result rather than assuming it passed.
+
+## 2026-07-18 15:57:00 +05:00 â€” Agent
+
+Both exact latest-executable projects passed their two-open Proteus gates. Iâ€™ve also isolated the post-fix regression set to the 23 BJT/grid-sensitive tests, so I can revalidate every affected path without needlessly retesting unrelated frozen families.
+
+## 2026-07-18 16:00:00 +05:00 â€” Agent
+
+The affected BJT/grid regression set is 20/20 clean so far. Iâ€™m running its final three mixed-tail tests now, then Iâ€™ll update the evidence/status files.
+
+## 2026-07-18 16:02:00 +05:00 â€” Agent
+
+PNPâ€™s completion record, locked catalogue status, matrix README, and executable documentation are now updated. Iâ€™m rebuilding once more so the release binary includes the final audit-report field as well as the path-budget repair.
+
+## 2026-07-18 16:04:00 +05:00 â€” Agent
+
+The final rebuilt executableâ€™s 60-component PNP release project passed both 12-second cold opens with an unchanged gate copy. Iâ€™m updating the evidence links to this final artifact, then performing the last focused checks and repository checkpoint.
+
+### Files edited or added during this response
+
+- `proteus/active/src/proteusgen/component_terminal_placer.py`
+- `proteus/active/src/proteusgen/proteus_app.py`
+- `proteus/active/knowledge/component_catalog_v0.json`
+- `proteus/active/knowledge/pnp_nonzero_grid_terminal_preflight_2026_07_18.md`
+- `proteus/active/tests/test_component_placer.py`
+- `proteus/active/tests/test_proteus_app.py`
+- `proteus/active/README.md`
+- `proteus/active/release/ProgenProteus.exe`
+- `proteus/active/release/README.md`
+- `proteus/archive/backups/component_terminal_placer/component_terminal_placer_20260718_142133_before_pnp_nonzero_grid_route.py`
+- `proteus/archive/backups/component_terminal_placer/component_terminal_placer_20260718_154121_before_profile_forced_grid_conservative_mix.py`
+- `proteus/experiments/runs/2026-07-18_pnp_terminal_promotion_matrix/`
+
+### Validation recorded
+
+- PNP focused/source regressions: `9 passed` after the final shared-place report update.
+- BJT/grid-sensitive regression matrix: `23 passed` after the profile-grid repair.
+- Application suite: `17 passed` after the executable path-budget repair.
+- Local Proteus: latest executable `EXE_M10_PNP_DIODE15X_RELEASE` passed two 12-second cold opens with screenshots and unchanged gate-copy SHA-256.
