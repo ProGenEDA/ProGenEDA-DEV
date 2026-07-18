@@ -150,7 +150,7 @@ def test_executable_terminalizes_bjt_with_native_non_ic_mix(
     )
 
 
-@pytest.mark.parametrize("family", ["NPN", "PNP", "2N3904"])
+@pytest.mark.parametrize("family", ["NPN", "PNP", "2N3904", "2N4401"])
 def test_executable_places_bjt_tail_after_later_diode_packets(
     tmp_path: Path,
     family: str,

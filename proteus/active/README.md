@@ -127,6 +127,15 @@ mix; and a dense 15-per-family mixed project all passed the two-open,
 route remains pending user visual review; evidence is in
 [`../experiments/runs/2026-07-18_2n3904_terminal_promotion_matrix`](../experiments/runs/2026-07-18_2n3904_terminal_promotion_matrix).
 
+`2N4401` is now enabled through the same shared catalogue route. Its accepted
+mixed donor independently proves the `COLLECTOR`/`EMITTER`/`BASE` tail must
+follow the full placed component stream. The staged 1x proof, 9x and 15x
+solos, five additive mixed boundaries, an asymmetric ratio, a heterogeneous
+24-component mix, and a dense 15-per-family mixed project all passed the
+two-open, 12-second local Proteus gate with grid-aligned, nonzero terminal
+WIREs. The route remains pending user visual review; evidence is in
+[`../experiments/runs/2026-07-18_2n4401_terminal_promotion_matrix`](../experiments/runs/2026-07-18_2n4401_terminal_promotion_matrix).
+
 The executable also has a deliberately bounded gate bridge for one gate family
 per project. It uses the same placement-control JSON, current locked-mega
 component placer, shared catalogue terminalizer, and

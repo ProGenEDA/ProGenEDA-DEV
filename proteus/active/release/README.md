@@ -59,15 +59,22 @@ asymmetric and heterogeneous mixes, a dense 15-per-family mix, and a fresh
 portable-executable ratio mix all passed normal open and cold reopen with
 grid-aligned, nonzero terminal-to-pin WIREs.
 
+`2N4401` is included in this build through the same shared route. Its
+independent accepted donor proves its `COLLECTOR`/`EMITTER`/`BASE` tail follows
+the whole placed stream. The staged 1x proof, 9x/15x solos, additive and
+asymmetric ratios, a heterogeneous 24-component mix, and a dense 15-per-family
+mix passed the local two-open Proteus gate. The rebuilt executable itself is
+gated below before this release note is finalized.
+
 For a canonical placement control, optional `terminal_label_projection`
 metadata assigns source-circuit node names to the exposed terminals before
 they are serialized. This changes labels (for example `VIN`, `G0`, `VOUT`),
 not physical routing: arbitrary `nets`, `wires`, `connections`, and `netlist`
 requests remain rejected until the shared Wire Maker is accepted.
 
-Build: 2026-07-18
+Build: 2026-07-18 (2N4401 terminal-route promotion)
 
-SHA-256: `808F0BE99A8644F204A97775D71B99CF67A28CC86A954E57A7D61A254319375D`
+SHA-256: `D32D06E4935EAAC1E8439807472871E1A706F299AE4A1DF7839CBC4E8534FEAD`
 
 ## Screenshot-proven gate bridge
 
