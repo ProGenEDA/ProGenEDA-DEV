@@ -35881,3 +35881,8 @@ Files created:
   EasyEDA projects, complexity figures, and direct `.eprj` links.
 - `showcase/.gitignore` - keeps generated immutable project payloads local
   while tracking the curated showcase manifests.
+
+Publication record:
+
+- Committed and pushed as `ce567253d Add KiCad and EasyEDA complex showcases`.
+- Confirmed local `main` and `origin/main` resolve to the same commit.
