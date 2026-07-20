@@ -35917,3 +35917,18 @@ Visible assistant response:
 > terminal blocks for input/output rather than a dedicated audio jack, and it
 > is not a speaker-driving power amplifier because no audio power-amp family
 > is presently locked.
+
+---
+
+Timestamp: 2026-07-20T00:00:00+05:00
+
+User message (verbatim):
+
+> okk give me a detailed prompt for it,
+
+Visible assistant response:
+
+> Supplied a detailed prompt for a native EasyEDA, single-supply LM358 guitar
+> distortion pedal/preamp using only locked catalogue families: reverse-power
+> protection, virtual-ground buffer, adjustable gain, antiparallel 1N4148
+> clipping, tone, level, status LED, and terminal-block audio I/O.
