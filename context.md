@@ -35955,3 +35955,24 @@ Visible assistant response:
 > and nets. The one-way importer does not reveal a complete native Altium
 > writer grammar, so donor-native Altium documents and Altium acceptance remain
 > necessary for a future direct exporter.
+
+---
+
+Timestamp: 2026-07-21T00:00:00+05:00
+
+User message (verbatim):
+
+> well if it can read it can be used to write can u answer this by deep looking into it
+
+Visible assistant response:
+
+> Corrected the earlier incomplete conclusion after inspecting and executing
+> EasyEDA's bundled Chameleon conversion engine. Its advertised registry lists
+> `altium` in both decoder and encoder types, and the Altium entry has both an
+> importer and exporter. The exporter serializes a ZIP containing Altium
+> `.PrjPcb`, `.SchDoc`, `.PcbDoc`, and related project artifacts. The practical
+> remaining bridge is from ProGenEDA's canonical JSON/native `.eprj` model into
+> Chameleon's shared conversion IR: the CLI registry does not expose current
+> `easyeda-pro`/SQLite `.eprj` as a decoder. A native Altium open and
+> re-import/netlist acceptance test would still be required before claiming
+> the output is production-ready.
