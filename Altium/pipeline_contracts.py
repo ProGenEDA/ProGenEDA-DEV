@@ -16,7 +16,7 @@ from .ir import AltiumCircuit, AltiumComponent
 from .source_catalogue import Bounds, Point, SourceTemplate
 
 
-PIPELINE_SCHEMA = "progen-altium-pipeline/v1"
+PIPELINE_SCHEMA = "progen-altium-pipeline/v2"
 DIRECT_GENERATION_SCHEMA = "progen-altium-direct-generation/v1"
 
 
@@ -88,6 +88,7 @@ class PlacedComponent:
     root_location: Point
     bounds: Bounds
     pins: dict[str, Point]
+    pin_names: dict[str, str]
     pin_directions: dict[str, str]
     pin_nets: dict[str, str]
     logical_pin_map: dict[str, str]
@@ -119,6 +120,7 @@ class PlacedComponent:
             "pins": {
                 pin: {
                     "position": point.json(),
+                    "name": self.pin_names.get(pin, ""),
                     "escape_direction": self.pin_directions[pin],
                     "net": self.pin_nets[pin],
                 }
@@ -318,14 +320,29 @@ class PipelineResult:
         }
 
 
-def expected_physical_contract(design: PlacedDesign, routing: RoutingPlan) -> dict[str, Any]:
+def expected_physical_contract(
+    design: PlacedDesign,
+    routing: RoutingPlan,
+    *,
+    sheet_width_ticks: int,
+    sheet_height_ticks: int,
+) -> dict[str, Any]:
     """Convert stage contracts into the saved-file validator's public contract."""
 
     return {
+        "schema": "progen-altium-expected-physical-contract/v2",
         "components": [
             {
                 "reference": component.reference,
+                "value": component.value,
+                "source_template": component.source_template,
+                "library_reference": component.library_reference,
+                "record_count": component.record_count,
                 "owner_index": component.owner_index,
+                "root_location": {
+                    "x_ticks": component.root_location.x,
+                    "y_ticks": component.root_location.y,
+                },
                 "bounds": {
                     "min_x_ticks": component.bounds.min_x,
                     "min_y_ticks": component.bounds.min_y,
@@ -336,6 +353,7 @@ def expected_physical_contract(design: PlacedDesign, routing: RoutingPlan) -> di
                     pin: {
                         "x_ticks": point.x,
                         "y_ticks": point.y,
+                        "name": component.pin_names.get(pin, ""),
                         "escape_direction": component.pin_directions[pin],
                     }
                     for pin, point in component.pins.items()
@@ -345,6 +363,24 @@ def expected_physical_contract(design: PlacedDesign, routing: RoutingPlan) -> di
         ],
         "nets": {name: list(members) for name, members in sorted(design.nets.items())},
         "terminalized_nets": list(routing.terminalized_nets),
+        "wire_geometry": [
+            {
+                "start": {"x_ticks": wire.start.x, "y_ticks": wire.start.y},
+                "end": {"x_ticks": wire.end.x, "y_ticks": wire.end.y},
+            }
+            for wire in routing.wires
+        ],
+        "label_geometry": [
+            {
+                "net": label.net,
+                "location": {"x_ticks": label.location.x, "y_ticks": label.location.y},
+            }
+            for label in routing.labels
+        ],
+        "sheet": {
+            "width_ticks": sheet_width_ticks,
+            "height_ticks": sheet_height_ticks,
+        },
     }
 
 

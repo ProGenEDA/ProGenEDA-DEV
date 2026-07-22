@@ -17,9 +17,28 @@ input fixer -> value editor -> value validator -> file-name decider
 -> native writer -> output packager -> PCB decision -> final validator
 ```
 
-Each successful run writes 21 numbered stage JSON files under
+At this original checkpoint, each successful run wrote 21 numbered stage JSON files under
 `internal/stages/`, a normalized input, source provenance, physical contract,
 final validation report, user-facing project ZIP, and private internal ZIP.
+
+## Follow-Up Hardening
+
+The original 21-stage checkpoint above is preserved as historical evidence.
+The repaired pipeline now has 22 stages because native route serialization is
+owned by an independent `wire_maker.py` between routing validation and project
+composition. The arrangement stage now runs four complete
+Beautifier-to-Wire-Planner trials and preserves every score before accepting
+the lowest unresolved-net/length/area/aspect result.
+
+Adversarial regressions now reject contradictory top-level nets, contradictory
+`expected_netlist`, normalized net-name collisions, altered component values,
+altered native library references, shifted component roots/bounds, changed pin
+names/directions, undersized sheets, wire/label index collisions, and ZIP
+payloads that differ from the files validated on disk. The `.PrjPcb` is now
+rendered from a pinned MIT-licensed native donor rather than a synthetic
+descriptor. An 80-resistor fully connected chain passed all 22 stages with 418
+physical segments in approximately 12.1 seconds; its two singleton end nets
+were explicitly terminalized in combination mode.
 
 ## Regression Evidence
 

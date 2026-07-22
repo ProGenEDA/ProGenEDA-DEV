@@ -10,13 +10,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 import json
 from pathlib import Path
-import re
 from typing import Any, Mapping
+
+from .naming import normalize_project_stem
 
 
 IR_SCHEMA = "progen-altium-circuit-ir/v1"
 ROUTING_MODES = frozenset({"wire", "terminal", "combination"})
-_SAFE_NAME = re.compile(r"[^A-Za-z0-9_.+-]+")
 
 
 class CircuitInputError(ValueError):
@@ -72,8 +72,7 @@ class AltiumCircuit:
 
 
 def _slug(value: object) -> str:
-    text = _SAFE_NAME.sub("_", str(value or "").strip()).strip("_.")
-    return text or "altium_project"
+    return normalize_project_stem(value)
 
 
 def _load(value: Path | str | Mapping[str, Any]) -> dict[str, Any]:

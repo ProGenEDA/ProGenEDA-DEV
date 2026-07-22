@@ -53,6 +53,7 @@ def place_components(selection: ComponentSelection) -> PlacedDesign:
                 root_location=root,
                 bounds=template.bounds.translated(dx, dy),
                 pins={pin: point.translated(dx, dy) for pin, point in template.pins.items()},
+                pin_names=dict(template.pin_names),
                 pin_directions=dict(template.pin_directions),
                 pin_nets=dict(item.pin_nets),
                 logical_pin_map=dict(item.logical_pin_map),

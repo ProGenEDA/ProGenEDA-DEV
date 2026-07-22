@@ -15,12 +15,13 @@ raw JSON
   -> value editor / value validator / file-name decider
   -> component selector / user-spec validator / input validator
   -> component placer / placement validator
-  -> arrangement decider
+  -> arrangement decider (Beautifier -> Wire Planner candidate loop)
   -> beautifier / beautifier validator
   -> routing decision
   -> wire planner
   -> terminal placer
   -> routing validator
+  -> wire maker
   -> native Altium writer
   -> output packager
   -> PCB decision
@@ -38,14 +39,15 @@ raw JSON
 | `user_spec_validator.py` | Preservation of requested references, values, logical pins, and net names through source resolution | Geometry or routing |
 | `component_placer.py` | Initial non-overlapping source-symbol placement | Routing, labels, values |
 | `placement_validator.py` | Bounds, pins, source record presence, net coverage | Routing quality |
-| `arrangement_decider.py` | Topology-aware near-square coordinate plan | Applying edits or rotation |
+| `arrangement_decider.py` | Four bounded near-square candidate plans, route trials, scoring, and accepted coordinate plan | Applying edits or native records |
 | `beautifier.py` | Applying coordinate edits only | Symbols, values, nets, wires |
 | `beautifier_validator.py` | Collision and pin/net preservation after coordinate edits | Any new layout decision |
 | `routing_decider.py` | Explicit `wire`, `terminal`, or `combination` policy and forced guess terminals | Route geometry |
 | `wire_planner.py` | Pure physical rectilinear routes and unresolved-net report | Terminal fallback or native records |
 | `terminal_placer.py` | Source-direction stems and labels for selected whole nets | Physical-route decisions |
 | `routing_validator.py` | Pure geometry, graph, terminal attachment, and strict-mode policy | Altium file parsing |
-| `native_writer.py` | Cloning/rebasing audited source records into `.SchDoc` and `.PrjPcb` | Geometry decisions |
+| `wire_maker.py` | Source-backed native wire and label records from the validated route | Placement and project composition |
+| `native_writer.py` | Cloning/rebasing audited component records, allocating final indexes, sizing the sheet, and composing `.SchDoc` / `.PrjPcb` | Route geometry decisions |
 | `output_packager.py` | User project ZIP and private internal evidence archive | Electrical validation |
 | `pcb_decider.py` | Explicit current PCB boundary | Fabricating a `.PcbDoc` |
 | `final_validator.py` | Saved-file pin/net/geometry and ZIP package validation | In-memory assumptions |
@@ -61,7 +63,11 @@ The fixer can safely:
 - accept `components`, `parts`, or `devices` lists;
 - accept `kind`, `type`, `component`, `family`, or `name` for a source alias;
 - accept component pin mappings or pin-object lists;
-- regenerate top-level `nets` and `expected_netlist` from explicit pin entries;
+- reconcile component pins, top-level `nets`, and `expected_netlist` without
+  discarding contradictions;
+- fill otherwise absent component pins from explicit top-level net members;
+- reject distinct names that collapse to one normalized net;
+- repair project names to conservative Altium/Windows-safe stems;
 - normalize values and routing mode; and
 - add a missing audited physical pin as a unique `GUESS_TERMINAL_<ref>_<pin>`
   singleton net.
@@ -93,7 +99,11 @@ Every full run uses a new directory:
     stages/
       01_input_fixer.json
       ...
-      21_final_validator.json
+      18_wire_maker.json
+      19_native_writer.json
+      20_output_packager.json
+      21_pcb_decision.json
+      22_final_validator.json
 ```
 
 The project ZIP contains only user-facing native project files.  The private

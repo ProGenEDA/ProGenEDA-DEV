@@ -11,7 +11,10 @@ def test_inspects_complete_native_project_inventory(tmp_path: Path) -> None:
     with zipfile.ZipFile(archive, "w") as bundle:
         bundle.writestr(
             "demo/board.PrjPcb",
-            "[Document1]\nDocumentPath=main.SchDoc\n[Document2]\nDocumentPath=board.PcbDoc\n",
+            "[Design]\nVersion=1.0\n[Preferences]\n"
+            "[Document1]\nDocumentPath=main.SchDoc\n"
+            "[Document2]\nDocumentPath=board.PcbDoc\n"
+            "[Configuration1]\nName=Default Configuration\n",
         )
         bundle.writestr("demo/main.SchDoc", b"native schematic bytes")
         bundle.writestr("demo/board.PcbDoc", b"native pcb bytes")
@@ -30,10 +33,30 @@ def test_inspects_complete_native_project_inventory(tmp_path: Path) -> None:
 def test_reports_missing_project_document(tmp_path: Path) -> None:
     archive = tmp_path / "broken.zip"
     with zipfile.ZipFile(archive, "w") as bundle:
-        bundle.writestr("board.PrjPcb", "DocumentPath=missing.SchDoc\n")
+        bundle.writestr(
+            "board.PrjPcb",
+            "[Design]\nVersion=1.0\n[Preferences]\n"
+            "[Document1]\nDocumentPath=missing.SchDoc\n"
+            "[Configuration1]\nName=Default Configuration\n",
+        )
         bundle.writestr("main.SchDoc", b"native schematic bytes")
 
     report = inspect_project_package(archive)
 
     assert report.passed is False
     assert any("declares missing documents" in error for error in report.errors)
+
+
+def test_rejects_synthetic_project_stub_without_native_sections(tmp_path: Path) -> None:
+    archive = tmp_path / "synthetic_stub.zip"
+    with zipfile.ZipFile(archive, "w") as bundle:
+        bundle.writestr(
+            "demo/demo.PrjPcb",
+            "[Project]\nProjectName=demo\n[Document1]\nDocumentPath=Schematic/demo.SchDoc\n",
+        )
+        bundle.writestr("demo/Schematic/demo.SchDoc", b"native schematic bytes")
+
+    report = inspect_project_package(archive)
+
+    assert not report.passed
+    assert any("missing native project sections" in error for error in report.errors)

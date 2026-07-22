@@ -10,9 +10,10 @@ generation.
 canonical JSON
   -> input fixer and value editor
   -> audited source selection and component placement
-  -> arrangement decider and coordinate-only beautifier
+  -> four-candidate route-informed arrangement and coordinate-only beautifier
   -> wire planner and terminal placer
-  -> routing validator and direct .SchDoc/.PrjPcb writer
+  -> routing validator and independent native wire maker
+  -> direct .SchDoc writer and donor-backed .PrjPcb writer
   -> saved-file/package final validation
   -> ZIP project artifact plus private stage archive
 ```
@@ -44,7 +45,7 @@ PYTHONPATH=. python -m Altium.executable validate-package RUN/project.zip
 
 Every generation creates a new run directory. It contains the user-facing
 project folder and ZIP, plus `internal/` records for the normalized input,
-source hashes, value edits, source selection, placement, arrangement,
+source hashes, value edits, source selection, placement, all arrangement trials,
 beautifier output, wire plan, terminal plan, routing validation, PCB decision,
 expected physical contract, and saved-file validation report. A separate
 private internal ZIP preserves the whole stage history.
@@ -101,17 +102,26 @@ The direct validator re-parses the saved `.SchDoc`; it does not accept the
 generator's in-memory route plan as proof. It checks:
 
 1. native ASCII header and record count;
-2. expected references, exact source-pin positions, and pin directions;
-3. component overlap and wire-to-component-body clearance;
-4. unique wire/label record indexes and orthogonal physical segments;
-5. physical wire graph connectivity for fully wired nets;
-6. native label attachment and logical connectivity for terminalized nets;
-7. expected-net separation so a route or label cannot silently short nets; and
-8. `.PrjPcb` document declarations, ZIP inventory, safe paths, and hashes.
+2. expected references, values, source library identities, root coordinates,
+   complete symbol bounds, and native pin names/directions/positions;
+3. dynamic sheet dimensions containing every body, pin, route, and label;
+4. component overlap and wire-to-component-body clearance;
+5. globally unique wire/label record indexes and orthogonal segments;
+6. exact wire-maker/terminal geometry with no duplicate native component or
+   pin/property records;
+7. physical wire graph connectivity for fully wired nets;
+8. native label attachment and logical connectivity for terminalized nets;
+9. expected-net separation so a route or label cannot silently short nets; and
+10. donor-native `.PrjPcb` sections, document declarations, ZIP inventory, safe
+   paths, and exact hash equality with the files that were validated.
 
-`Altium/tests/` contains focused pytest regressions. The base environment used
-for the first implementation does not include pytest, so the same fixtures are
-also exercised through the CLI and standard-library scripts during local runs.
+`Altium/tests/` contains focused pytest regressions, including deliberate
+mutations of values, library references, pin identity, sheet size, routing
+indexes, and archive payloads. A repository-local `.venv` may be used when the
+host Python does not already provide pytest.
+
+With `--progress-json`, the executable emits one ordered event for every one
+of the 22 retained stages, followed by a `complete` event at 100 percent.
 
 ## Encoder/Decoder Research Boundary
 

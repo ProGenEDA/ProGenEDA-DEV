@@ -1,7 +1,7 @@
 # Altium Donors
 
-The current compact schematic seed lives in
-[`../source_pack/donors/`](../source_pack/donors/) because it is runtime
+The current compact schematic and project-descriptor seeds live in
+[`../source_pack/donors/`](../source_pack/donors/) because they are runtime
 catalogue evidence. This directory is reserved for future raw donor archives,
 desktop-open evidence, and controlled source comparisons.
 

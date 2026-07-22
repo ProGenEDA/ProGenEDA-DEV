@@ -68,7 +68,7 @@ check.
 
 | Field | Required | Meaning |
 | --- | --- | --- |
-| `project.name` | no | Safe project/file stem; defaults to `altium_project`. |
+| `project.name` | no | Project/file stem; unsafe punctuation and reserved host names are repaired. |
 | `project.title` | no | Human-visible project title. |
 | `routing.mode` | no | `wire`, `terminal`, or `combination`; defaults to `combination`. |
 | `components` | yes | Non-empty list of source-backed components. |
@@ -76,8 +76,8 @@ check.
 | `components[].ref` | yes in practice | Unique emitted Altium designator. |
 | `components[].kind` | yes | One alias from [SUPPORTED_COMPONENTS.md](SUPPORTED_COMPONENTS.md). |
 | `components[].value` | no | Text copied to the audited source value properties. |
-| `components[].pins` | yes | Mapping of canonical/source pin spelling to net name. |
-| `nets` | no | Optional cross-check in list or object form. |
+| `components[].pins` | conditionally | Mapping of canonical/source pin spelling to net name. Missing entries may be filled only from explicit top-level net members. |
+| `nets` | no | Optional exact declaration in list or object form; it can supply otherwise absent component pin bindings. |
 
 ## Non-Negotiable Rules
 
@@ -103,8 +103,10 @@ contract.
 `validate-input` and the normal generator first run the conservative Altium
 input fixer. It can accept alternate field names such as `parts`, `devices`,
 `type`, `family`, `reference`, `connections`, and pin-object lists. It derives
-the top-level net list from the explicit component pins and records every
-repair in `internal/stages/01_input_fixer.json`.
+one canonical net list from component pins plus explicit `nets` and
+`expected_netlist` declarations, and records every repair in
+`internal/stages/01_input_fixer.json`. It rejects conflicting declarations and
+normalization collisions instead of overwriting user intent.
 
 If an audited physical source pin was omitted, the fixer adds it as a unique
 net named `GUESS_TERMINAL_<reference>_<source-pin>`. It never connects that

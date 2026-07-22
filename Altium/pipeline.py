@@ -14,7 +14,7 @@ import json
 from pathlib import Path
 from typing import Any, Callable, Mapping
 
-from .arrangement_decider import decide_arrangement
+from .arrangement_decider import choose_route_informed_arrangement
 from .beautifier import apply_coordinate_edits
 from .beautifier_validator import validate_beautifier_result
 from .component_placer import place_components
@@ -29,6 +29,7 @@ from .output_packager import package_internal_evidence, package_project
 from .pcb_decider import decide_pcb_output
 from .pipeline_contracts import PIPELINE_SCHEMA, PipelineError, PipelineResult, as_json
 from .placement_validator import validate_placement
+from .project_descriptor import project_template_provenance
 from .routing_decider import decide_routing
 from .routing_validator import validate_routing
 from .source_catalogue import SourceCatalogue, load_source_catalogue
@@ -37,9 +38,34 @@ from .user_spec_validator import validate_user_specification
 from .value_editor import apply_value_edits
 from .value_validator import validate_component_values
 from .wire_planner import plan_wires
+from .wire_maker import make_native_route_records
 
 
 ProgressCallback = Callable[[dict[str, Any]], None]
+_STAGE_PROGRESS = {
+    "input_fixer": 4,
+    "value_editor": 8,
+    "value_validator": 11,
+    "file_name_decider": 14,
+    "component_selector": 18,
+    "user_spec_validator": 22,
+    "input_validator": 26,
+    "component_placer": 30,
+    "placement_validator_initial": 34,
+    "arrangement_decider": 40,
+    "beautifier": 44,
+    "beautifier_validator": 48,
+    "routing_decider": 52,
+    "wire_planner": 58,
+    "terminal_placer": 64,
+    "routing_plan": 68,
+    "routing_validator": 72,
+    "wire_maker": 77,
+    "native_writer": 82,
+    "output_packager": 86,
+    "pcb_decision": 90,
+    "final_validator": 96,
+}
 
 
 class PipelineRunError(PipelineError):
@@ -150,6 +176,7 @@ def generate_pipeline(
         path = stages_directory / f"{number:02d}_{name}.json"
         _write_json(path, value)
         reports[name] = path
+        progress(name, name.replace("_", " ").capitalize(), _STAGE_PROGRESS[name])
         return path
 
     def fail(stage: str, errors: tuple[str, ...] | list[str] | str) -> None:
@@ -172,25 +199,24 @@ def generate_pipeline(
         {
             "schema": PIPELINE_SCHEMA,
             "source_catalogue": source.json(),
+            "project_descriptor_donor": project_template_provenance(),
             "generation_path": (
                 "canonical_json -> input_fixer -> value_editor -> value_validator -> "
                 "file_name_decider -> component_selector -> user_spec_validator -> input_validator -> "
                 "component_placer -> placement_validator_initial -> arrangement_decider -> beautifier -> "
                 "beautifier_validator -> routing_decider -> wire_planner -> terminal_placer -> "
-                "routing_plan -> routing_validator -> native_altium_writer -> output_packager -> "
+                "routing_plan -> routing_validator -> wire_maker -> native_altium_writer -> output_packager -> "
                 "pcb_decision -> final_validator"
             ),
             "easyeda_conversion_used": False,
         },
     )
     record(1, "input_fixer", fixed.report)
-    progress("input_fixer", "Input JSON normalized and safe missing pins terminalized", 6)
     record(2, "value_editor", values)
     value_validation = validate_component_values(circuit)
     record(3, "value_validator", value_validation)
     if not value_validation.passed:
         fail("value_validator", value_validation.errors)
-    progress("value_editor", "Component values normalized", 12)
 
     record(4, "file_name_decider", names)
     selection = resolve_components(circuit, catalogue=source)
@@ -203,7 +229,6 @@ def generate_pipeline(
     record(7, "input_validator", input_validation)
     if not input_validation.passed:
         fail("input_validator", input_validation.errors)
-    progress("component_selector", "Audited native source components and pins resolved", 22)
 
     initial_design = place_components(selection)
     record(8, "component_placer", initial_design)
@@ -211,11 +236,15 @@ def generate_pipeline(
     record(9, "placement_validator_initial", initial_placement)
     if not initial_placement.passed:
         fail("placement_validator_initial", initial_placement.errors)
-    progress("component_placer", "Baseline source-backed components placed", 34)
 
-    arrangement = decide_arrangement(initial_design)
+    routing_decision = decide_routing(selection)
+    arrangement = choose_route_informed_arrangement(
+        initial_design,
+        routing_decision.routing_mode,
+        forced_terminal_nets=routing_decision.forced_terminal_nets,
+    )
     record(10, "arrangement_decider", arrangement)
-    beautified = apply_coordinate_edits(initial_design, arrangement)
+    beautified = apply_coordinate_edits(initial_design, arrangement.plan)
     record(11, "beautifier", beautified)
     design = beautified.design
     beautifier_validation = validate_beautifier_result(beautified)
@@ -223,9 +252,7 @@ def generate_pipeline(
     if not beautifier_validation.passed:
         fail("beautifier_validator", beautifier_validation.placement.errors)
     _write_mapping(internal_directory / "placement.json", design.json())
-    progress("arrangement", "Connectivity-aware square arrangement applied", 46)
 
-    routing_decision = decide_routing(selection)
     record(13, "routing_decider", routing_decision)
     wire_plan = plan_wires(
         design,
@@ -242,7 +269,9 @@ def generate_pipeline(
     _write_mapping(internal_directory / "routing.json", routing.json())
     if not routing_validation.passed:
         fail("routing_validator", routing_validation.errors)
-    progress("routing", "Physical wires and native terminal fallbacks planned", 63)
+
+    route_records = make_native_route_records(routing, source)
+    record(18, "wire_maker", route_records)
 
     project_directory = run_directory / names.project_directory
     native = write_native_project(
@@ -250,21 +279,20 @@ def generate_pipeline(
         selection,
         design,
         routing,
+        route_records,
         catalogue=source,
         project_directory=project_directory,
     )
-    record(18, "native_writer", native)
+    record(19, "native_writer", native)
     _write_mapping(internal_directory / "expected_physical_contract.json", native.expected_contract)
-    progress("native_writer", "Native source-backed Altium records emitted", 76)
 
     project_archive = package_project(project_directory, run_directory, circuit.name)
-    record(19, "output_packager", {"project_archive": str(project_archive)})
+    record(20, "output_packager", {"project_archive": str(project_archive)})
     pcb = decide_pcb_output(selection, design)
-    record(20, "pcb_decision", pcb)
+    record(21, "pcb_decision", pcb)
     final = validate_final_output(native, project_archive)
-    record(21, "final_validator", final)
+    record(22, "final_validator", final)
     _write_mapping(internal_directory / "validation_report.json", final.json())
-    progress("final_validator", "Saved schematic graph and package revalidated", 91)
     if not final.passed:
         fail("final_validator", final.errors)
 
@@ -284,7 +312,7 @@ def generate_pipeline(
     _write_mapping(internal_directory / "pipeline_report.json", pipeline_report)
     reports["pipeline_report"] = internal_directory / "pipeline_report.json"
     internal_archive = package_internal_evidence(run_directory, internal_directory, circuit.name)
-    progress("output_packager", "User project and private pipeline evidence packaged", 100)
+    progress("complete", "User project and private pipeline evidence packaged", 100)
     return PipelineResult(
         run_directory=run_directory,
         project_directory=project_directory,

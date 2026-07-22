@@ -9,9 +9,9 @@ canonical JSON
   -> input fixer / AltiumCircuit IR / value editor
   -> source catalogue resolution / component selector
   -> placed-design contract
-  -> arrangement decider / beautifier
+  -> route-informed arrangement trials / beautifier
   -> wire planner / terminal placer / routing validator
-  -> direct native ASCII SchDoc writer
+  -> source-backed wire maker / direct native ASCII SchDoc writer
   -> output packager / PCB decision
   -> saved-file graph, geometry, and ZIP package final validator
 ```
@@ -32,16 +32,17 @@ kept outside this path as a local research utility only.
 | User specification validator | canonical request + source selection | intent-preservation report | implemented |
 | Component placer | resolved templates | deterministic non-overlapping placed-design contract | implemented |
 | Placement validator | placed-design contract | collision/pin/net report | implemented |
-| Arrangement decider | placed-design contract | connectivity-aware square coordinate plan | implemented |
+| Arrangement decider | placed-design contract + routing policy | four scored placement/routing trials and accepted square plan | implemented |
 | Beautifier | coordinate plan | moved placed-design contract | implemented |
 | Beautifier validator | beautified placed design | post-edit placement report | implemented |
 | Routing decider | routing mode + source facts | explicit wire/terminal/combination policy | implemented |
 | Wire planner | pins, bounds, nets | orthogonal source-pin escape routes | implemented bounded baseline |
 | Terminal planner | unresolved or selected nets | stem wires plus native `RECORD=25` labels | implemented |
 | Routing validator | pure routing contract | geometry, graph, terminal-policy report | implemented |
+| Wire maker | validated route + source records | native wire/net-label record plan | implemented |
 | Schematic writer | source records + plan | fresh ASCII `.SchDoc` | implemented |
 | Direct validator | saved `.SchDoc` + expected contract | pin/net/geometry validation report | implemented |
-| Project writer | schematic metadata | `.PrjPcb` and ZIP project artifact | implemented baseline |
+| Project writer | pinned MIT donor descriptor + schematic metadata | native-section `.PrjPcb` and ZIP project artifact | implemented |
 | Output packager | project + stage evidence | user ZIP and private internal ZIP | implemented |
 | PCB decision | resolved source/pin facts | explicit qualified/unqualified PCB outcome | implemented boundary |
 | PCB compiler | schematic pin/pad contract | `.PcbDoc` | not implemented |
@@ -71,6 +72,12 @@ The writer copies those records into a fresh document, changes only safe
 identity/value/coordinate fields, and allocates fresh owner and sheet indexes.
 It never draws a replacement symbol or guesses a pin map.
 
+The `.PrjPcb` descriptor is separately sourced from the MIT-licensed NodeMCU
+Altium project at pinned commit
+`587a0881f7ee9c02b628323909afa40c92162c1a`. Generation retains its native
+`Design`, `Preferences`, `Document1`, and `Configuration1` sections and changes
+only the generated schematic document path.
+
 ## Routing Policy
 
 Every input source pin must be assigned to an explicit net. `NC_*` names are
@@ -96,13 +103,16 @@ and merges only labels with the declared same net name.
 1. JSON references, pins, and declared net membership agree.
 2. Every logical pin resolves to a source-native physical pin.
 3. Every source pin is explicitly connected or marked `NC_*`.
-4. Saved `.SchDoc` record count, component references, pins, and indexes match
-   the expected contract.
-5. Component bodies do not overlap and wires do not cross/touch bodies except
+4. Saved `.SchDoc` record count, component references, values, source library
+   identities, roots, symbol bounds, native pin identity, exact route/label
+   geometry, and indexes match with no duplicate native records.
+5. The dynamically sized sheet contains every emitted geometry point.
+6. Component bodies do not overlap and wires do not cross/touch bodies except
    their source-directed pin escape.
-6. Saved wire/label graph exactly covers expected nets without shorts.
-7. ZIP package structure and `.PrjPcb` document references are valid.
-8. Altium Designer open/render/compile is required before a desktop-qualified
+7. Saved wire/label graph exactly covers expected nets without shorts.
+8. ZIP package structure, donor-native `.PrjPcb` sections, document references,
+   and exact payload hashes are valid.
+9. Altium Designer open/render/compile is required before a desktop-qualified
    release claim.
 
 ## Conversion Engine

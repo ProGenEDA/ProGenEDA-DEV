@@ -36308,3 +36308,83 @@ Checkpoint:
 Files edited:
 
 > Updated this continuation record with the staged-pipeline commit and pending remote-hash verification.
+
+---
+
+Timestamp: 2026-07-22T17:00:00+05:00
+
+User message (verbatim):
+
+> are you sure this is correct, why dont u try and look for issues
+
+Visible assistant responses:
+
+> You’re right to question it. I’m switching into a code-review pass now: no edits, just trying to break the pipeline with malformed inputs, naming edge cases, routing-mode boundaries, archive contents, and saved-file graph checks.
+
+> The happy-path tests are genuinely passing, but they are not enough. Two suspicious areas are already emerging: the fixer may be overwriting contradictory user netlists instead of reporting them, and the final saved-file validator may not prove component values survived emission. I’m testing those directly now, along with archive ordering and routing edge cases.
+
+> The review found a more fundamental release blocker: the dense example extends beyond the source sheet dimensions, and neither placement nor final validation notices. I’m checking the native project descriptor and donor provenance next, because a structurally valid ZIP is not evidence that Altium Designer will accept the project.
+
+> At this point I’m not comfortable calling it correct or shippable. The source-backed schematic mechanics are promising, but the adversarial checks exposed multiple false passes: contradictory input, altered values/device identities, an altered ZIP payload, and out-of-sheet placement can all survive current validation. I’m doing one last donor/open-gate check so the report distinguishes fixable validator gaps from unproven native-format assumptions.
+
+Review outcome:
+
+> The backend was not declared ready. The audit identified false passes for contradictory net declarations, normalized-name collisions, altered saved values/library identities, mismatched ZIP payloads, out-of-sheet geometry, unsafe filenames, cross-type route indexes, a synthetic project descriptor, and missing route-informed arrangement/wire-maker boundaries. Altium desktop acceptance remained unavailable because the installer download was incomplete.
+
+Files edited:
+
+> None during the review-only pass.
+
+---
+
+Timestamp: 2026-07-22T18:10:47+05:00
+
+User message (verbatim):
+
+> fix then and look for further errors and fix those too
+
+Visible assistant responses:
+
+> I’ve got a concrete repair set now. I’ll first make the validators fail every adversarial case we found, then repair generation against those gates: preserve raw net intent, detect normalization collisions, validate saved values/device identity, bind ZIP hashes to the validated files, enforce sheet bounds, harden names/indexes, source the project descriptor from a real donor, and finally add the missing route-informed arrangement loop and wire-maker boundary.
+
+> I’m continuing from the adversarial audit, starting with the source-license check and then turning each false pass into a regression test before changing behavior. The order matters here: once the validators reliably catch the bad artifacts, the generator fixes have a hard target instead of another optimistic happy path.
+
+> The project donor question is settled cleanly: I found a real Altium `.PrjPCB` from the MIT-licensed NodeMCU hardware repository, so the descriptor can be source-backed without importing an unlicensed template. I’m now mapping the existing contracts and tests so the fixes land in the shared stages, not as one-off patches around the three examples.
+
+> I’m about to edit the regression suite first. The new tests will cover exactly what fooled the current release gate: conflicting user net intent, net-name collisions, nets-only inputs, reserved filenames, altered values/library identities, cross-type record-index collisions, undersized sheets, and archives whose contents differ from the files that were actually validated.
+
+> The environment still has no `pytest`, so I can’t use the repository’s normal runner yet. I’m installing it into a repository-local virtual environment, which keeps the machine clean and gives us the real failure output instead of relying on a hand-rolled imitation of the tests.
+
+> The failing tests now reproduce the audit exactly: 13 false passes or data-loss cases. I’m fixing the input boundary first because every downstream validator is meaningless if normalization has already erased the user’s original net intent; project naming is being centralized at the same time so the fixer and filename stage cannot disagree.
+
+> The input stage is now preserving declarations and rejecting contradictions instead of laundering them into a new “valid” circuit. Next I’m hardening the emitted artifact contract itself: the saved file will have to prove component value, donor library identity, unique routing indexes, and a sheet large enough for every body, pin, route, and terminal.
+
+> The first hardening block is working: normalized input contradictions are now rejected, nets-only declarations are recovered, unsafe names are repaired and independently rejected if they bypass the fixer, saved values/library identities are checked, sheet dimensions expand with the design, routing indexes are globally unique, and the final validator cryptographically binds the ZIP payload to the files it inspected. I’m running the full suite now, then I’ll address the two architectural gaps the audit found rather than stopping at the validator repairs.
+
+> The `.PrjPcb` descriptor is the next native-format correction. I’m replacing the synthetic `[Project]` stub with a compact, pinned template copied from a real MIT-licensed Altium project, retaining the donor’s `[Design]`, `[Preferences]`, `[Document1]`, and `[Configuration1]` grammar while changing only the generated document path and deterministic identifiers.
+
+> The native writer now has a real wire-maker boundary, and the project descriptor is donor-backed rather than a guessed INI fragment. I’m implementing the remaining placement/routing flaw as an actual optimization loop: several deterministic compact arrangements will be beautified and routed independently, then scored by unresolved nets, route length, area, and aspect ratio before the accepted coordinates are committed.
+
+> The optimizer is doing real work now, so the dense test takes longer than the old single-layout pass. It is evaluating four complete placement/routing candidates and preserving all their scores; I’m waiting for the suite, then I’ll profile whether that added confidence costs too much and trim only redundant computation if needed.
+
+> The new body and pin-identity mutations are now caught. An 80-component all-source-backed stress project also passes in 0.14 seconds, but that case has no routes; I’m running a harder 80-resistor chain next so every component pin participates in real connectivity and the four-variation optimizer, wire maker, saved graph parser, and ZIP binding are all exercised together.
+
+> The 80-part fully connected chain passed end to end in about 12.1 seconds with 418 physical segments and only its two singleton end nets terminalized. I’m updating the architecture documents and CLI contract now so they describe the repaired 22-stage implementation exactly, including the four-candidate arrangement loop, independent wire maker, donor-backed project descriptor, dynamic sheets, and the stronger saved-file/archive checks.
+
+> The runtime tests are clean, and the harder 80-part routed case is clean. I tried adding `ruff` to the local test environment for an extra static pass, but this host downloads the wheel and then silently declines to install it; I’m not treating that as validation. I’ll use compile checks, AST/import checks, CLI generation, mutation tests, and repository diffs instead, all of which are under our control.
+
+> The public CLI run passed and showed another quality issue worth fixing: although the backend retains all 22 stages, progress output still reports only nine coarse milestones. I’m aligning progress with the real stage artifacts now so a frontend sees every deterministic stage in execution order, plus one final completion event, instead of guessing what the executable is doing.
+
+> One more adversarial edge surfaced in the graph parser: duplicate physical pin/property records and extra route geometry could previously hide behind dictionary overwrites or remain electrically irrelevant. I’m closing that too by making the physical contract include the exact saved wire and label geometry, rejecting duplicate native component records, while still retaining the independent net-graph comparison as the electrical proof.
+
+> All 40 focused tests are now green, including duplicate native records and route-geometry tampering. I’m at the final independent sweep: regenerate every public example through the CLI-facing API, confirm all 22 stage artifacts and donor hashes, run source-isolation/static checks, and recheck the Altium installer status so the final report does not confuse strong offline validation with a desktop-open claim.
+
+> The hardening sweep is complete at the code level: 41 tests pass, all public examples regenerate with 22 stage artifacts, the 80-component connected stress case passes, and compile/import/diff checks are clean. The only unavailable acceptance gate is still Altium Designer itself because the installer remains a 2.51 GB partial download and the final ZIP is still zero bytes; I’m recording that boundary and the full repair history now before committing and pushing only to `ProGenEDA/ProGenEDA-DEV`.
+
+Files edited:
+
+> Repaired Altium input normalization, naming, physical contracts, saved-file and package validation, dynamic sheet sizing, arrangement optimization, native route record ownership, native project descriptor generation, progress reporting, source provenance, tests, and all active Altium architecture/input/pipeline documentation. Added the pinned MIT NodeMCU project descriptor donor, license, provenance note, `naming.py`, `project_descriptor.py`, and `wire_maker.py`.
+
+Validation evidence:
+
+> `41 passed` through repository-local pytest; all three public examples regenerated with 22 retained stages; all 12 source templates remained covered; an 80-component connected resistor chain passed with 418 segments in approximately 12.1 seconds; `pyflakes`, `compileall`, and `git diff --check` passed. Altium Designer open/render/compile remains pending because its installer is incomplete.

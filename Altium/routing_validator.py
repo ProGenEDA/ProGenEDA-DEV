@@ -6,7 +6,6 @@ from dataclasses import asdict, dataclass
 from typing import Any
 
 from .pipeline_contracts import PlacedDesign, RoutingPlan, WireSegment
-from .source_catalogue import Point
 from .wire_planner import (
     is_outward_pin_escape,
     outward_escape,

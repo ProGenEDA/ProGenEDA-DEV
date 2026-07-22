@@ -149,6 +149,8 @@ class SourceCatalogue:
     sheet_record: str
     wire_record: str
     net_label_record: str
+    sheet_width_ticks: int
+    sheet_height_ticks: int
     templates: dict[str, SourceTemplate]
     aliases: dict[str, str]
     source_path: Path
@@ -178,6 +180,10 @@ class SourceCatalogue:
             },
             "aliases": dict(sorted(self.aliases.items())),
             "source_record_types": {"sheet": 31, "wire": 27, "net_label": 25},
+            "sheet": {
+                "source_width_ticks": self.sheet_width_ticks,
+                "source_height_ticks": self.sheet_height_ticks,
+            },
         }
 
 
@@ -443,6 +449,13 @@ def load_source_catalogue() -> SourceCatalogue:
     net_label_record = next((line for line in document_lines if line.startswith("|RECORD=25|")), None)
     if net_label_record is None:
         raise SourceCatalogueError("Locked Altium source pack has no source-backed net-label record.")
+    try:
+        sheet_width_ticks = int(_field(sheet_record, "CUSTOMX") or "0") * 2
+        sheet_height_ticks = int(_field(sheet_record, "CUSTOMY") or "0") * 2
+    except ValueError as exc:
+        raise SourceCatalogueError("Locked source sheet has invalid CUSTOMX/CUSTOMY dimensions.") from exc
+    if sheet_width_ticks <= 0 or sheet_height_ticks <= 0:
+        raise SourceCatalogueError("Locked source sheet has no positive CUSTOMX/CUSTOMY dimensions.")
 
     blocks = _component_blocks(document_lines)
     by_reference: dict[str, tuple[str, ...]] = {}
@@ -466,6 +479,8 @@ def load_source_catalogue() -> SourceCatalogue:
         sheet_record=sheet_record,
         wire_record=wire_record,
         net_label_record=net_label_record,
+        sheet_width_ticks=sheet_width_ticks,
+        sheet_height_ticks=sheet_height_ticks,
         templates=dict(sorted(templates.items())),
         aliases=dict(sorted(_ALIASES.items())),
         source_path=source_path,

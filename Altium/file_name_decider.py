@@ -3,15 +3,14 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
-import re
 from typing import Any
 
 from .ir import AltiumCircuit
+from .naming import is_safe_project_stem
 from .pipeline_contracts import PipelineError
 
 
 FILE_NAME_SCHEMA = "progen-altium-file-name-decision/v1"
-_SAFE_STEM = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.+-]*$")
 
 
 class FileNameDecisionError(PipelineError):
@@ -35,7 +34,7 @@ def decide_file_names(circuit: AltiumCircuit) -> FileNameDecision:
     """Convert the normalized project stem into stable, path-safe native names."""
 
     stem = circuit.name
-    if not _SAFE_STEM.fullmatch(stem) or stem in {".", ".."}:
+    if not is_safe_project_stem(stem):
         raise FileNameDecisionError(f"Normalized project stem is not path-safe: {stem!r}")
     return FileNameDecision(
         project_stem=stem,

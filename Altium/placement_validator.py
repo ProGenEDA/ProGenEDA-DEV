@@ -36,11 +36,20 @@ def validate_placement(design: PlacedDesign) -> PlacementValidationReport:
     pin_count = 0
     for component in design.components:
         pins = set(component.pins)
-        if pins != set(component.pin_directions) or pins != set(component.pin_nets):
+        if (
+            pins != set(component.pin_names)
+            or pins != set(component.pin_directions)
+            or pins != set(component.pin_nets)
+        ):
             errors.append(f"{component.reference} has incomplete pin geometry/direction/net facts")
         if component.record_count <= 0:
             errors.append(f"{component.reference} has no source record payload")
+        if component.bounds.min_x < 0 or component.bounds.min_y < 0:
+            errors.append(f"{component.reference} extends into negative sheet coordinates")
         for pin in pins:
+            point = component.pins[pin]
+            if point.x < 0 or point.y < 0:
+                errors.append(f"{component.reference}.{pin} extends into negative sheet coordinates")
             endpoint_set.add(f"{component.reference}.{pin}")
             pin_count += 1
     net_endpoints = {endpoint for members in design.nets.values() for endpoint in members}

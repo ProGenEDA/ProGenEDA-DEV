@@ -14,13 +14,14 @@ from .pipeline_contracts import (
     PipelineError,
     PlacedDesign,
     RoutingPlan,
-    WireSegment,
     expected_physical_contract,
 )
+from .project_descriptor import render_project_descriptor
 from .source_catalogue import Point, SourceCatalogue, SourceTemplate
+from .wire_maker import WireMakerResult
 
 
-NATIVE_WRITE_SCHEMA = "progen-altium-native-write/v1"
+NATIVE_WRITE_SCHEMA = "progen-altium-native-write/v2"
 _UNSAFE_TEXT = re.compile(r"[|\r\n\x00]")
 _COORDINATE_KEY = re.compile(r"^(?:LOCATION|CORNER)\.(X|Y)$|^([XY])\d+$")
 
@@ -36,6 +37,8 @@ class NativeWriteResult:
     schematic_file: Path
     expected_contract: dict[str, Any]
     emitted_record_count: int
+    sheet_width_ticks: int
+    sheet_height_ticks: int
 
     def json(self) -> dict[str, Any]:
         return {
@@ -44,6 +47,8 @@ class NativeWriteResult:
             "project_file": str(self.project_file),
             "schematic_file": str(self.schematic_file),
             "emitted_record_count": self.emitted_record_count,
+            "sheet_width_ticks": self.sheet_width_ticks,
+            "sheet_height_ticks": self.sheet_height_ticks,
         }
 
 
@@ -66,10 +71,6 @@ def _replace_field(record: str, name: str, value: str) -> str:
     if not pattern.search(record):
         return record
     return pattern.sub(lambda match: f"{match.group(1)}{value}", record)
-
-
-def _remove_field(record: str, name: str) -> str:
-    return re.sub(rf"\|{re.escape(name)}=[^|]*", "", record)
 
 
 def _set_field(record: str, name: str, value: str) -> str:
@@ -104,15 +105,6 @@ def _translate_record_coordinates(record: str, dx: int, dy: int) -> str:
         except ValueError:
             translated.append(token)
     return "|".join(translated)
-
-
-def _set_coordinate(record: str, name: str, value: int) -> str:
-    whole, remainder = divmod(value, 2)
-    result = _set_field(record, name, str(whole))
-    fraction_name = f"{name}_FRAC"
-    if remainder:
-        return _set_field(result, fraction_name, "50000")
-    return _remove_field(result, fraction_name)
 
 
 def _replace_owner_indexes(record: str, owner_delta: int) -> str:
@@ -168,20 +160,6 @@ def _rewrite_component_records(
     return tuple(records), next_index
 
 
-def _wire_record(source_record: str, segment: WireSegment, index_in_sheet: int) -> str:
-    record = _replace_field(source_record, "INDEXINSHEET", str(index_in_sheet))
-    for name, value in (("X1", segment.start.x), ("Y1", segment.start.y), ("X2", segment.end.x), ("Y2", segment.end.y)):
-        record = _set_coordinate(record, name, value)
-    return record
-
-
-def _net_label_record(source_record: str, net: str, location: Point, index_in_sheet: int) -> str:
-    record = _replace_field(source_record, "INDEXINSHEET", str(index_in_sheet))
-    record = _replace_field(record, "TEXT", _clean_text(net, "terminal net name"))
-    record = _set_coordinate(record, "LOCATION.X", location.x)
-    return _set_coordinate(record, "LOCATION.Y", location.y)
-
-
 def _header_record(catalogue: SourceCatalogue, circuit: AltiumCircuit, weight: int) -> str:
     identity = uuid5(NAMESPACE_URL, f"progeneda:altium:{circuit.name}:{circuit.title}")
     return _replace_field(
@@ -191,17 +169,39 @@ def _header_record(catalogue: SourceCatalogue, circuit: AltiumCircuit, weight: i
     )
 
 
-def _project_descriptor(circuit: AltiumCircuit, schematic_name: str) -> str:
-    return "\n".join(
-        (
-            "[Project]",
-            f"ProjectName={_clean_text(circuit.name, 'project name')}",
-            f"ProjectTitle={_clean_text(circuit.title, 'project title')}",
-            "[Document1]",
-            f"DocumentPath=Schematic/{schematic_name}",
-            "",
+def _required_sheet_size(
+    design: PlacedDesign,
+    routing: RoutingPlan,
+    catalogue: SourceCatalogue,
+) -> tuple[int, int]:
+    points: list[Point] = []
+    for component in design.components:
+        points.extend(
+            (
+                Point(component.bounds.min_x, component.bounds.min_y),
+                Point(component.bounds.max_x, component.bounds.max_y),
+                *component.pins.values(),
+            )
         )
-    )
+    for wire in routing.wires:
+        points.extend((wire.start, wire.end))
+    points.extend(label.location for label in routing.labels)
+    if any(point.x < 0 or point.y < 0 for point in points):
+        raise NativeWriteError("Placed/routed geometry extends into negative sheet coordinates.")
+
+    def round_up(value: int, quantum: int = 100) -> int:
+        return ((value + quantum - 1) // quantum) * quantum
+
+    width = max(catalogue.sheet_width_ticks, round_up(max(point.x for point in points) + 160))
+    height = max(catalogue.sheet_height_ticks, round_up(max(point.y for point in points) + 160))
+    return width, height
+
+
+def _sheet_record(catalogue: SourceCatalogue, width_ticks: int, height_ticks: int) -> str:
+    if width_ticks % 2 or height_ticks % 2:
+        raise NativeWriteError("Altium source sheet dimensions must use whole document units.")
+    record = _set_field(catalogue.sheet_record, "CUSTOMX", str(width_ticks // 2))
+    return _set_field(record, "CUSTOMY", str(height_ticks // 2))
 
 
 def write_native_project(
@@ -209,6 +209,7 @@ def write_native_project(
     selection: ComponentSelection,
     design: PlacedDesign,
     routing: RoutingPlan,
+    route_records: WireMakerResult,
     *,
     catalogue: SourceCatalogue,
     project_directory: Path,
@@ -219,7 +220,8 @@ def write_native_project(
     schematic_directory = project_directory / "Schematic"
     schematic_directory.mkdir()
     source_by_reference = selection.by_reference()
-    emitted_records: list[str] = [catalogue.sheet_record]
+    sheet_width_ticks, sheet_height_ticks = _required_sheet_size(design, routing, catalogue)
+    emitted_records: list[str] = [_sheet_record(catalogue, sheet_width_ticks, sheet_height_ticks)]
     index_cursor = 1
     for component in design.components:
         try:
@@ -235,21 +237,31 @@ def write_native_project(
             index_start=index_cursor,
         )
         emitted_records.extend(records)
-    for segment in routing.wires:
-        emitted_records.append(_wire_record(catalogue.wire_record, segment, index_cursor))
-        index_cursor += 1
-    for label in routing.labels:
-        emitted_records.append(_net_label_record(catalogue.net_label_record, label.net, label.location, index_cursor))
+    if route_records.wire_count != len(routing.wires) or route_records.label_count != len(routing.labels):
+        raise NativeWriteError("Wire-maker record counts do not match the validated routing contract.")
+    for native_route in route_records.records:
+        emitted_records.append(_set_field(native_route.record, "INDEXINSHEET", str(index_cursor)))
         index_cursor += 1
     schematic_file = schematic_directory / f"{circuit.name}.SchDoc"
     header = _header_record(catalogue, circuit, len(emitted_records))
     schematic_file.write_text("\r\n".join((header, *emitted_records, "")), encoding="utf-8", newline="")
     project_file = project_directory / f"{circuit.name}.PrjPcb"
-    project_file.write_text(_project_descriptor(circuit, schematic_file.name), encoding="utf-8")
+    project_file.write_text(
+        render_project_descriptor(f"Schematic/{schematic_file.name}").replace("\n", "\r\n"),
+        encoding="utf-8",
+        newline="",
+    )
     return NativeWriteResult(
         project_directory=project_directory,
         project_file=project_file,
         schematic_file=schematic_file,
-        expected_contract=expected_physical_contract(design, routing),
+        expected_contract=expected_physical_contract(
+            design,
+            routing,
+            sheet_width_ticks=sheet_width_ticks,
+            sheet_height_ticks=sheet_height_ticks,
+        ),
         emitted_record_count=len(emitted_records),
+        sheet_width_ticks=sheet_width_ticks,
+        sheet_height_ticks=sheet_height_ticks,
     )

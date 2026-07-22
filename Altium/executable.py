@@ -37,7 +37,7 @@ def _parser() -> argparse.ArgumentParser:
         help="Write real pipeline stage events as newline-delimited JSON to stderr.",
     )
 
-    contracts = commands.add_parser(
+    commands.add_parser(
         "pipeline-contracts", help="Print the ordered stage contract names for direct generation."
     )
 
@@ -118,6 +118,7 @@ def main(argv: list[str] | None = None) -> int:
                             "terminal_placer",
                             "routing_plan",
                             "routing_validator",
+                            "wire_maker",
                             "native_writer",
                             "output_packager",
                             "pcb_decision",

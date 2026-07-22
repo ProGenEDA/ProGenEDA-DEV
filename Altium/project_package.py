@@ -67,6 +67,25 @@ def _decode_project(data: bytes) -> tuple[str, ...]:
     return tuple(sorted(set(documents)))
 
 
+def _validate_project_descriptor(path: str, data: bytes) -> tuple[str, ...]:
+    text = data.decode("utf-8-sig", errors="replace")
+    sections = {
+        line.strip()[1:-1]
+        for line in text.splitlines()
+        if line.strip().startswith("[") and line.strip().endswith("]")
+    }
+    required = {"Design", "Preferences", "Configuration1"}
+    missing = sorted(required - sections)
+    errors: list[str] = []
+    if missing:
+        errors.append(f"{path} is missing native project sections: {missing}")
+    if not any(section.casefold().startswith("document") for section in sections):
+        errors.append(f"{path} has no native Document section")
+    if "Version=1.0" not in text:
+        errors.append(f"{path} has no supported Design Version=1.0 declaration")
+    return tuple(errors)
+
+
 def inspect_project_package(path: Path | str) -> ProjectPackageReport:
     """Inspect an exported ZIP without requiring Altium Designer to be installed."""
 
@@ -98,9 +117,12 @@ def inspect_project_package(path: Path | str) -> ProjectPackageReport:
             }
             declared_documents: set[str] = set()
             declared_document_candidates: dict[str, set[str]] = {}
+            descriptor_errors: list[str] = []
             for project_path in by_suffix[".prjpcb"]:
+                project_data = bundle.read(project_path)
+                descriptor_errors.extend(_validate_project_descriptor(project_path, project_data))
                 project_parent = PurePosixPath(project_path).parent
-                for document in _decode_project(bundle.read(project_path)):
+                for document in _decode_project(project_data):
                     declared_documents.add(document)
                     declared_document_candidates.setdefault(document, set()).update(
                         {
@@ -116,6 +138,7 @@ def inspect_project_package(path: Path | str) -> ProjectPackageReport:
         errors.append(f"archive contains unsafe paths: {sorted(unsafe)}")
     if duplicates:
         errors.append(f"archive contains duplicate paths: {duplicates}")
+    errors.extend(descriptor_errors)
     if not by_suffix[".prjpcb"]:
         errors.append("archive has no .PrjPcb project descriptor")
     if not by_suffix[".schdoc"]:

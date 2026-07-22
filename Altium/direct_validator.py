@@ -7,6 +7,7 @@ graph, and compares it with the expected canonical net membership.
 
 from __future__ import annotations
 
+from collections import Counter
 from dataclasses import asdict, dataclass
 from pathlib import Path
 import re
@@ -15,8 +16,10 @@ from typing import Any, Mapping
 from .source_catalogue import Bounds, Point
 
 
-VALIDATION_SCHEMA = "progen-altium-direct-validation/v1"
+VALIDATION_SCHEMA = "progen-altium-direct-validation/v2"
 _RECORD_PATTERN = re.compile(r"^\|RECORD=(\d+)(?:\||$)")
+_GEOMETRY_FIELD = re.compile(r"^(?:LOCATION|CORNER)\.(X|Y)$|^([XY])(\d+)$")
+_PIN_DIRECTION_BY_CONGLOMERATE = {0: "right", 1: "bottom", 2: "left", 3: "top"}
 
 
 @dataclass(frozen=True)
@@ -132,6 +135,43 @@ def _wire_points(fields: Mapping[str, str]) -> tuple[Point, ...]:
             return ()
         points.append(Point(x_numerator // 50_000, y_numerator // 50_000))
     return tuple(points)
+
+
+def _record_geometry_points(fields: Mapping[str, str]) -> tuple[Point, ...]:
+    pairs: dict[str, dict[str, int]] = {}
+    for key, raw_value in fields.items():
+        match = _GEOMETRY_FIELD.match(key)
+        if not match:
+            continue
+        axis = match.group(1) or match.group(2)
+        prefix = key[:-1] if key.startswith(("LOCATION.", "CORNER.")) else (match.group(3) or "")
+        try:
+            pairs.setdefault(prefix, {})[axis] = int(raw_value) * 2
+        except ValueError:
+            continue
+    for key, raw_value in fields.items():
+        if not key.endswith("_FRAC"):
+            continue
+        stem = key[:-5]
+        match = _GEOMETRY_FIELD.match(stem)
+        if not match:
+            continue
+        axis = match.group(1) or match.group(2)
+        prefix = stem[:-1] if stem.startswith(("LOCATION.", "CORNER.")) else (match.group(3) or "")
+        if axis not in pairs.get(prefix, {}):
+            continue
+        try:
+            fraction = int(raw_value)
+        except ValueError:
+            continue
+        if fraction % 50_000:
+            continue
+        pairs[prefix][axis] += fraction // 50_000
+    return tuple(
+        Point(pair["X"], pair["Y"])
+        for pair in pairs.values()
+        if "X" in pair and "Y" in pair
+    )
 
 
 def parse_ascii_schdoc(path: Path | str) -> tuple[str, tuple[ParsedRecord, ...]]:
@@ -281,6 +321,8 @@ def validate_direct_schematic(
     schematic = Path(path).expanduser().resolve()
     header, records = parse_ascii_schdoc(schematic)
     errors: list[str] = []
+    if expected.get("schema") != "progen-altium-expected-physical-contract/v2":
+        errors.append("expected physical contract schema is not progen-altium-expected-physical-contract/v2")
     header_fields = _fields(header)
     try:
         declared_weight = int(header_fields.get("WEIGHT", ""))
@@ -290,19 +332,29 @@ def validate_direct_schematic(
         errors.append(
             f"header WEIGHT mismatch: declared {declared_weight}, saved {len(records)} records"
         )
-    if not any(record.record_type == 31 for record in records):
-        errors.append("generated schematic has no source-backed sheet record (RECORD=31)")
+    sheet_record_count = sum(record.record_type == 31 for record in records)
+    if sheet_record_count != 1:
+        errors.append(
+            f"generated schematic needs exactly one source-backed sheet record; saved {sheet_record_count}"
+        )
 
     expected_components = tuple(expected.get("components", ()))
+    expected_by_owner: dict[str, Mapping[str, Any]] = {}
     expected_pins: dict[str, Point] = {}
+    expected_pin_names: dict[str, str] = {}
     expected_pin_directions: dict[str, str] = {}
     component_bounds: dict[str, Bounds] = {}
     for component in expected_components:
         reference = str(component["reference"])
+        owner = str(component["owner_index"])
+        if owner in expected_by_owner:
+            errors.append(f"expected contract duplicates component owner index {owner}")
+        expected_by_owner[owner] = component
         component_bounds[reference] = _bounds_from_manifest(component["bounds"])
         for pin, position in component["pins"].items():
             endpoint = f"{reference}.{pin}"
             expected_pins[endpoint] = _point_from_manifest(position)
+            expected_pin_names[endpoint] = str(position.get("name", ""))
             direction = str(position.get("escape_direction", ""))
             if direction not in {"left", "right", "top", "bottom"}:
                 errors.append(f"expected pin {endpoint} lacks a valid escape direction")
@@ -310,28 +362,66 @@ def validate_direct_schematic(
                 expected_pin_directions[endpoint] = direction
 
     actual_references: dict[str, str] = {}
-    pending_pins: list[tuple[str, str, Point]] = []
+    pending_pins: list[tuple[str, str, Point, str, str]] = []
     segments: list[_Segment] = []
     wire_indexes: list[str] = []
     labels: list[_NetLabel] = []
     label_indexes: list[str] = []
     component_unique_ids: list[str] = []
+    component_roots_by_owner: dict[str, dict[str, str]] = {}
+    component_values: dict[str, str] = {}
+    current_component_root: dict[str, str] | None = None
+    sheet_width_ticks: int | None = None
+    sheet_height_ticks: int | None = None
+    component_groups: list[list[ParsedRecord]] = []
+    current_component_group: list[ParsedRecord] | None = None
     for record in records:
+        if record.record_type == 1:
+            if current_component_group:
+                component_groups.append(current_component_group)
+            current_component_group = [record]
+        elif current_component_group is not None:
+            current_component_group.append(record)
         owner = record.fields.get("OWNERINDEX")
         if record.record_type == 1:
+            current_component_root = record.fields
             unique_id = record.fields.get("UNIQUEID", "")
             if not re.fullmatch(r"pge\d+", unique_id):
                 errors.append(f"component record has non-source-style UNIQUEID {unique_id!r}")
             else:
                 component_unique_ids.append(unique_id)
-        elif record.record_type == 34 and record.fields.get("NAME") == "Designator" and owner:
+        elif record.record_type == 31:
+            try:
+                sheet_width_ticks = int(record.fields["CUSTOMX"]) * 2
+                sheet_height_ticks = int(record.fields["CUSTOMY"]) * 2
+            except (KeyError, ValueError):
+                errors.append("source-backed sheet record has invalid CUSTOMX/CUSTOMY dimensions")
+        elif record.fields.get("NAME") == "Designator" and owner:
+            if owner in actual_references:
+                errors.append(f"duplicate component Designator record for owner {owner}")
             actual_references[owner] = record.fields.get("TEXT", "")
+            if current_component_root is not None:
+                if owner in component_roots_by_owner:
+                    errors.append(f"duplicate component root association for owner {owner}")
+                component_roots_by_owner[owner] = current_component_root
+        elif record.fields.get("NAME") == "Value" and owner:
+            if owner in component_values:
+                errors.append(f"duplicate component Value record for owner {owner}")
+            component_values[owner] = record.fields.get("TEXT", "")
         elif record.record_type == 2 and owner:
             x = _coordinate(record.fields, "LOCATION", "X")
             y = _coordinate(record.fields, "LOCATION", "Y")
             pin = record.fields.get("DESIGNATOR")
             if x is not None and y is not None and pin:
-                pending_pins.append((owner, pin, Point(x, y)))
+                try:
+                    direction = _PIN_DIRECTION_BY_CONGLOMERATE[
+                        int(record.fields.get("PINCONGLOMERATE", "")) & 0b11
+                    ]
+                except (KeyError, ValueError):
+                    direction = ""
+                pending_pins.append(
+                    (owner, pin, Point(x, y), direction, record.fields.get("NAME", ""))
+                )
         elif record.record_type == 27:
             index_in_sheet = record.fields.get("INDEXINSHEET")
             if not index_in_sheet:
@@ -360,12 +450,21 @@ def validate_direct_schematic(
             else:
                 label_indexes.append(index_in_sheet)
                 labels.append(_NetLabel(index_in_sheet, text, Point(x, y)))
+    if current_component_group:
+        component_groups.append(current_component_group)
 
     actual_pins: dict[str, Point] = {}
-    for owner, pin, point in pending_pins:
+    actual_pin_directions: dict[str, str] = {}
+    actual_pin_names: dict[str, str] = {}
+    for owner, pin, point, direction, name in pending_pins:
         reference = actual_references.get(owner)
         if reference:
-            actual_pins[f"{reference}.{pin}"] = point
+            endpoint = f"{reference}.{pin}"
+            if endpoint in actual_pins:
+                errors.append(f"duplicate physical pin record for {endpoint}")
+            actual_pins[endpoint] = point
+            actual_pin_directions[endpoint] = direction
+            actual_pin_names[endpoint] = name
         else:
             errors.append(f"physical pin {pin!r} has no component designator owner {owner!r}")
 
@@ -388,6 +487,95 @@ def validate_direct_schematic(
     if duplicate_component_unique_ids:
         errors.append(f"duplicate component UNIQUEID values: {duplicate_component_unique_ids}")
 
+    actual_component_owners = set(component_roots_by_owner)
+    expected_component_owners = set(expected_by_owner)
+    if actual_component_owners != expected_component_owners:
+        errors.append(
+            "saved component owner indexes differ from expected contract: "
+            f"missing={sorted(expected_component_owners - actual_component_owners)}, "
+            f"unexpected={sorted(actual_component_owners - expected_component_owners)}"
+        )
+    for owner, component in sorted(expected_by_owner.items()):
+        reference = str(component["reference"])
+        root = component_roots_by_owner.get(owner)
+        if root is None:
+            continue
+        actual_library = root.get("LIBREFERENCE", "")
+        expected_library = str(component.get("library_reference", ""))
+        if actual_library != expected_library:
+            errors.append(
+                f"library reference mismatch for {reference}: expected {expected_library!r}, "
+                f"got {actual_library!r}"
+            )
+        actual_value = component_values.get(owner)
+        expected_value = str(component.get("value", ""))
+        if actual_value != expected_value:
+            errors.append(
+                f"component value mismatch for {reference}: expected {expected_value!r}, "
+                f"got {actual_value!r}"
+            )
+        expected_root = _point_from_manifest(component["root_location"])
+        actual_root_x = _coordinate(root, "LOCATION", "X")
+        actual_root_y = _coordinate(root, "LOCATION", "Y")
+        actual_root = (
+            Point(actual_root_x, actual_root_y)
+            if actual_root_x is not None and actual_root_y is not None
+            else None
+        )
+        if actual_root != expected_root:
+            errors.append(
+                f"component root location mismatch for {reference}: expected {expected_root.json()}, "
+                f"got {actual_root.json() if actual_root else None}"
+            )
+
+    for group in component_groups:
+        designator = next(
+            (
+                record
+                for record in group
+                if record.fields.get("NAME") == "Designator" and record.fields.get("OWNERINDEX")
+            ),
+            None,
+        )
+        if designator is None:
+            continue
+        owner = str(designator.fields["OWNERINDEX"])
+        expected_component = expected_by_owner.get(owner)
+        if expected_component is None:
+            continue
+        geometry = [
+            point
+            for record in group
+            if record.record_type in {2, 6, 8, 10, 12, 13, 14}
+            and record.fields.get("OWNERINDEX") == owner
+            for point in _record_geometry_points(record.fields)
+        ]
+        reference = str(expected_component["reference"])
+        actual_record_count = sum(
+            record.record_type not in {25, 27, 31} for record in group
+        )
+        expected_record_count = int(expected_component.get("record_count", 0))
+        if actual_record_count != expected_record_count:
+            errors.append(
+                f"component source record count mismatch for {reference}: expected "
+                f"{expected_record_count}, got {actual_record_count}"
+            )
+        if not geometry:
+            errors.append(f"saved component {reference} has no measurable native body/pin geometry")
+            continue
+        actual_bounds = Bounds(
+            min(point.x for point in geometry),
+            min(point.y for point in geometry),
+            max(point.x for point in geometry),
+            max(point.y for point in geometry),
+        )
+        expected_bounds = component_bounds[reference]
+        if actual_bounds != expected_bounds:
+            errors.append(
+                f"component geometry bounds mismatch for {reference}: "
+                f"expected {expected_bounds.json()}, got {actual_bounds.json()}"
+            )
+
     for endpoint, position in sorted(expected_pins.items()):
         actual = actual_pins.get(endpoint)
         if actual is None:
@@ -395,6 +583,16 @@ def validate_direct_schematic(
         elif actual != position:
             errors.append(
                 f"pin position mismatch for {endpoint}: expected {position.json()}, got {actual.json()}"
+            )
+        if actual_pin_directions.get(endpoint) != expected_pin_directions.get(endpoint):
+            errors.append(
+                f"pin direction mismatch for {endpoint}: expected "
+                f"{expected_pin_directions.get(endpoint)!r}, got {actual_pin_directions.get(endpoint)!r}"
+            )
+        if actual_pin_names.get(endpoint) != expected_pin_names.get(endpoint):
+            errors.append(
+                f"pin name mismatch for {endpoint}: expected {expected_pin_names.get(endpoint)!r}, "
+                f"got {actual_pin_names.get(endpoint)!r}"
             )
     unexpected_pins = sorted(set(actual_pins) - set(expected_pins))
     if unexpected_pins:
@@ -429,6 +627,90 @@ def validate_direct_schematic(
     duplicate_label_indexes = sorted({index for index in label_indexes if label_indexes.count(index) > 1})
     if duplicate_label_indexes:
         errors.append(f"duplicate net-label INDEXINSHEET values: {duplicate_label_indexes}")
+    routing_indexes = [*wire_indexes, *label_indexes]
+    duplicate_routing_indexes = sorted(
+        {index for index in routing_indexes if routing_indexes.count(index) > 1}
+    )
+    if duplicate_routing_indexes:
+        errors.append(f"duplicate wire/label INDEXINSHEET values: {duplicate_routing_indexes}")
+
+    def segment_key(start: Point, end: Point) -> tuple[int, int, int, int]:
+        left, right = sorted((start, end))
+        return left.x, left.y, right.x, right.y
+
+    expected_wire_geometry = expected.get("wire_geometry")
+    if not isinstance(expected_wire_geometry, list):
+        errors.append("expected physical contract has no wire geometry")
+    else:
+        expected_segment_counts = Counter(
+            segment_key(
+                _point_from_manifest(item["start"]),
+                _point_from_manifest(item["end"]),
+            )
+            for item in expected_wire_geometry
+        )
+        actual_segment_counts = Counter(segment_key(segment.start, segment.end) for segment in segments)
+        if actual_segment_counts != expected_segment_counts:
+            errors.append("saved wire geometry differs from the validated wire-maker contract")
+
+    expected_label_geometry = expected.get("label_geometry")
+    if not isinstance(expected_label_geometry, list):
+        errors.append("expected physical contract has no label geometry")
+    else:
+        expected_label_counts = Counter(
+            (
+                str(item["net"]),
+                _point_from_manifest(item["location"]).x,
+                _point_from_manifest(item["location"]).y,
+            )
+            for item in expected_label_geometry
+        )
+        actual_label_counts = Counter(
+            (label.text, label.location.x, label.location.y) for label in labels
+        )
+        if actual_label_counts != expected_label_counts:
+            errors.append("saved label geometry differs from the validated terminal contract")
+
+    expected_sheet = expected.get("sheet")
+    if not isinstance(expected_sheet, Mapping):
+        errors.append("expected physical contract has no sheet dimensions")
+    else:
+        expected_width = int(expected_sheet.get("width_ticks", 0))
+        expected_height = int(expected_sheet.get("height_ticks", 0))
+        if sheet_width_ticks != expected_width or sheet_height_ticks != expected_height:
+            errors.append(
+                "saved sheet dimensions differ from expected contract: "
+                f"expected {expected_width}x{expected_height} ticks, "
+                f"got {sheet_width_ticks}x{sheet_height_ticks}"
+            )
+    if sheet_width_ticks is not None and sheet_height_ticks is not None:
+        if sheet_width_ticks <= 0 or sheet_height_ticks <= 0:
+            errors.append("saved sheet dimensions must be positive")
+        geometry_points = [
+            point
+            for bounds in component_bounds.values()
+            for point in (
+                Point(bounds.min_x, bounds.min_y),
+                Point(bounds.max_x, bounds.max_y),
+            )
+        ]
+        geometry_points.extend(expected_pins.values())
+        geometry_points.extend(
+            point for segment in segments for point in (segment.start, segment.end)
+        )
+        geometry_points.extend(label.location for label in labels)
+        outside = [
+            point
+            for point in geometry_points
+            if point.x < 0
+            or point.y < 0
+            or point.x > sheet_width_ticks
+            or point.y > sheet_height_ticks
+        ]
+        if outside:
+            errors.append(
+                f"sheet does not contain all emitted geometry; {len(outside)} point(s) are outside bounds"
+            )
 
     graph = _UnionFind()
     for endpoint in expected_pins:
