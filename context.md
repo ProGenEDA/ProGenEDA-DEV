@@ -36298,3 +36298,13 @@ Files edited:
 Additional visible assistant responses:
 
 > The final audit is clean enough to checkpoint: 21 focused regressions passed through the standard-library harness, the public CLI path revalidated a generated `.SchDoc` and project ZIP, and the only unavailable gate is `pytest` itself because the base environment does not have that package. I’m staging the scoped Altium changes and then will push them only to `ProGenEDA/ProGenEDA-DEV`.
+
+> The code checkpoint is pushed. I’m recording its hash and performing the required remote comparison so the repository log is self-contained.
+
+Checkpoint:
+
+> `42e2b230` (`Add staged Altium generation pipeline`) was pushed to `origin/main`. The full pipeline is now represented as 21 immutable stage artifacts, with the old direct-generator entry point retained as a compatibility facade.
+
+Files edited:
+
+> Updated this continuation record with the staged-pipeline commit and pending remote-hash verification.
