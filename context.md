@@ -36451,3 +36451,29 @@ Files edited:
 Validation evidence:
 
 > The current direct Altium generator produced the project successfully. Its own saved-file/net/package validators passed, and EasyEDA’s bundled Altium decoder accepted the exact ZIP and emitted a native `.epro2` round-trip archive.
+
+---
+
+Timestamp: 2026-07-22T18:34:00+05:00
+
+User message (verbatim):
+
+> open easyeda
+
+Visible assistant responses:
+
+> Opening EasyEDA Pro now with the installed software-rendering launcher so it stays stable on this desktop.
+
+> EasyEDA Pro is running and its window has been raised to the foreground. I’m logging the verified launch checkpoint while leaving the application open for you.
+
+Planned final visible response:
+
+> Opened. EasyEDA Pro is running and visible now.
+
+Files edited:
+
+> `context.md` only.
+
+Validation evidence:
+
+> The main EasyEDA Pro process is running from `/home/zaruka/.local/opt/easyeda-pro/easyeda-pro` through the software-rendering launcher, and the KWin activation helper was invoked to raise its window.
