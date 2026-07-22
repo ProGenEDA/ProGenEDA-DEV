@@ -36414,3 +36414,40 @@ Planned final visible response:
 > Verification: 41 tests passed; all three public examples regenerated; all 12 source templates remain covered; an 80-component fully connected chain passed with 418 segments in about 12.1 seconds; `pyflakes`, `compileall`, and `git diff --check` passed.
 >
 > Pushed to `ProGenEDA/ProGenEDA-DEV` as `e3112269`. The only remaining gate is Altium Designer open/render/compile: its download is still incomplete (`.part` present, final ZIP is 0 bytes), so I am not claiming desktop acceptance yet.
+
+---
+
+Timestamp: 2026-07-22T18:30:00+05:00
+
+User messages (verbatim):
+
+> and any more issues, yk till we have working altium
+> u can actually start testing by importing it back into easyeda and opening it
+
+> give me the altium wali file and then ill import ti myself
+
+Visible assistant responses:
+
+> Yes, that gives us a useful additional acceptance loop right now: generate native Altium, decode/import it through EasyEDA’s own Altium importer, then open the imported project in EasyEDA and inspect the schematic rather than trusting our parser alone. I’ll start from the synced checkpoint, probe the exact importer inputs/outputs, and keep fixing anything that fails structurally, electrically, or visually.
+
+> The repository checkpoint is clean and exactly matches `origin/main`, so I’m testing the hardened direct generator rather than an uncommitted intermediate. The next useful fact is whether EasyEDA’s decoder accepts our project container, its `.PrjPcb`, or the `.SchDoc` directly; that distinction will tell us whether a failure is packaging or native schematic encoding.
+
+> The first round trip is already informative: EasyEDA’s own Altium decoder accepted the generated ZIP and produced a native `easyeda-pro-2` archive successfully. That clears the outer package and `.PrjPcb`; I’m now inspecting the decoded project content and then opening that exact import result, because a “conversion succeeded” flag can still conceal dropped components, missing pins, or broken nets.
+
+> I have the exact direct-generator artifact ready. I’m placing a clearly named copy in `Downloads`; import the ZIP using EasyEDA’s **Import Altium** flow.
+
+> The handoff ZIP is structurally intact and contains the native `.PrjPcb` plus `.SchDoc`. I’m recording this exact test handoff in the repository work log now so your import result can be tied back to the generator revision and file hash.
+
+Planned final visible response:
+
+> Here it is: [ProGenEDA_Altium_74HC04_Breakout.zip](/home/zaruka/Downloads/ProGenEDA_Altium_74HC04_Breakout.zip)
+>
+> Import that ZIP through EasyEDA’s **Import Altium** option. It contains the native `.PrjPcb` and `.SchDoc`; SHA-256: `486268161e43006f3444d78ac26e9cabf255f0922e55f712f9d0a661500a6dd6`.
+
+Files edited:
+
+> `context.md` only. The generated test handoff was copied to `/home/zaruka/Downloads/ProGenEDA_Altium_74HC04_Breakout.zip` and is not a repository source change.
+
+Validation evidence:
+
+> The current direct Altium generator produced the project successfully. Its own saved-file/net/package validators passed, and EasyEDA’s bundled Altium decoder accepted the exact ZIP and emitted a native `.epro2` round-trip archive.
