@@ -6,13 +6,14 @@ The product path is direct and backend-independent:
 
 ```text
 canonical JSON
-  -> AltiumCircuit IR
-  -> source catalogue resolution
+  -> input fixer / AltiumCircuit IR / value editor
+  -> source catalogue resolution / component selector
   -> placed-design contract
-  -> wire / terminal / combination routing plan
+  -> arrangement decider / beautifier
+  -> wire planner / terminal placer / routing validator
   -> direct native ASCII SchDoc writer
-  -> saved-file graph and geometry validator
-  -> direct PrjPcb writer and ZIP package validator
+  -> output packager / PCB decision
+  -> saved-file graph, geometry, and ZIP package final validator
 ```
 
 No stage generates or consumes EasyEDA `.eprj` data. The Chameleon bridge is
@@ -22,16 +23,27 @@ kept outside this path as a local research utility only.
 
 | Stage | Input | Output | State |
 | --- | --- | --- | --- |
-| Canonical JSON validator | loose canonical JSON | normalized `AltiumCircuit` | implemented |
+| Input fixer | loose JSON | canonical JSON, explicit `GUESS_TERMINAL_*` repairs | implemented |
+| Canonical JSON validator | fixed canonical JSON | normalized `AltiumCircuit` | implemented |
+| Value editor / validator | component values | normalized safe values and report | implemented |
+| File name decider | normalized project identity | safe `.PrjPcb` / `.SchDoc` names | implemented |
 | Source catalogue | locked native seed | source templates, aliases, pins, directions, bounds | implemented |
-| Value editor | requested component value | cloned native `Value` / `Comment` property text | implemented for audited templates |
+| Component selector | `AltiumCircuit` + source catalogue | resolved native pin/net contract | implemented |
+| User specification validator | canonical request + source selection | intent-preservation report | implemented |
 | Component placer | resolved templates | deterministic non-overlapping placed-design contract | implemented |
-| Arrangement | placed-design contract | deterministic grid coordinates | implemented baseline |
+| Placement validator | placed-design contract | collision/pin/net report | implemented |
+| Arrangement decider | placed-design contract | connectivity-aware square coordinate plan | implemented |
+| Beautifier | coordinate plan | moved placed-design contract | implemented |
+| Beautifier validator | beautified placed design | post-edit placement report | implemented |
+| Routing decider | routing mode + source facts | explicit wire/terminal/combination policy | implemented |
 | Wire planner | pins, bounds, nets | orthogonal source-pin escape routes | implemented bounded baseline |
 | Terminal planner | unresolved or selected nets | stem wires plus native `RECORD=25` labels | implemented |
+| Routing validator | pure routing contract | geometry, graph, terminal-policy report | implemented |
 | Schematic writer | source records + plan | fresh ASCII `.SchDoc` | implemented |
 | Direct validator | saved `.SchDoc` + expected contract | pin/net/geometry validation report | implemented |
 | Project writer | schematic metadata | `.PrjPcb` and ZIP project artifact | implemented baseline |
+| Output packager | project + stage evidence | user ZIP and private internal ZIP | implemented |
+| PCB decision | resolved source/pin facts | explicit qualified/unqualified PCB outcome | implemented boundary |
 | PCB compiler | schematic pin/pad contract | `.PcbDoc` | not implemented |
 | Desktop acceptance | disposable project copy | open/render/compile evidence | pending Altium installation |
 

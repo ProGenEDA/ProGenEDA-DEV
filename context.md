@@ -36229,3 +36229,72 @@ Checkpoint:
 Files edited:
 
 > Updated this continuation record with the direct Altium commit and remote verification.
+
+---
+
+Timestamp: 2026-07-22T16:01:57+05:00
+
+User message (verbatim):
+
+> i wna tthe full pipeline btw
+> component placer, so on n so on.
+> that allows for much simpler fixing
+> make it proper and thorogh
+
+Visible assistant responses:
+
+> Yes, that is the right next move. I’m turning the direct Altium generator into a real replaceable pipeline: input repair/validation, source resolution, placement, placement validation, arrangement, routing, terminal placement, value editing, native emission, and final saved-file/package validation, with clear JSON contracts between each stage.
+
+> I’ve confirmed the current Altium path already has the raw mechanics, but they are concentrated in one generator file. I’m going to preserve its tested behavior while extracting it into explicit stages with stable JSON artifacts, so a future bug can be isolated to “placement,” “arrangement,” “wire plan,” “terminal plan,” “value edit,” or “native write” instead of debugging one opaque run.
+
+> Here’s the build I’m putting in place:
+>
+> 1. `input_fixer` and input validator normalize aliases, routing mode, values, and explicit `NC_*` pins without inventing electrical intent.
+> 2. `component_selector` and `component_placer` resolve only audited Altium source records and emit a placed-design JSON contract.
+> 3. `placement_validator` -> `arrangement_decider` -> `beautifier` produce and validate coordinate plans independently of native file writing.
+> 4. `wire_planner` and `terminal_placer` produce separate pure JSON plans; strict wire mode fails, while combination mode records exactly which whole nets terminalized.
+> 5. `value_editor`, native writer, final validator, package stage, CLI progress events, and an immutable internal stage archive complete the run.
+>
+> I’ll retain the current direct generator as a compatibility facade while moving its logic behind those contracts, then test each stage alone and as one full pipeline.
+
+> I’m starting with the shared contracts and the front of the pipeline. The important bit is that the fixer will only repair format, aliases, missing pin declarations, and safe defaults; any pin it has to add becomes an explicit `GUESS_TERMINAL_*` net, never an invented connection to a real signal.
+
+> The front-end contracts are working now: a partial resistor input is repaired into a canonical circuit with an explicit `GUESS_TERMINAL_R1_2`, and source selection proves that it maps to the actual native pin. I’m extracting placement and coordinate-only layout next, keeping the square, connectivity-aware arrangement separate from the native writer.
+
+> Placement and arrangement are now split and independently validated. The 74HC04 breakout keeps its known good layout unchanged, while the arrangement stage now exposes topology score, square-grid order, and every coordinate edit as its own artifact. I’m moving the physical router and terminal fallback into the same kind of pure, inspectable contracts now.
+
+> The native writer has now been pulled behind its own contract and still produces a passing source-backed `.SchDoc` and `.PrjPcb` from the staged RC design. I’m assembling the orchestration layer now: every stage will write a numbered JSON report into the immutable run, and the old `generate_direct_project` API will become a thin compatibility facade over it.
+
+> The first full run is already green and writes 18 numbered stage reports plus a private internal archive. I’m tightening two finishing pieces now: strict-wire errors will preserve the old explicit wording, and the CLI will expose the fixer/preflight report and real stage-progress events rather than hiding the pipeline behind one command.
+
+> The public CLI now shows the repaired input, native pin resolution, and the ordered pipeline contracts, while the compatibility API still works unchanged. I’m adding regression tests for the stage boundaries and a dedicated pipeline document next, including exactly how guessed pins and the unqualified PCB stage behave.
+
+> The full pipeline regression passes end to end, including a deliberately incomplete component: the added pin becomes a visible guessed terminal and never contaminates a real net. I’m doing a small validator hardening pass now so the terminal stage proves the exact expected source-direction endpoint, not merely that a label happens to sit on some wire.
+
+> The stage code is cleanly independent of EasyEDA, and the full run passes the original fixtures, all 12 native source templates, strict-wire refusal, guessed-terminal repair, and saved-file/package validation. I’m finishing the release record now: trimming a few unused imports, documenting the pipeline artifact contract, and adding a dated reproducibility note before the final regression and commit.
+
+> One more architectural pass will make the pipeline match the full workflow more faithfully without inventing an AI prompt layer inside the deterministic backend. I’m adding explicit file-name, user-spec, routing-decision, and beautifier-validation stages; the pipeline will still begin from canonical JSON, while prompt-to-JSON remains an upstream concern.
+
+> The expanded pipeline is now at 21 explicit artifacts, and the new stages are producing their own reports in a real run. I’m aligning the test expectations and documentation with that final stage map now, then I’ll run the full compatibility regression again.
+
+> The last review found one metadata detail to correct, and it is fixed: source provenance now names the full 21-stage chain rather than the earlier shorter path. I’m adding one topology-order regression and one explicit note about the prompt-to-JSON boundary, then I’ll run the final clean regression set.
+
+> The architecture is now complete for the JSON-to-schematic backend: the upstream prompt layer stays separate, while everything from repair through packaging is deterministic, independently inspectable, and recorded. I’m running the full compatibility, stage-contract, source-catalogue, and strict-failure regression pass now.
+
+> I’m picking up from the staged direct Altium refactor now. The generator is no longer meant to be one opaque function: the working tree contains the full JSON-to-native-schematic pipeline, and I’m completing its final regression, audit trail, and repository checkpoint.
+
+> The previous checkpoint is cleanly synced to `origin/main`, and the new work is isolated to the Altium backend plus its documentation. I’m now validating it at two levels: each stage contract on its own, then end-to-end native file/package validation through the public facade.
+
+> One compatibility assertion still describes the pre-pipeline provenance string, so I’m updating that test to assert the new explicit chain rather than preserving a stale monolith-era detail. Then I’ll run the full regression matrix manually because this base image has no `pytest` installed.
+
+> The pipeline now records every validation/decision step in its provenance chain, not just the core generators. I’m running the repository’s Altium test suite through a tiny standard-library pytest-compatible harness, so the exact focused tests still execute despite the missing external test package.
+
+> The direct path is now exercising the same public CLI a frontend would call: the dense breakout produced a valid native project, 21 retained stage artifacts, 43 physical segments, and 11 explicitly recorded terminalized nets; its saved schematic and ZIP both revalidated independently. I’m doing the final repository audit and recording the work so the next person can trace every stage without relying on this chat.
+
+Files edited:
+
+> Added the full direct Altium pipeline stage modules, stage contracts, test coverage, pipeline documentation, an experiment record, CLI preflight/progress visibility, and updated direct-generator compatibility facade. Updated this continuation record.
+
+Additional visible assistant responses:
+
+> The final audit is clean enough to checkpoint: 21 focused regressions passed through the standard-library harness, the public CLI path revalidated a generated `.SchDoc` and project ZIP, and the only unavailable gate is `pytest` itself because the base environment does not have that package. I’m staging the scoped Altium changes and then will push them only to `ProGenEDA/ProGenEDA-DEV`.

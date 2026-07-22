@@ -16,7 +16,7 @@ another at runtime.
 | Proteus | `.pdsprj` | [`proteus/active/`](proteus/active/) | Donor-backed placement, bounded terminal attachment, value editing, and local loader evidence. |
 | KiCad | `.kicad_pro`, `.kicad_sch`, optional `.kicad_pcb` | [`kicad/`](kicad/) | Canonical JSON repair, source-backed schematic generation, combination routing, validation, and bounded two-layer PCB output. |
 | EasyEDA Pro | `.eprj` | [`Easyeda/`](Easyeda/) | Native SQLite project generation using audited source records, compact schematic routing, and bounded PCB generation. |
-| Altium | `.PrjPcb` + source-backed `.SchDoc`, packaged as ZIP | [`Altium/`](Altium/) | Direct native schematic generation from canonical JSON, with source-derived symbols/pins/wires/labels and saved-file validation. Direct PCB output is not qualified yet. |
+| Altium | `.PrjPcb` + source-backed `.SchDoc`, packaged as ZIP | [`Altium/`](Altium/) | Full direct native schematic pipeline: repair, values, source selection, placement, arrangement, wiring/terminals, native emission, and saved-file validation. Direct PCB output is not qualified yet. |
 | LTspice | `.asc` | [`ltspice/`](ltspice/) | Donor-native stock-symbol placement, physical-wire routing, and validated ASC emission. |
 
 Each backend documents its supported catalogue, input restrictions, validation
@@ -176,6 +176,7 @@ should create a new run directory and never overwrite prior outputs.
 - [`Easyeda/INPUT_JSON.md`](Easyeda/INPUT_JSON.md) - EasyEDA input contract.
 - [`Easyeda/ARCHITECTURE.md`](Easyeda/ARCHITECTURE.md) - EasyEDA stage design.
 - [`Altium/README.md`](Altium/README.md) - Altium target status and commands.
+- [`Altium/PIPELINE.md`](Altium/PIPELINE.md) - Altium stage contracts and immutable run artifacts.
 - [`Altium/ARCHITECTURE.md`](Altium/ARCHITECTURE.md) - Altium stage contracts.
 - [`Altium/INPUT_JSON.md`](Altium/INPUT_JSON.md) - Altium direct input contract.
 - [`ltspice/ARCHITECTURE.md`](ltspice/ARCHITECTURE.md) - LTspice donor-native

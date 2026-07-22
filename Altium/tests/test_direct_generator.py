@@ -29,7 +29,10 @@ def test_direct_rc_filter_is_fully_wired_and_packaged(tmp_path: Path) -> None:
     assert "|UNIQUEID=pge1" in result.schematic_file.read_text(encoding="utf-8")
     provenance = json.loads((result.internal_directory / "source_provenance.json").read_text())
     assert provenance["easyeda_conversion_used"] is False
-    assert provenance["generation_path"].startswith("canonical_json -> direct_altium_ir")
+    assert provenance["generation_path"].startswith(
+        "canonical_json -> input_fixer -> value_editor -> value_validator"
+    )
+    assert provenance["generation_path"].endswith("pcb_decision -> final_validator")
 
 
 def test_direct_led_aliases_resolve_to_source_pin_designators(tmp_path: Path) -> None:

@@ -97,3 +97,19 @@ check.
 The generator records the normalized version of this JSON alongside the
 project so subsequent pipeline stages and desktop tests use one exact input
 contract.
+
+## Repair And Guess-Terminal Rules
+
+`validate-input` and the normal generator first run the conservative Altium
+input fixer. It can accept alternate field names such as `parts`, `devices`,
+`type`, `family`, `reference`, `connections`, and pin-object lists. It derives
+the top-level net list from the explicit component pins and records every
+repair in `internal/stages/01_input_fixer.json`.
+
+If an audited physical source pin was omitted, the fixer adds it as a unique
+net named `GUESS_TERMINAL_<reference>_<source-pin>`. It never connects that
+pin to a real signal. These nets are native terminals in `terminal` and
+`combination` mode, and cause an explicit failure in strict `wire` mode.
+
+The detailed ownership and JSON artifacts for the full process are in
+[PIPELINE.md](PIPELINE.md).

@@ -8,12 +8,13 @@ generation.
 
 ```text
 canonical JSON
-  -> Altium IR and input validation
-  -> audited Altium source-record catalogue
-  -> deterministic placement and routing policy
-  -> direct .SchDoc/.PrjPcb writer
-  -> saved-file pin, net, and geometry validation
-  -> ZIP project artifact plus private audit files
+  -> input fixer and value editor
+  -> audited source selection and component placement
+  -> arrangement decider and coordinate-only beautifier
+  -> wire planner and terminal placer
+  -> routing validator and direct .SchDoc/.PrjPcb writer
+  -> saved-file/package final validation
+  -> ZIP project artifact plus private stage archive
 ```
 
 ## Direct Generation
@@ -24,12 +25,15 @@ Run from the repository root:
 # Inspect the exact source-backed component catalogue.
 PYTHONPATH=. python -m Altium.executable supported-components
 
-# Validate and normalize a canonical circuit JSON file.
+# Repair, normalize, and source-validate a canonical circuit JSON file.
 PYTHONPATH=. python -m Altium.executable validate-input INPUT.json
+
+# Inspect every explicit pipeline stage and its ownership boundary.
+PYTHONPATH=. python -m Altium.executable pipeline-contracts
 
 # Directly generate an Altium project. This never creates an .eprj.
 PYTHONPATH=. python -m Altium.executable generate INPUT.json \
-  --output-root /tmp/progen-altium-runs
+  --output-root /tmp/progen-altium-runs --progress-json
 
 # Re-check an emitted schematic and its project ZIP without Altium Designer.
 PYTHONPATH=. python -m Altium.executable validate-schematic \
@@ -40,8 +44,10 @@ PYTHONPATH=. python -m Altium.executable validate-package RUN/project.zip
 
 Every generation creates a new run directory. It contains the user-facing
 project folder and ZIP, plus `internal/` records for the normalized input,
-source hashes, resolved placement, routing choice, expected physical contract,
-and saved-file validation report.
+source hashes, value edits, source selection, placement, arrangement,
+beautifier output, wire plan, terminal plan, routing validation, PCB decision,
+expected physical contract, and saved-file validation report. A separate
+private internal ZIP preserves the whole stage history.
 
 The same code is also available as a Python API:
 
@@ -134,7 +140,7 @@ open/render/compile evidence remains a required next gate. Unsupported
 families, unqualified PCB output, and unresolved strict-wire routes fail
 clearly rather than being approximated.
 
-See [ARCHITECTURE.md](ARCHITECTURE.md),
+See [PIPELINE.md](PIPELINE.md), [ARCHITECTURE.md](ARCHITECTURE.md),
 [SUPPORTED_COMPONENTS.md](SUPPORTED_COMPONENTS.md), and
 [source_pack/README.md](source_pack/README.md) for the implementation and
 evidence details.
