@@ -36388,3 +36388,29 @@ Files edited:
 Validation evidence:
 
 > `41 passed` through repository-local pytest; all three public examples regenerated with 22 retained stages; all 12 source templates remained covered; an 80-component connected resistor chain passed with 418 segments in approximately 12.1 seconds; `pyflakes`, `compileall`, and `git diff --check` passed. Altium Designer open/render/compile remains pending because its installer is incomplete.
+
+---
+
+Timestamp: 2026-07-22T18:12:24+05:00
+
+Visible assistant responses:
+
+> The diff is clean and entirely confined to the Altium backend, its source pack/tests/docs, `.gitattributes`, and the required continuation log. I’m committing this as one scoped hardening change now, then I’ll push only to `origin/main` and compare the remote branch hash to local `HEAD`.
+
+> Committed as `e3112269` (`Harden direct Altium pipeline`). I’m pushing that commit to `ProGenEDA/ProGenEDA-DEV` now; the disabled `memory-source` remote remains untouched.
+
+> The push verified exactly: local `HEAD`, tracked upstream, and GitHub `origin/main` all point to `e31122692075bfcda0616c6209092d1564ff72d2`, and the worktree is clean. I’m adding that checkpoint to `context.md` in a final log-only commit, then I’ll verify the remote once more and give you the concise result, including the one honest remaining boundary.
+
+Checkpoint:
+
+> `e31122692075bfcda0616c6209092d1564ff72d2` (`Harden direct Altium pipeline`) was pushed to `origin/main`. Local `HEAD`, tracked upstream, and remote `refs/heads/main` matched at verification time. No push was made to `memory-source` or Azure.
+
+Planned final visible response:
+
+> Fixed, and I kept auditing beyond the original failures.
+>
+> The pipeline now preserves raw net intent, rejects normalization collisions, validates saved values/library identity/pin identity/symbol geometry, sizes sheets dynamically, binds ZIP bytes and exact inventory to validated files, uses a pinned donor-native `.PrjPcb`, evaluates four placement/routing variations, and has an independent `wire_maker` stage. Progress now reports all 22 stages.
+>
+> Verification: 41 tests passed; all three public examples regenerated; all 12 source templates remain covered; an 80-component fully connected chain passed with 418 segments in about 12.1 seconds; `pyflakes`, `compileall`, and `git diff --check` passed.
+>
+> Pushed to `ProGenEDA/ProGenEDA-DEV` as `e3112269`. The only remaining gate is Altium Designer open/render/compile: its download is still incomplete (`.part` present, final ZIP is 0 bytes), so I am not claiming desktop acceptance yet.
