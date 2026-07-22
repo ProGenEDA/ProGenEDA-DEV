@@ -1,0 +1,55 @@
+{
+  "project": {
+    "name": "direct_led_indicator",
+    "title": "Direct Altium LED Indicator"
+  },
+  "routing": {
+    "mode": "wire"
+  },
+  "components": [
+    {
+      "id": "J1",
+      "ref": "J1",
+      "kind": "pin header",
+      "value": "Power input",
+      "pins": {
+        "1": "VIN",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "R1",
+      "ref": "R1",
+      "kind": "resistor",
+      "value": "1k",
+      "pins": {
+        "1": "VIN",
+        "2": "LED_ANODE"
+      }
+    },
+    {
+      "id": "D1",
+      "ref": "D1",
+      "kind": "LED",
+      "value": "Status LED",
+      "pins": {
+        "A": "LED_ANODE",
+        "C": "GND"
+      }
+    }
+  ],
+  "nets": [
+    {
+      "name": "VIN",
+      "members": ["J1.1", "R1.1"]
+    },
+    {
+      "name": "LED_ANODE",
+      "members": ["R1.2", "D1.A"]
+    },
+    {
+      "name": "GND",
+      "members": ["D1.C", "J1.2"]
+    }
+  ]
+}

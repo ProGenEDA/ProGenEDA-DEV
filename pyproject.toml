@@ -17,11 +17,13 @@ build-exe = ["pyinstaller>=6.0"]
 proteusgen = "proteusgen.cli:main"
 progen-proteus = "proteusgen.proteus_cli:main"
 progen-easyeda = "Easyeda.executable:main"
+progen-altium = "Altium.executable:main"
 
 [tool.setuptools.packages.find]
 where = ["proteus/active/src", "."]
-include = ["proteusgen*", "kicad*", "ltspice*", "Easyeda*"]
+include = ["proteusgen*", "kicad*", "ltspice*", "Easyeda*", "Altium*"]
 
 [tool.setuptools.package-data]
 kicad = ["source_pack/downloaded_zip/*.zip", "rules/*.json", "examples/json/*.json", "targets/*.md", "pipeline/catelogues/*.json"]
 ltspice = ["pipeline/*.json", "catalogues/*.json"]
+Altium = ["examples/*.json", "source_pack/donors/*.SchDoc"]

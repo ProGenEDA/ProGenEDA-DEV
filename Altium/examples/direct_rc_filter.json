@@ -1,0 +1,64 @@
+{
+  "project": {
+    "name": "direct_rc_filter",
+    "title": "Direct Altium RC Filter"
+  },
+  "routing": {
+    "mode": "wire"
+  },
+  "components": [
+    {
+      "id": "R1",
+      "ref": "R1",
+      "kind": "resistor",
+      "value": "1k",
+      "pins": {
+        "1": "VIN",
+        "2": "VOUT"
+      }
+    },
+    {
+      "id": "C1",
+      "ref": "C1",
+      "kind": "capacitor",
+      "value": "100nF",
+      "pins": {
+        "1": "VOUT",
+        "2": "GND"
+      }
+    },
+    {
+      "id": "R2",
+      "ref": "R2",
+      "kind": "resistor",
+      "value": "10k",
+      "pins": {
+        "1": "VIN",
+        "2": "GND"
+      }
+    }
+  ],
+  "nets": [
+    {
+      "name": "VIN",
+      "members": [
+        "R1.1",
+        "R2.1"
+      ]
+    },
+    {
+      "name": "VOUT",
+      "members": [
+        "R1.2",
+        "C1.1"
+      ]
+    },
+    {
+      "name": "GND",
+      "members": [
+        "C1.2",
+        "R2.2"
+      ]
+    }
+  ]
+}
