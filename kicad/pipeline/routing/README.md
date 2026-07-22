@@ -1,12 +1,12 @@
 # KiCad Routing V2 Refactor
 
-## Codex 5.6 Routing Delivery
+## Current Routing Delivery
 
-Codex 5.6 built the active movement-first routing architecture described here:
+The current implementation built the active movement-first routing architecture described here:
 topology-aware placement variants, rotation-aware pin/keepout geometry,
 compact square-fill scoring, lane-aware rectilinear planning, strict
 component-contact protection, explicit terminal fallback, and validator-led
-selection. This is an immense step beyond 5.5-era isolated wire attempts
+selection. This is an immense step beyond isolated wire attempts
 because routing now participates in a complete executable, retains variants,
 and is judged by electrical and geometric proof rather than by a rendered line
 count.

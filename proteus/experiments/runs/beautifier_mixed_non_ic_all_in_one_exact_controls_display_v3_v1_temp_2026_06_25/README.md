@@ -61,6 +61,6 @@ It includes sources, displays, controls, transformer/bridge/regulator/opamp, and
 
 Pending.
 
-## Codex Observation
+## Observation
 
 Static generation and manifest validation pending in this run.

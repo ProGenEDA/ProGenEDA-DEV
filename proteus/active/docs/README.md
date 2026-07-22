@@ -1,9 +1,9 @@
 # Proteus Active Documentation
 
-> **GPT-5.6 implementation.** GPT-5.6 built and organized this active
-> documentation alongside the repaired component placer, shared terminal
-> route, grid-attached wire contract, automated validation workflow,
-> value/properties editor, and portable executable.
+> **Current implementation.** This folder is the active Proteus documentation index
+> for the repaired component placer, shared terminal route, grid-attached wire
+> contract, automated validation workflow, value/properties editor, and
+> portable executable.
 
 Updated: 2026-07-16
 

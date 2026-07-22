@@ -33,6 +33,6 @@ Baseline control. One `BZX79C5V1` should open in the original donor-selected pos
 
 Pending.
 
-## Codex Observation
+## Observation
 
 Pending user Proteus result.

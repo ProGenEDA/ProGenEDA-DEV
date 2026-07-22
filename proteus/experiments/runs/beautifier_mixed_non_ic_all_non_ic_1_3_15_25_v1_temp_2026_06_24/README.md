@@ -69,7 +69,7 @@ Do not use this pack as coordinate-mutation evidence. It combined families
 before BRIDGE, transformer, regulator/opamp, source, display, and control
 coordinate mutation had been proven separately.
 
-## Codex Observation
+## Observation
 
 Static generation and manifest validation passed:
 

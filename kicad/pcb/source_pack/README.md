@@ -1,10 +1,10 @@
 # KiCad PCB Source Pack
 
-## Codex 5.6 Source-Backed Physical Delivery
+## Current Source-Backed Physical Delivery
 
-Codex 5.6 built this compact audited source pack so native PCB generation and
+The current implementation built this compact audited source pack so native PCB generation and
 validation work without an installed KiCad application or global libraries.
-That is the foundation for the 5.6 PCB delivery: exact footprint/pad facts are
+That is the foundation for PCB delivery: exact footprint/pad facts are
 verified at runtime, not guessed from a component name or recreated by hand.
 
 The hosted PCB generator does not require KiCad. It loads

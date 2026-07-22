@@ -42,7 +42,7 @@ It uses the actual component placer plus the shared parsed-coordinate beautifier
 
 Pending.
 
-## Codex Observation
+## Observation
 
 Static generation and manifest validation passed:
 

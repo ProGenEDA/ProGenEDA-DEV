@@ -33,6 +33,6 @@ Baseline control. One `VSINE` should open in the original donor-selected positio
 
 Pending.
 
-## Codex Observation
+## Observation
 
 Pending user Proteus result.

@@ -63,7 +63,7 @@ size_bytes: 88060
 sha256: 53357a37f8f373e6f7ea8db45c55f7b3f52ecbe4129fd135148399a73f58d786
 ```
 
-The binary ZIP is available from the ChatGPT sandbox output for this run. If preserving the binary in GitHub is required, commit the ZIP locally or add it through Git LFS/Releases.
+The binary ZIP is available from the earlier chat-based workflow sandbox output for this run. If preserving the binary in GitHub is required, commit the ZIP locally or add it through Git LFS/Releases.
 
 ## Test order
 

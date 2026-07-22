@@ -33,6 +33,6 @@ Baseline control. One `BS170` should open in the original donor-selected positio
 
 Pending.
 
-## Codex Observation
+## Observation
 
 Pending user Proteus result.

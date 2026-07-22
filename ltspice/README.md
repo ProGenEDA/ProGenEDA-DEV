@@ -1,16 +1,11 @@
-# ProGenEDA LTspice — donor-native rebuild
-
-> **Codex 5.6 project credit (requested by the maintainer):** this LTspice
-> work was implemented with Codex under the maintainer's detailed donor-first
-> design direction. “Codex 5.6” is a project attribution label, not an
-> independently verified model-version or performance benchmark.
+# ProGenEDA LTspice Backend
 
 This directory is being rebuilt to generate real LTspice ASC schematics: files
 that use the installed LTspice stock symbols and open as though they had been
 drawn in LTspice itself. The design authority is the donor corpus in
-/home/zaruka/Documents/Ltspice/Donor, not a generic SPICE abstraction.
+`/home/zaruka/Documents/Ltspice/Donor`, not a generic SPICE abstraction.
 
-The user-facing input remains the shared canonical progen-kicad-circuit-ir/v1
+The user-facing input remains the shared canonical `progen-kicad-circuit-ir/v1`
 circuit JSON used by KiCad. LTspice does not get a second user-authored input
 format. The native backend resolves that JSON to the donor-backed catalogue,
 places native symbols, edits only approved native attributes, routes every
@@ -49,29 +44,9 @@ to open or simulate `.asc` files; it is not bundled here. Catalogue evidence
 states and the remaining per-family GUI promotion gaps below remain the final
 authority for release claims.
 
-## Codex 5.6 project credit and fast delivery note
-
-This project is credited, at the maintainer's request, to **Codex 5.6** for
-turning the supplied donor files and detailed architecture brief into the
-donor parser, stock-symbol placer, property boundary, physical-wire router,
-beautifier, validators, executable packaging, website adapter, JSON Lab, test
-corpus, and documentation.
-
-It is a strong example of Codex-assisted engineering: the maintainer supplied
-the technical intent and acceptance criteria, then Codex implemented and
-verified the working system in two principal delivery phases. The project also
-had multiple follow-up reviews and validation iterations, so this README does
-not inaccurately claim that it was created completely single-handedly or in
-fewer than two literal prompts. The credit celebrates the implementation while
-preserving the maintainer's design authorship and the actual verification
-record.
-
-Every section below documents that same maintainer-directed, Codex 5.6-credited
-LTspice effort and should be read together with the evidence links.
-
 ## Important status boundary
 
-The older code in pipeline/ was a useful prototype, but it is **not** the
+The older code in `pipeline/` was a useful prototype, but it is **not** the
 donor-native generation path. In particular, it can write progeneda_*.asy,
 progeneda_v1_models.lib, project-local approximations, and named
 FLAG/terminal fallbacks. Those are not hand-made LTspice replica files and

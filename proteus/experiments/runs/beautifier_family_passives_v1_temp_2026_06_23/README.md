@@ -39,7 +39,7 @@ the real mega-donor coordinate fields.
 
 Failed. User reported all six files gave `LXLCORE.dll`.
 
-## Codex Observation
+## Observation
 
 The fixed passive-family offset table is unsafe and must not be reused. For the
 first `RESISTOR` packet in the main mega donor, real coordinate fields are

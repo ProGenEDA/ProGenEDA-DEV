@@ -33,6 +33,6 @@ Baseline control. One `2N4401` should open in the original donor-selected positi
 
 Pending.
 
-## Codex Observation
+## Observation
 
 Pending user Proteus result.

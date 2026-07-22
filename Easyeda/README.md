@@ -1,137 +1,113 @@
 # ProGenEDA EasyEDA Pro Backend
 
-This package generates one native EasyEDA Pro `.eprj` SQLite project from the
-same canonical circuit JSON used by the other ProGenEDA backends. It is
-independent from `kicad/` at runtime.
+This independent backend compiles canonical circuit JSON into one native
+EasyEDA Pro `.eprj` SQLite project. It does not import from `kicad/` at
+runtime.
 
-The backend is donor-native. Every symbol, device, footprint, pad, power
-symbol, and net-port payload is copied unchanged from the authorized EasyEDA
-source records. The portable executable embeds a compact locked bundle
-containing only the audited rows needed by the supported catalogue, not the
-desktop application or complete standard library. The generator creates
-project rows, component instances, coordinates, references, values, net
-bindings, wires, tracks, vias, and the board outline.
+The backend is donor-native: symbols, devices, footprints, pads, power
+terminals, and net-port payloads are resolved from audited EasyEDA source
+records. The portable generator contains only the compact locked record bundle
+needed by the supported catalogue. It does not package the EasyEDA desktop
+application or its complete library.
 
-## Codex 5.6 Delivery
+## What It Produces
 
-> **CODEX 5.6 BUILT THE COMPLETE EASYEDA PRO BACKEND.**
->
-> Codex 5.6 single-handedly took the supplied EasyEDA Pro package from source
-> research to a native `.eprj` generator: it installed and stabilized the
-> desktop application in this environment, mapped the real SQLite project
-> grammar, resolved exact donor records, built the locked 59-entry catalogue,
-> implemented tolerant JSON repair, placement, compact wire/terminal routing,
-> bounded PCB generation, native validation, portable packaging, website
-> handoff, and the full 300-circuit qualification system.
+For a supported request, the pipeline emits:
 
-This is a huge advance over the earlier 5.5-era starting point. Codex 5.6
-replaced exploratory conversion work with a closed engineering loop: generate
-donor-native projects, validate exact pins/nets/geometry/pads, open disposable
-copies through installed EasyEDA Pro, visually inspect difficult schematics,
-retain visual inspection evidence for compact routing, prove the audited
-originals stayed unchanged, and feed those findings back into the shared
-router. It delivered complete automation while keeping every generated project
-indistinguishable in structure from a project made in the application itself.
+- one editable native `<project-name>.eprj` project;
+- a schematic using source-resolved components, wires, terminals, and net
+  ports according to the chosen routing mode;
+- a bounded two-layer PCB in the same project when all used devices have exact
+  footprint/pad mappings and physical validation passes; and
+- an internal ZIP containing normalized input, fixer report, placement,
+  routing, donor provenance, PCB decisions and variants, and validation
+  reports.
 
-The proof is the untouched 300-circuit corpus: 300/300 complete pipeline,
-netlist, source-pin, geometry, and PCB-ready passes, plus native opening of the
-ten most complex designs. See
-[`qualification/RESULTS_2026_07_17.md`](qualification/RESULTS_2026_07_17.md).
+The primary user artifact is the `.eprj` project. Internal records are kept for
+audit and regeneration rather than mixed into the user-facing project folder.
 
-## Use The Portable Executable
+## Run The Portable Executable
 
 ```bash
 Easyeda/dist/progen-easyeda run INPUT.json \
-  --output-root /tmp/progen_easyeda_runs \
-  --routing-mode combination --events ndjson
+  --output-root /tmp/progen-easyeda-runs \
+  --routing-mode combination \
+  --events ndjson
 ```
 
-The portable executable is the normal distribution artifact. It embeds only
-the compact audited donor bundle required by the locked catalogue; it does not
-need an installed EasyEDA application for generation or deterministic
-validation.
+The portable executable is the normal distribution artifact. It can generate
+and run deterministic validation without an installed EasyEDA application.
 
-## Use The Direct Source Generator
+## Run From Source
 
 ```bash
 PYTHONPATH=. python -m Easyeda.executable run \
   Easyeda/examples/regulated_5v_supply.json \
-  --output-root /tmp/progen_easyeda_runs
+  --output-root /tmp/progen-easyeda-runs \
+  --routing-mode combination
 ```
 
-An authorized source installation may still be supplied with `--source-pack`
-as a development-time override.
-
-The primary output is `<project-name>.eprj`. Each run also creates an internal
-ZIP with the normalized input, placement, routing, donor provenance, PCB
-decision, all attempted PCB routing variations, and validation reports.
+An authorized source installation can be supplied with `--source-pack` as a
+development-time override.
 
 Useful deterministic commands:
 
 ```bash
-# Report and repair common JSON mistakes without generating.
+# Report and repair common input problems without generating a project.
 Easyeda/dist/progen-easyeda validate-input circuit.json
 Easyeda/dist/progen-easyeda fix-input circuit.json --output fixed.json
 
-# List fields exposed by the normal value/reference editor.
+# Discover fields exposed by the normal reference/value editor.
 Easyeda/dist/progen-easyeda editable circuit.json
 
-# Apply validated value/reference edits to canonical JSON.
+# Apply validated JSON edits and emit normalized JSON.
 Easyeda/dist/progen-easyeda edit circuit.json edits.json --output edited.json
 
-# Stream truthful completed pipeline stages for a website/worker adapter.
+# Stream completed pipeline stages for a worker or website adapter.
 Easyeda/dist/progen-easyeda run circuit.json --output-root runs --events ndjson
 ```
 
-## Release Contract
+## Routing And PCB Contract
 
-- 59 locked logical catalogue entries backed by 57 physical donor families
-  plus native `GND` and `VCC` terminal families.
-- At most 80 input component instances.
-- Deterministic tolerant input repair before generation. Missing donor pins are
-  explicitly completed as terminalized `GUESS_*` nets and reported; clean
-  canonical inputs pass with zero changes and zero guesses.
-- `wire`, `terminal`, and `combination` schematic modes.
-- `combination` is the default.
-- In combination mode, each power/ground net is physically routed to one
-  shared native named terminal. High-fanout non-power nets above five use
-  endpoint net ports.
-- Failed schematic wire routes fall back to native net ports in combination
-  mode, never to hidden labels.
-- Different nets may cross at a point, but may not share any positive-length
-  horizontal or vertical wire span. Planning, terminal placement, and the
-  independent native-record validator all enforce this readability rule.
-- Routing lanes remain local to each branch, use compact four-unit spacing,
-  and have a bounded detour and emitted-wire envelope. A difficult net is
-  terminalized in combination mode instead of producing a whole-sheet loop.
-- Single-endpoint guessed nets may attach a source-native net port directly at
-  the component pin; they remain explicit and auditable without decorative
-  wire stubs.
-- Basic PCB output is included in the same `.eprj` when all used source devices
-  have verified footprint/pad mappings and the two-layer router succeeds.
-- The hardened PCB profile supports at most 32 physical components. `GND` and
-  `VCC` schematic terminals do not count as physical PCB components.
-- PCB failure never invalidates a correct schematic. The project is emitted
-  without a PCB document and `pcb_report.json` explains why.
-- Static validation does not replace EasyEDA acceptance. A release candidate
-  must also open in installed EasyEDA Pro through the `.eprj` file association.
-  The acceptance helper opens a disposable copy and proves the audited artifact
-  was not rewritten.
-- Generated projects carry an explicit EasyEDA 3.x branch identity and contain
-  no stale donor history or copper-cache rows. This avoids the desktop
-  application's legacy "Failed to get historical project data" conversion.
-- The authorized offline EasyEDA Pro build requires
-  `~/Documents/EasyEDA-Pro/lceda-pro-activation.txt` before native `.eprj`
-  projects can reach the editor. The installer fixes NixOS compatibility but
-  does not create, alter, or bypass that activation. On NixOS it resolves a
-  complete donor-compatible dynamic-library path and patches both the Electron
-  executable and its crash reporter without changing the system installation.
+- The locked catalogue contains 59 logical entries backed by 57 physical donor
+  families, plus native `GND` and `VCC` terminal families.
+- A schematic request may contain at most 80 component instances.
+- `wire`, `terminal`, and `combination` modes are supported; `combination` is
+  the default.
+- Combination mode uses explicit native terminals for power/ground, selected
+  high-fanout nets, and failed wire routes. Strict wire mode fails rather than
+  silently terminalizing a net.
+- Distinct nets may cross at a point but may not share a positive-length wire
+  span. The planner and native validator enforce this readability constraint.
+- PCB output is bounded to 32 physical components. `GND` and `VCC` schematic
+  terminals do not count as physical PCB components.
+- A PCB failure never invalidates an otherwise valid schematic. The project is
+  emitted without a board document and the PCB report records the reason.
 
-See [INPUT_JSON.md](INPUT_JSON.md), [SUPPORTED_COMPONENTS.md](SUPPORTED_COMPONENTS.md),
-[ARCHITECTURE.md](ARCHITECTURE.md), and the
-[300-case qualification record](qualification/README.md).
+## Validation And Acceptance
 
-The shipping website handoff is
-[`release/newwebsite-easyeda-handoff-2026_07_17.zip`](release/newwebsite-easyeda-handoff-2026_07_17.zip).
-It contains the portable, all 300 named circuit inputs, the complete website
-overlay, guarded installer, registry/UI payloads, tests, and release evidence.
+The native validator checks source-record hashes, components, pins, expected
+nets, geometry, wire-span overlap, footprint/pad mapping, and board-level
+connectivity. Input repair is deterministic: a guessed or completed net is
+named `GUESS_*`, terminalized, and reported. A clean canonical input produces
+zero guesses and zero repairs.
+
+Static validation is necessary but not desktop acceptance. Release evidence
+also opens a disposable copy of each selected project through the installed
+EasyEDA Pro file association and confirms that the audited original was not
+rewritten. Generated projects carry a native EasyEDA 3.x identity and omit
+legacy history/cache rows that trigger conversion failures.
+
+## Evidence And Documentation
+
+- [Input JSON contract](INPUT_JSON.md)
+- [Supported components](SUPPORTED_COMPONENTS.md)
+- [Architecture](ARCHITECTURE.md)
+- [300-circuit qualification](qualification/README.md)
+- [Qualification results](qualification/RESULTS_2026_07_17.md)
+- [Website handoff](release/newwebsite_easyeda_handoff_2026_07_17/README.md)
+
+The release handoff contains the portable executable, named qualification
+inputs, website integration material, installer guidance, and release
+evidence. Historical experiments remain in `experiments/` and are not runtime
+dependencies.

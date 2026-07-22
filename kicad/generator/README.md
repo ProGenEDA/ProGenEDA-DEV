@@ -3,13 +3,13 @@
 This folder retains the persistent source-writing research and component
 catalogue work that feeds the active KiCad backend.
 
-## Codex 5.6 Active Generator Delivery
+## Current Active Generator Delivery
 
-Codex 5.6 took the early source-writing milestones recorded below and connected
+The current implementation took the early source-writing milestones recorded below and connected
 them to the complete `kicad/pipeline/` generator: canonical JSON repair,
 source-backed symbol/pin use, arrangement, routing, terminals, values,
 validators, packaging, and optional PCB output. This is a substantial advance
-over the prior 5.5-era isolated writer experiments: the source writer is now
+over prior isolated writer experiments: the source writer is now
 one proven stage in an executable pipeline with expected-net and geometry
 acceptance rather than a stand-alone file emitter.
 
@@ -22,7 +22,7 @@ PYTHONPATH=. python -m kicad.pipeline.progen_kicad_executable run INPUT.json \
 
 The final release/qualification details are in
 [`../FINALIZATION_STATUS.md`](../FINALIZATION_STATUS.md). The V6/V7 notes below
-are preserved because they document the donor/source discovery that Codex 5.6
+are preserved because they document the donor/source discovery that the current implementation
 expanded into the current backend.
 
 ## Historical Locked Milestone

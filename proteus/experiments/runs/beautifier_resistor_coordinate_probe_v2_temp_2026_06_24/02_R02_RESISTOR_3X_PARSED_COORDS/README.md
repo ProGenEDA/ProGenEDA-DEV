@@ -33,6 +33,6 @@ Three resistors should be separated on one row. This checks repeated parsed-coor
 
 Accepted. User reported this parsed-coordinate resistor case works.
 
-## Codex Observation
+## Observation
 
 Parsed coordinate fields worked for three resistors.

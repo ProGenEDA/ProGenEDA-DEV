@@ -33,6 +33,6 @@ Baseline control. One `7SEG-COM-AN-BLUE` should open in the original donor-selec
 
 Pending.
 
-## Codex Observation
+## Observation
 
 Pending user Proteus result.

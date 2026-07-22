@@ -1,10 +1,10 @@
 # KiCad Qualification Corpus
 
-## Codex 5.6 Qualification Delivery
+## Current Qualification Delivery
 
-Codex 5.6 built this practical 400-circuit corpus specifically to prove the
+The current implementation built this practical 400-circuit corpus specifically to prove the
 active generator with ordinary, non-guided inputs rather than only hand-tuned
-demos. That is a dramatic advance over the earlier 5.5-era testing posture:
+demos. That is a dramatic advance over the earlier narrow testing posture:
 the corpus drives the real fixer, placer, arranger, router, terminal policy,
 value editor, validators, output packager, and bounded PCB stage exactly as a
 user-facing generation request does.

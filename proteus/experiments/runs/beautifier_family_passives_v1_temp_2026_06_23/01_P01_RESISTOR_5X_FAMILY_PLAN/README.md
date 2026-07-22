@@ -33,7 +33,7 @@ Open the project first. If it opens, inspect visual placement. If applicable, ru
 
 Failed. User reported this V1 passive-family coordinate test gave `LXLCORE.dll`.
 
-## Codex Observation
+## Observation
 
 Rejected method. The fixed offset plan touched non-coordinate constants inside
 the donor packet instead of the parsed resistor coordinate fields. Follow-up

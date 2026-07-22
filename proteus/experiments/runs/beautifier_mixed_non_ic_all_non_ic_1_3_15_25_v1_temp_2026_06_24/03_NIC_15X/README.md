@@ -69,6 +69,6 @@ Requested count per family: 15. Displays should appear without counting the inte
 
 Pending.
 
-## Codex Observation
+## Observation
 
 Pending user Proteus result.

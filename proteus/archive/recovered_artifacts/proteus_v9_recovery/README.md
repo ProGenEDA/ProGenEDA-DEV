@@ -2,7 +2,7 @@
 
 ## Status
 
-This directory records the recovered V9 Proteus Route A artifact after the old ChatGPT thread reached its message limit.
+This directory records the recovered V9 Proteus Route A artifact after the old earlier chat-based workflow thread reached its message limit.
 The uploaded bundle is now preserved in this repository, along with a flattened extraction of all nested ZIP contents.
 
 The uploaded local bundle was:

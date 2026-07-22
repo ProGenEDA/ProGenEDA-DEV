@@ -33,6 +33,6 @@ Baseline control. One `CAP-ELEC` should open in the original donor-selected posi
 
 Pending.
 
-## Codex Observation
+## Observation
 
 Pending user Proteus result.

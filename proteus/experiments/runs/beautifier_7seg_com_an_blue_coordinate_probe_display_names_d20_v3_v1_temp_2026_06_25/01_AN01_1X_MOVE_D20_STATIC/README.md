@@ -35,6 +35,6 @@ One `7SEG-COM-AN-BLUE` should move onto the grid and remain intact. D20 should s
 
 Pending.
 
-## Codex Observation
+## Observation
 
 Pending user Proteus result.

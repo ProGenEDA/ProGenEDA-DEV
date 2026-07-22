@@ -33,6 +33,6 @@ Accepted-limit resistor stress case: 91 resistors should open on the beautifier 
 
 Accepted. User reported this R91 beautified resistor stress case worked perfectly.
 
-## Codex Observation
+## Observation
 
 Parsed resistor coordinate movement is accepted at the R91 ceiling. Continue with the next passive family, starting with CAP.

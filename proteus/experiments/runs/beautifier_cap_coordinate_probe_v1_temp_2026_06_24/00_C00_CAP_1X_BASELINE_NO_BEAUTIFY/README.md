@@ -33,6 +33,6 @@ Baseline control. One `CAP` should open in the original donor-selected position.
 
 Accepted. User reported this CAP baseline works.
 
-## Codex Observation
+## Observation
 
 Baseline donor-selected CAP path is sound.

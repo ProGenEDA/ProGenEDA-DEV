@@ -33,6 +33,6 @@ This case goes through `generate_component_placement_project`; it is not a helpe
 
 Accepted. User reported this CAP parsed-coordinate case works.
 
-## Codex Observation
+## Observation
 
 Parsed coordinate fields worked for one CAP.

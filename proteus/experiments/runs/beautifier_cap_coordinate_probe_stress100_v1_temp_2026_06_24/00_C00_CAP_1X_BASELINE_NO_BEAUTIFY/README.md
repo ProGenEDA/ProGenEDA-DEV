@@ -33,6 +33,6 @@ Baseline control. One `CAP` should open in the original donor-selected position.
 
 Pending.
 
-## Codex Observation
+## Observation
 
 Pending user Proteus result.

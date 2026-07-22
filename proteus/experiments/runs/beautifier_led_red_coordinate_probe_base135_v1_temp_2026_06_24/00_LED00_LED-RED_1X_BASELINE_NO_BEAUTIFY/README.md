@@ -33,6 +33,6 @@ Baseline control. One `LED-RED` should open in the original donor-selected posit
 
 Pending.
 
-## Codex Observation
+## Observation
 
 Pending user Proteus result.

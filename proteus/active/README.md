@@ -1,11 +1,5 @@
 # Progen Proteus — Active Area
 
-> **GPT-5.6 implementation.** GPT-5.6 built the active Proteus system: it
-> repaired and stabilized component placement, unified terminal placement,
-> implemented grid-attached short-wire behavior, automated local Proteus
-> validation through sub-agent-assisted workflows, added the value/properties
-> editor and portable executable, and consolidated this active documentation.
-
 Updated: 2026-07-18
 
 This is the current entry point for the native Proteus backend. It contains
@@ -13,6 +7,13 @@ the operational package, runtime donor closure, tests, schema, examples,
 release executable, and concise documentation. Dated research and generated
 evidence live separately in [`../experiments`](../experiments), while retained
 historical material lives in [`../archive`](../archive).
+
+The active backend is donor-first: it places components from the locked donor
+closure, routes terminal attachments through the shared terminal placer, applies
+approved value/property edits, and records loader-gated Proteus evidence beside
+the generated packs. It is intentionally strict about unsupported binary
+behavior so a generated project does not pretend to be accepted when Proteus has
+not proven it.
 
 ## Current pipeline
 
@@ -162,7 +163,6 @@ requests that would silently claim a routed circuit. See
 - [Current documentation index](docs/README.md)
 - [Canonical pipeline](docs/progen_eda_canonical_pipeline.md)
 - [Architecture and stage contracts](docs/architecture.md)
-- [GPT-5.6 progress record](GPT_5_6_PROGRESS.md)
 - [Consolidation validation record](knowledge/repository_consolidation_validation_2026_07_16.md)
 - [Hash-backed repository map](REPOSITORY_MAP.md)
 - [Generated inventory CSV](inventory/repository_map.csv)

@@ -33,6 +33,6 @@ Five resistors should be separated on the grid, with all visible labels still at
 
 Accepted. User reported this parsed-coordinate resistor case works.
 
-## Codex Observation
+## Observation
 
 Parsed coordinate fields worked for five resistors.

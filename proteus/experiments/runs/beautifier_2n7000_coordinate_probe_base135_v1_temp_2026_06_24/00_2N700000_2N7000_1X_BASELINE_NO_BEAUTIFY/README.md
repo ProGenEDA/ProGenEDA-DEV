@@ -33,6 +33,6 @@ Baseline control. One `2N7000` should open in the original donor-selected positi
 
 Pending.
 
-## Codex Observation
+## Observation
 
 Pending user Proteus result.

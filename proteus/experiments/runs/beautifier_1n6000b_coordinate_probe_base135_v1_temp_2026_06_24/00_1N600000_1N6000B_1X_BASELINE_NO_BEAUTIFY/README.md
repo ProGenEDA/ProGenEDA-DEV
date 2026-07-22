@@ -33,6 +33,6 @@ Baseline control. One `1N6000B` should open in the original donor-selected posit
 
 Pending.
 
-## Codex Observation
+## Observation
 
 Pending user Proteus result.

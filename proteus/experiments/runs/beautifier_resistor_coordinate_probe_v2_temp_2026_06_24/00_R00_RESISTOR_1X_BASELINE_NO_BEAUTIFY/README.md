@@ -33,6 +33,6 @@ Baseline control. One resistor should open in the original donor-selected positi
 
 Accepted. User reported this baseline works.
 
-## Codex Observation
+## Observation
 
 Baseline donor-selected resistor path is sound.

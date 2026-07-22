@@ -52,6 +52,6 @@ All listed families should appear together, arranged by the beautifier grid. Req
 
 Pending.
 
-## Codex Observation
+## Observation
 
 Pending user Proteus result.

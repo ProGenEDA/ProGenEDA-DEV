@@ -35,6 +35,6 @@ This case goes through `generate_component_placement_project`; it is not a helpe
 
 Pending.
 
-## Codex Observation
+## Observation
 
 Pending user Proteus result.

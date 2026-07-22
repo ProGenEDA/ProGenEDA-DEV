@@ -4,7 +4,7 @@ This folder stores long-form human-readable learning documents for the Proteus g
 
 ## Current learning PDFs generated locally
 
-The following files were generated in the ChatGPT sandbox and should be copied into this folder manually if binary storage is required:
+The following files were generated in the earlier chat-based workflow sandbox and should be copied into this folder manually if binary storage is required:
 
 ```text
 resistor_E0_R1_R2_R3_R4_pattern_comparison.pdf

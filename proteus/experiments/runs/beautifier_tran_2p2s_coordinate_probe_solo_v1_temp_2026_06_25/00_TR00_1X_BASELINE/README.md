@@ -33,6 +33,6 @@ Baseline control. One `TRAN-2P2S` should open in the original donor-selected pos
 
 Pending.
 
-## Codex Observation
+## Observation
 
 Pending user Proteus result.

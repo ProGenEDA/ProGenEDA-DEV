@@ -35,6 +35,6 @@ One `7SEG-COM-CAT-BLUE` should move onto the grid and remain intact. D20 should 
 
 Pending.
 
-## Codex Observation
+## Observation
 
 Pending user Proteus result.

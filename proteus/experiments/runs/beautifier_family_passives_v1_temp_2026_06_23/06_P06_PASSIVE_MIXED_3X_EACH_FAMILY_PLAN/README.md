@@ -37,7 +37,7 @@ Open the project first. If it opens, inspect visual placement. If applicable, ru
 
 Failed. User reported this V1 passive-family coordinate test gave `LXLCORE.dll`.
 
-## Codex Observation
+## Observation
 
 Rejected method. Mixed passive movement used the same unsafe fixed offsets as
 the single-family cases. Follow-up must prove one family at a time, starting

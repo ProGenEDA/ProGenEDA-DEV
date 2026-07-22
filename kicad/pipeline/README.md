@@ -4,16 +4,16 @@ This package was built incrementally and is now the active KiCad production
 pipeline. Historical planner and placer notes remain below as engineering
 record; the executable entry point runs the complete validated path.
 
-## Codex 5.6 Active Pipeline
+## Current Active Pipeline
 
-Codex 5.6 assembled the independent modules in this directory into a real
+The current implementation assembled the independent modules in this directory into a real
 backend rather than a diagram of intended stages. It built the deterministic
 main-JSON fixer, canonical placer, movement-first arrangement/beautifier loop,
 routing and terminal contracts, native KiCad writer, value tools, source-backed
 expected-net validator, final validator, PCB handoff, output packager, portable
 launcher, and large-corpus evidence.
 
-That is the central 5.6 advantage over the earlier 5.5-era work: each stage is
+That is the central production improvement over earlier prototype work: each stage is
 still replaceable and testable alone, but the normal command now executes the
 whole chain, retains accepted and rejected variants, and refuses to package a
 circuit with a blocking electrical or geometry failure. The 400-circuit

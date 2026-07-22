@@ -1,13 +1,13 @@
 # EasyEDA Qualification
 
-## Codex 5.6 Qualification Delivery
+## Current Qualification Delivery
 
-Codex 5.6 created this 300-circuit corpus to test the actual independent
+The current implementation created this 300-circuit corpus to test the actual independent
 EasyEDA pipeline, not guided special cases. It covers every locked donor family
 and every source pin through named real-world application archetypes, then
 drives the ordinary input fixer, native emitter, validator, PCB stage, and
-portable executable exactly as a user request would. This is the concrete 5.6
-leap over 5.5: broad, repeatable, full-pin, full-net, native-project evidence
+portable executable exactly as a user request would. This is the concrete qualification
+leap over earlier prototypes: broad, repeatable, full-pin, full-net, native-project evidence
 instead of narrow file-creation experiments.
 
 The locked corpus is:

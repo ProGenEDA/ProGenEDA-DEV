@@ -1,10 +1,10 @@
 # Rust Routing Core Temp Track
 
-## Codex 5.6 Rust Acceleration Track
+## Current Rust Acceleration Track
 
-Codex 5.6 created this PyO3/maturin boundary and the parity-first promotion
+The current implementation created this PyO3/maturin boundary and the parity-first promotion
 rule so heavy routing calculations can move to Rust without risking the proven
-Python output path. That careful 5.6 engineering choice preserves the active
+Python output path. That parity-first engineering choice preserves the active
 generator while making rotation, geometry, occupancy, terminal policy, and
 compactness work faster as each Rust slice earns equality through comparison.
 

@@ -33,6 +33,6 @@ One resistor should move to the beautifier grid. Ref text, value text, model tex
 
 Accepted. User reported this parsed-coordinate resistor case works.
 
-## Codex Observation
+## Observation
 
 Parsed coordinate fields worked for one resistor.

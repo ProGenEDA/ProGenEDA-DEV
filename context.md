@@ -35999,3 +35999,41 @@ Visible assistant response:
 > donor or native export path before a converter can be safely implemented.
 > Per user direction, no converter was added and the disposable desktop test
 > process was stopped.
+
+---
+
+Timestamp: 2026-07-22T13:06:29+05:00
+
+User message (verbatim):
+
+> continue
+
+Visible assistant responses:
+
+> I’ll pick this back up in the new `ProGenEDA-DEV` checkout and keep the cleanup scoped to README/docs hygiene: neutral project docs, no model-agent mentions, no root LTspice graphics.
+
+> I see the three entry READMEs already changed, and the remaining noise is mostly the LTspice/Proteus entry docs plus repeated old experiment headings. I’m going to read the repo-local instructions, then apply one careful mechanical cleanup across README files.
+
+> The repo-local rules also ask me to keep a running `context.md` record and to commit/push completed repo changes. I’ll keep that to the new `ProGenEDA-DEV` remote only; no old `memory-source` push and no Azure.
+
+> I’m going to make the entry READMEs read like product documentation now, then run a repo-wide README scan for stale attribution strings. The generated experiment READMEs mostly just need heading normalization, so those can be cleaned mechanically without touching their evidence.
+
+> LTspice’s README is now neutral and still keeps the donor-native scope, executable limits, GUI-verification boundary, and website handoff path. Next I’m doing the same for the Proteus active entry.
+
+> Now I’m normalizing the remaining README files mechanically: old “Observation” headings stay as evidence headings, and model/agent-credit wording becomes plain implementation wording. This should preserve the technical records while removing the attribution layer.
+
+> The broad pass worked, but it left a few awkward “the current implementation” headings and old 5.5/5.6 comparison fragments. I’m polishing those by hand/mechanical text cleanup now so the docs read like normal repo docs, not scrubbed slogans.
+
+> The scan is clean for “Codex/GPT/OpenAI/ChatGPT,” but the comparison numbers still linger in a few README prose blocks. I’m removing those too, because they read like the old attribution layer even without the names.
+
+> One handoff README still had a defensive “month of earlier work” paragraph. It no longer mentions a model, but it’s not useful project documentation, so I’m replacing it with a plain reproducibility note.
+
+> That one changed underneath my patch context, so I’m reading the exact lines and applying a smaller patch.
+
+> The key entry files now look coherent: root, KiCad, EasyEDA, LTspice, and Proteus all explain current scope and source commands without old credit blocks or root images. I’m checking filenames/status and then I’ll log the turn per the repo rule.
+
+> Remote wiring is right: `memory-source` push is disabled and `origin` points at `ProGenEDA/ProGenEDA-DEV`. I’m adding the required local context entry now, then I’ll commit this doc cleanup and push only to `origin`.
+
+Files edited:
+
+> README files across the root, KiCad, EasyEDA, LTspice, and Proteus areas were neutralized and refreshed. `context.md` was updated for this turn.

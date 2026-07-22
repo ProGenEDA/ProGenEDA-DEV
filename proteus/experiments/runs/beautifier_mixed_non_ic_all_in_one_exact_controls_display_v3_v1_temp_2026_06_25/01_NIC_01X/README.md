@@ -68,6 +68,6 @@ Requested count per family: 1. Displays should appear without counting the inter
 
 Pending.
 
-## Codex Observation
+## Observation
 
 Pending user Proteus result.
