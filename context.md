@@ -36600,3 +36600,25 @@ Files edited:
 Validation evidence:
 
 > A Wine `start` invocation for `https://example.com/` completed without a URL-handler error. Firefox was already running, so process count cannot distinguish the newly opened tab; the authoritative association values were read back from the Wine registry.
+
+---
+
+Timestamp: 2026-07-23T13:35:00+05:00
+
+User message (verbatim):
+
+> open it
+
+Visible assistant responses:
+
+> Altium is not currently running. I’m launching its installed `X2.EXE` host in the dedicated Wine prefix and will bring its window to the foreground once it appears.
+
+> Altium has started successfully: `X2.EXE` and its embedded WebView runtime are both alive. The application may take a few more seconds to finish its initial screen, but it is running now.
+
+Files edited:
+
+> `context.md`.
+
+Validation evidence:
+
+> `C:\\Program Files\\Altium\\AD26.8.1\\X2.EXE` is running in the isolated Wine prefix with its embedded Microsoft Edge WebView2 child processes.
