@@ -36477,3 +36477,126 @@ Files edited:
 Validation evidence:
 
 > The main EasyEDA Pro process is running from `/home/zaruka/.local/opt/easyeda-pro/easyeda-pro` through the software-rendering launcher, and the KWin activation helper was invoked to raise its window.
+
+---
+
+Timestamp: 2026-07-23T13:01:45+05:00
+
+User messages (verbatim):
+
+> it worked yes
+> continue
+> continue
+> especially for pcb
+
+> continue
+
+> /shared/OfflineSetup_Altium_Designer_Public_26_8_1.zip
+> install this
+> then dont open, ill tell u what to do next before opening
+
+Visible assistant responses:
+
+> The schematic import is now user-confirmed, so I’m treating that format as locked and leaving it intact. I’m resuming at the PCB boundary: first checking the newly pinned footprint catalogue, then wiring it into native `.PcbDoc` generation and validating the saved board rather than merely trusting our in-memory model.
+
+> The correctness gates are already holding, and the user-confirmed import locks the schematic half. I’ve found the next release issue in the PCB half: package metadata still bundles only `.SchDoc` donors, so an installed wheel could lose the PCB seed even though source-tree tests pass; I’m correcting that alongside the router benchmark.
+
+> The dense board is now down from roughly 29 seconds to 11 seconds with the same complete electrical result; the saved board still passes, now with 176 track records and 16 vias. I’m keeping the faster route only after rerunning mutation and package tests, then I’ll rebuild the external decoder evidence against this exact geometry so the documented acceptance numbers cannot drift from the shipped generator.
+
+> The clean-install test has passed outside the repository: a wheel built from the current tree retained all three donor types and generated a validated RC `.PrjPcb`/`.SchDoc`/`.PcbDoc` ZIP from `/tmp`. That closes the “works only from checkout” gap; I’m now freezing the release artifact and adding a smoke test that runs the packaged binary with no source-tree imports.
+
+> The first standalone build caught a platform-specific packaging flaw before release: PyInstaller produced a normal glibc ELF, but this NixOS host refuses its default dynamic loader. I’m fixing the build artifact itself and retesting from `/tmp`; a binary that cannot execute here will not be presented as portable simply because compilation succeeded.
+
+> The zip executable exposed one more hidden filesystem assumption: the catalogues were hashing donors through `Path(__file__)`, which works in a wheel but not inside an archive. I’m replacing that with one package-resource loader used by schematic, project, and PCB donors, then adding a regression that builds and executes the archive from a temporary directory so this cannot regress silently.
+
+> The standalone executable now works from `/tmp` with no checkout imports: it loads all embedded SchDoc/PcbDoc/PrjPcb donors, reports the 12-family PCB catalogue, and generates a fully validated combined RC project. The archive is only 280 KB because donor text compresses well, and its embedded donor hashes are still checked before every generation.
+
+> The final portable-generated dense project has passed the decoder gate again from scratch, with the optimized 176-line/16-via board and all 14 expected net names retained. I’m preserving both the original Altium ZIP and its EasyEDA-decoded round-trip as experiment evidence, then updating active docs and release hashes to this exact run.
+
+> I’ll install the supplied Altium Designer package without launching it or opening any generated projects. I’ll first inspect the archive’s installer layout, then use its intended installer path only.
+
+> This is the full Windows offline installer, not a Linux package: it contains `Installer.Exe` plus the 3.2 GB local cache. I’m checking the available Windows compatibility layer and disk space next; I will not run the installer or launch Altium until the install path is confirmed.
+
+> Wine 11 is already available locally, and there is enough disk space for the unpacked cache and a separate Wine prefix. I’m checking the vendor’s unattended-install arguments so the installer can run without launching Designer at the end.
+
+> Altium’s official guidance confirms the offline installer supports a no-UI install with `-AutoInstall -InstallAll`; offline mode does not require embedding credentials. I’m extracting the cache into a dedicated local installer directory, then I’ll run that silent installer inside its own Wine prefix with an explicit program/documents location and no Designer launch.
+
+> The verified offline cache is unpacked at `~/.local/share/altium-installer-26.8.1` (3.2 GB). I’m starting the official silent installer now in an isolated `wine-altium-designer` prefix; it installs the software only and does not request that Designer be launched.
+
+> The isolated Wine prefix has been created and the installer is still running silently. I’m monitoring its process and installation files only; I will leave Designer closed when it completes.
+
+> Installation is progressing normally: the AD26.8.1 program tree and Altium configuration folders now exist, and the installer is currently completing its WebView prerequisite. Designer itself has not been started.
+
+> The silent installer exited successfully. I’m doing only post-install checks now: confirming the AD26.8.1 executable and installer records exist, and confirming no Altium Designer process was started.
+
+Files edited:
+
+> `context.md`. The current Altium PCB implementation and portable-artifact changes remain uncommitted while the user directs the next desktop test.
+
+Installation evidence:
+
+> The 3.2 GB offline cache was extracted to `/home/zaruka/.local/share/altium-installer-26.8.1`. The installer ran under Wine 11 with `-UI:None -AutoInstall -InstallAll` and exited successfully. The installed executable is `/home/zaruka/.local/share/wine-altium-designer/drive_c/Program Files/Altium/AD26.8.1/AltiumMS.exe`. Process inspection confirmed it was not started.
+
+---
+
+Timestamp: 2026-07-23T13:16:00+05:00
+
+User message (verbatim):
+
+> here paste this in the directory where its installed the .exe
+> then open it here
+
+Visible assistant responses:
+
+> I’ll place the supplied `shfolder.dll` beside `AltiumMS.exe` in the installed Wine program directory, verify the copied hash, then launch Altium Designer from that exact directory.
+
+> The DLL is now next to `AltiumMS.exe` and matches the supplied file hash. I’m launching Designer through the installed Wine prefix and will keep it open for you.
+
+> Designer did not stay running after launch, so I’m checking its newly written local log before trying anything else. The DLL placement itself is correct; this is now a Wine/runtime startup issue rather than a missing-file copy issue.
+
+> The startup log points to Altium’s internal multi-client pipe bootstrap, not to the copied DLL. The installed tree contains the companion `X2.EXE` host, so I’m trying the native host entry point now; it is the appropriate fallback for this version’s split launcher layout.
+
+> `X2.EXE` reaches Altium’s actual UI path but fails during .NET text shaping because Wine has no usable Windows font mapping. I’m repairing the Wine prefix’s font substitution next; this is a standard compatibility-layer prerequisite, not an Altium project change.
+
+> The crash identifies the exact required family: Altium’s own `Font.ini` asks for `Microsoft Sans Serif`. The font file is present but Wine has not registered it as that Windows family, so I’m registering the installed substitution at the normal Windows font key and retrying.
+
+> I’ve installed Liberation font files into the isolated prefix and mapped the Windows UI font names Altium expects to them, then restarted Wine so the font cache is rebuilt. I’m launching the X2 host again now.
+
+> That cleared the font bootstrap crash. Altium’s host process is now still running; I’m verifying that the actual Designer window is present and keeping it open.
+
+> Altium Designer is now open and foregrounded. KWin reports an active, non-minimized `x2.exe` window with desktop identity “Altium Designer”; I’m leaving it running for your next instruction.
+
+Files edited:
+
+> `context.md`. Outside the repository, `/shared/shfolder.dll` was copied to `/home/zaruka/.local/share/wine-altium-designer/drive_c/Program Files/Altium/AD26.8.1/shfolder.dll`. The isolated Wine prefix also received registered Liberation font substitutions required by the Altium UI host.
+
+Validation evidence:
+
+> The copied DLL SHA-256 is `36a4b9e2a6953c2de894758ee1af1671be8da2d52a254a101cf1effb800b0071`, matching the supplied file. `X2.EXE` is running, and KWin identifies its active window as `Altium Designer` (`resourceClass: x2.exe`, `minimized: false`).
+
+---
+
+Timestamp: 2026-07-23T13:30:00+05:00
+
+User message (verbatim):
+
+> understood, i will avoid it
+> can u fix its login with browser? make ti open firefox
+
+Visible assistant responses:
+
+> Yes. I’ll configure the isolated Altium Wine prefix so HTTP/HTTPS links are handed to the host’s Firefox rather than Wine’s internal browser, then test the association with a harmless URL without touching Altium licensing itself.
+
+> I’ve confirmed the active ProGenEDA checkout is still aligned with its remote; the large Altium PCB work remains deliberately uncommitted and untouched. I’m checking the Wine URL handlers now, then I’ll point them explicitly at host Firefox and verify with a normal web URL.
+
+> Wine had no explicit URL association in this prefix, so Altium was falling back to its own browser resolution. I’m adding `http` and `https` handlers that call the installed host Firefox directly; this does not alter the program or its licensing.
+
+> The handler is now registered directly to `/run/current-system/sw/bin/firefox` for both schemes. I also invoked an `https://` test through Wine; it completed without a handler error, so Altium login links will now be handed to Firefox instead of Wine’s fallback browser.
+
+Files edited:
+
+> `context.md`. The isolated Wine registry now defines `HKCU\\Software\\Classes\\http\\shell\\open\\command` and `HKCU\\Software\\Classes\\https\\shell\\open\\command` as `Z:\\run\\current-system\\sw\\bin\\firefox "%1"`.
+
+Validation evidence:
+
+> A Wine `start` invocation for `https://example.com/` completed without a URL-handler error. Firefox was already running, so process count cannot distinguish the newly opened tab; the authoritative association values were read back from the Wine registry.
