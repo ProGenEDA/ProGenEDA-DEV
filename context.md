@@ -36622,3 +36622,36 @@ Files edited:
 Validation evidence:
 
 > `C:\\Program Files\\Altium\\AD26.8.1\\X2.EXE` is running in the isolated Wine prefix with its embedded Microsoft Edge WebView2 child processes.
+
+---
+
+Timestamp: 2026-07-23T13:45:00+05:00
+
+User messages (verbatim):
+
+> okk its still not working 
+> ill figure something out can u till then if u can open a project in it ?
+
+> i.e. link the altium file opening directly to altium
+
+Visible assistant responses:
+
+> I’ll leave the browser-login issue aside. I’m checking the existing direct-generator output and will open a disposable native Altium project through the running Designer, without modifying the source artifact.
+
+> Got it: you mean file association, so double-clicking an Altium project/document should launch Altium directly. I’ll register a local “Altium Designer” desktop launcher plus MIME associations for `.PrjPcb`, `.SchDoc`, `.PcbDoc`, and the common Altium library files, then test it with the generated project.
+
+> Good news: the official installer already created native Wine extension handlers for these exact formats, including the project, schematic, and PCB documents. I’m making them the explicit desktop defaults and testing the actual `.PrjPcb` from our generated project, rather than relying on the launcher entry alone.
+
+> The desktop association itself is correct, but the launch test exposed a separate runtime issue: Altium did not remain running after the project-open handoff. I’m tracing the generated handler now and will replace it with an explicit launcher to the exact Wine and X2 installation we already know works.
+
+> The failure was exactly in Wine’s auto-generated handler: it launches through a generic ProgID path, while the proven launch is the installed `X2.EXE` host with the selected file passed directly. I’m replacing the desktop default with that known-good command for projects, schematics, and PCB documents.
+
+> Done. Double-clicking a `.PrjPcb`, `.SchDoc`, or `.PcbDoc` now starts the installed Altium `X2.EXE` directly. I tested it using the generated 74HC04 project through `xdg-open`; the resulting Altium process contains that project path.
+
+Files edited:
+
+> `context.md`. Outside the repository, `/home/zaruka/.local/share/applications/altium-designer-files.desktop` was added and set as the desktop default for the three native Altium document MIME types.
+
+Validation evidence:
+
+> `xdg-mime` maps each of `application/x-wine-extension-prjpcb`, `application/x-wine-extension-schdoc`, and `application/x-wine-extension-pcbdoc` to `altium-designer-files.desktop`. `xdg-open` on the disposable generated `.PrjPcb` created `X2.EXE` with the project as its argument.
